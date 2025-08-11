@@ -34,11 +34,12 @@ const router = createRouter({
       name: 'reports',
       component: () => import('../views/ReportsView.vue')
     },
-    {
-      path: '/test',
-      name: 'test',
-      component: () => import('../views/TestView.vue')
-    },
+    // 暂时注释掉不存在的测试路由
+    // {
+    //   path: '/test',
+    //   name: 'test',
+    //   component: () => import('../views/TestView.vue')
+    // },
     {
       path: '/simple-test',
       name: 'simple-test',
