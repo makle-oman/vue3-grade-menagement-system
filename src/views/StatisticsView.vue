@@ -186,6 +186,17 @@
               <el-tag :type="getLevelType(scope.row)">{{ getLevel(scope.row) }}</el-tag>
             </template>
           </el-table-column>
+          <el-table-column label="评级" min-width="80">
+            <template #default="scope">
+              <el-tag v-if="!scope.row.isAbsent && scope.row.score !== null" 
+                     :type="getGradeTagType(scope.row.score)" 
+                     size="small" 
+                     effect="plain">
+                {{ getLetterGrade(scope.row.score) }}
+              </el-tag>
+              <span v-else>-</span>
+            </template>
+          </el-table-column>
         </el-table>
       </div>
     </el-card>
@@ -344,7 +355,7 @@ const examStudents = computed(() => {
   });
 
 // 学生成绩排名
-const sortedStudentScores = computed(() => {
+  const sortedStudentScores = computed(() => {
   if (!currentExam.value) return [];
 
   // 构建完整的学生成绩列表
@@ -359,16 +370,16 @@ const sortedStudentScores = computed(() => {
 
   // 分类排序：正常成绩 → 不及格 → 缺考
   const normalScores = allStudentScores
-    .filter(item => !item.isAbsent && item.score !== null && item.score >= 60)
-    .sort((a, b) => (b.score || 0) - (a.score || 0));
+    .filter(item => !item.isAbsent && item.score !== null && Number(item.score) >= 60)
+    .sort((a, b) => Number(b.score || 0) - Number(a.score || 0));
 
   const failedScores = allStudentScores
-    .filter(item => !item.isAbsent && item.score !== null && item.score < 60)
-    .sort((a, b) => (b.score || 0) - (a.score || 0));
+    .filter(item => !item.isAbsent && item.score !== null && Number(item.score) < 60)
+    .sort((a, b) => Number(b.score || 0) - Number(a.score || 0));
 
   const absentScores = allStudentScores
     .filter(item => item.isAbsent)
-    .sort((a, b) => a.student.studentId.localeCompare(b.student.studentId));
+    .sort((a, b) => a.student.studentNumber.localeCompare(b.student.studentNumber));
 
   // 合并并添加排名
   const sortedList = [...normalScores, ...failedScores, ...absentScores];
@@ -653,12 +664,21 @@ const getLevel = (item: any) => {
   if (item.score === null) return '-';
 
   const score = item.score;
-  const totalScore = currentExam.value?.totalScore || 100;
+  
+  if (score >= 90) return '优秀(A+)';
+  if (score >= 80 && score < 90) return '良好(A)';
+  if (score >= 70 && score < 80) return '良好(B+)';
+  if (score >= 60 && score < 70) return '合格(B)';
+  return '不合格(C)';
+};
 
-  if (score >= 90) return '优秀';
-  if (score >= 70 && score < 90) return '良好';
-  if (score >= 60) return '及格';
-  return '不及格';
+// 获取字母等级
+const getLetterGrade = (score: number) => {
+  if (score >= 90) return 'A+';
+  if (score >= 80 && score < 90) return 'A';
+  if (score >= 70 && score < 80) return 'B+';
+  if (score >= 60 && score < 70) return 'B';
+  return 'C';
 };
 
 // 获取等级标签类型
@@ -672,6 +692,15 @@ const getLevelType = (item: any) => {
   if (score >= totalScore * 0.85) return 'success';
   if (score >= totalScore * 0.75) return '';
   if (score >= totalScore * 0.6) return 'info';
+  return 'danger';
+};
+
+// 获取评级标签类型
+const getGradeTagType = (score: number) => {
+  if (score >= 90) return 'success';
+  if (score >= 80) return 'success';
+  if (score >= 70) return 'warning';
+  if (score >= 60) return 'info';
   return 'danger';
 };
 </script>
