@@ -24,7 +24,7 @@
     </el-card>
 
     <!-- 统计概览 -->
-    <div v-if="statistics" class="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-4">
+    <div v-if="statistics" class="grid gap-4 md:grid-cols-2 lg:grid-cols-5 mb-4">
       <el-card shadow="hover">
         <template #header>
           <div class="text-center">
@@ -74,6 +74,19 @@
         <div class="text-2xl font-bold">{{ statistics.excellentRate }}%</div>
         <p class="text-xs text-gray-500">
           优秀人数 {{ Math.round(statistics.participantCount * statistics.excellentRate / 100) }} 人
+        </p>
+      </el-card>
+
+      <el-card shadow="hover">
+        <template #header>
+          <div class="text-center">
+            <h3 class="text-lg font-medium mb-2">班级成绩</h3>
+            <div class="text-gray-500 text-sm">班级总分与平均分</div>
+          </div>
+        </template>
+        <div class="text-2xl font-bold">{{ statistics.totalClassScore }}</div>
+        <p class="text-xs text-gray-500">
+          总分 {{ currentExam?.totalScore || 100 }} / 班级排名 {{ classRank || '-' }}
         </p>
       </el-card>
     </div>
@@ -158,7 +171,8 @@
       <el-empty v-if="examStudents.length === 0" description="暂无学生数据" />
 
       <div v-else class="table-container">
-        <el-table :data="sortedStudentScores" stripe border style="width: 100%">
+        <el-table :data="sortedStudentScores" stripe border style="width: 100%"
+                 :row-class-name="getRowClassName">
           <el-table-column label="排名" width="100">
             <template #default="scope">
               <div class="flex items-center gap-2">
@@ -176,7 +190,7 @@
           <el-table-column prop="student.name" label="姓名" min-width="100" />
           <el-table-column label="成绩" min-width="100">
             <template #default="scope">
-              <span :class="{ 'text-red-500': scope.row.isAbsent || (scope.row.score !== null && scope.row.score < 60) }">
+              <span>
                 {{ scope.row.isAbsent ? '缺考' : (scope.row.score !== null ? scope.row.score : '-') }}
               </span>
             </template>
@@ -341,18 +355,25 @@ const examStudents = computed(() => {
       }
     ];
 
+    // 计算班级总分
+    const totalClassScore = scoreValues.reduce((sum, score) => sum + score, 0);
+
     return {
       participantCount: validScores.length,
       absentCount: filteredScores.length - validScores.length,
-      averageScore: Math.round(scoreValues.reduce((sum, score) => sum + score, 0) / validScores.length * 10) / 10,
+      averageScore: Math.round(totalClassScore / validScores.length * 10) / 10,
       highestScore: Math.max(...scoreValues),
       lowestScore: Math.min(...scoreValues),
       passRate: Math.round((passCount + goodCount + excellentCount) / validScores.length * 100),
       excellentRate: Math.round(excellentCount / validScores.length * 100),
       goodRate: Math.round(goodCount / validScores.length * 100),
-      scoreDistribution: distribution
+      scoreDistribution: distribution,
+      totalClassScore: totalClassScore // 班级总分
     };
   });
+
+// 班级排名（模拟数据，实际应从后端获取）
+const classRank = ref(1); // 默认排名第一
 
 // 学生成绩排名
   const sortedStudentScores = computed(() => {
@@ -703,6 +724,14 @@ const getGradeTagType = (score: number) => {
   if (score >= 60) return 'info';
   return 'danger';
 };
+
+// 获取行的类名
+const getRowClassName = ({ row }: { row: any }) => {
+  if (row.isAbsent || (row.score !== null && Number(row.score) < 60)) {
+    return 'failed-row';
+  }
+  return '';
+};
 </script>
 
 <style scoped>
@@ -820,5 +849,14 @@ const getGradeTagType = (score: number) => {
     margin: 0 1rem !important;
     box-sizing: border-box !important;
   }
+}
+
+/* 不及格和缺考行样式 */
+:deep(.failed-row) {
+  color: #F56C6C !important;
+}
+
+:deep(.failed-row td) {
+  color: #F56C6C !important;
 }
 </style>

@@ -47,13 +47,13 @@
                 <el-tag size="small" type="info">{{ scope.row.className }}</el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="examDate" label="考试日期" min-width="120">
+            <el-table-column prop="examDate" label="考试日期" min-width="180">
               <template #default="scope">
                 <div class="flex items-center gap-1">
                   <el-icon>
                     <Calendar />
                   </el-icon>
-                  {{ formatDate(scope.row.examDate) }}
+                  {{ formatDateTime(scope.row.examDate) }}
                 </div>
               </template>
             </el-table-column>
@@ -133,16 +133,17 @@
         </el-form-item>
         <el-form-item label="考试日期" prop="examDate">
           <el-date-picker v-model="examForm.examDate" type="datetime" placeholder="选择日期和时间" format="YYYY-MM-DD HH:mm"
-            value-format="YYYY-MM-DD HH:mm" class="w-full" />
+            value-format="YYYY-MM-DD HH:mm" style="width: 100%;" />
         </el-form-item>
         <el-form-item label="总分" prop="totalScore">
           <el-input-number v-model="examForm.totalScore" :min="1" :max="1000" class="w-full" />
         </el-form-item>
         <el-form-item label="考试类型" prop="examType">
           <el-select v-model="examForm.examType" placeholder="请选择考试类型" class="w-full">
+            <el-option label="单元练习" value="unit_practice" />
+            <el-option label="单元测试" value="unit_test" />
             <el-option label="期中考试" value="midterm" />
             <el-option label="期末考试" value="final" />
-            <el-option label="测验" value="quiz" />
             <el-option label="其他" value="other" />
           </el-select>
         </el-form-item>
@@ -198,16 +199,16 @@ const examForm = reactive<{
   className: string;
   examDate: string;
   totalScore: number;
-  examType: 'midterm' | 'final' | 'quiz' | 'other';
+  examType: 'unit_practice' | 'unit_test' | 'midterm' | 'final' | 'other';
   status: 'not_started' | 'in_progress' | 'completed' | 'analyzed';
 }>({
   id: '',
   name: '',
   subject: '数学',
   className: '',
-  examDate: new Date().toISOString().split('T')[0],
+  examDate: new Date().toISOString().split('T')[0] + ' ' + new Date().toTimeString().slice(0, 5),
   totalScore: 100,
-  examType: 'midterm',
+  examType: 'unit_test',
   status: 'not_started'
 });
 const examToDelete = ref<Exam | null>(null);
@@ -222,9 +223,10 @@ const allClasses = computed(() => {
 
 // 考试类型映射
 const examTypeMap = {
+  unit_practice: '单元练习',
+  unit_test: '单元测试',
   midterm: '期中考试',
   final: '期末考试',
-  quiz: '测验',
   other: '其他',
 };
 
@@ -306,18 +308,28 @@ const formatDate = (dateString: string) => {
   return date.toLocaleDateString();
 };
 
+const formatDateTime = (dateString: string) => {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
+};
+
 const getExamTypeLabel = (type: string) => {
   return examTypeMap[type as keyof typeof examTypeMap] || type;
 };
 
 const resetForm = () => {
-  examForm.id = 0;
+  examForm.id = '';
   examForm.name = '';
   examForm.subject = '数学';
   examForm.className = allClasses.value[0] || '';
-  examForm.examDate = new Date().toISOString().split('T')[0];
+  examForm.examDate = new Date().toISOString().split('T')[0] + ' ' + new Date().toTimeString().slice(0, 5);
   examForm.totalScore = 100;
-  examForm.examType = 'midterm';
+  examForm.examType = 'unit_test';
   examForm.status = 'not_started';
 };
 
@@ -333,7 +345,10 @@ const openEditDialog = (exam: Exam) => {
   examForm.name = exam.name;
   examForm.subject = exam.subject;
   examForm.className = exam.className;
-  examForm.examDate = exam.examDate; // 保持原始格式，不再转换
+  // 确保日期时间格式正确
+  const dateObj = new Date(exam.examDate);
+  const formattedDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')} ${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}`;
+  examForm.examDate = formattedDate;
   examForm.totalScore = exam.totalScore;
   examForm.examType = exam.examType as any;
   examForm.status = exam.status as any;
@@ -393,7 +408,7 @@ const deleteExam = async () => {
 const updateExamStatus = async (examId: string, status: string) => {
   loading.value = true;
   try {
-    // 只发送status字段，不包含id
+    // 发送状态更新
     await examStore.updateExam(examId, { status: status as any });
     ElMessage.success('考试状态更新成功');
   } catch (error) {
