@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue测试</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+    <div id="app">
+        <h1>{{ message }}</h1>
+        <p>当前时间: {{ currentTime }}</p>
+        <button @click="updateTime">更新时间</button>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+        
+        createApp({
+            data() {
+                return {
+                    message: 'Vue 3 测试页面正常运行！',
+                    currentTime: new Date().toLocaleString()
+                }
+            },
+            methods: {
+                updateTime() {
+                    this.currentTime = new Date().toLocaleString();
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

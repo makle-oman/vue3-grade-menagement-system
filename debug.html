@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>调试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background: #409EFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #337ecc;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Vue应用调试页面</h1>
+        <p>这是一个独立的调试页面，用于测试各种功能</p>
+        
+        <div class="test-section">
+            <h3>1. 基本HTML显示测试</h3>
+            <p class="success">✅ 如果您能看到这个绿色文字，说明HTML正常显示</p>
+        </div>
+        
+        <div class="test-section">
+            <h3>2. JavaScript基本功能测试</h3>
+            <p id="js-test">⏳ JavaScript测试中...</p>
+            <button onclick="testJS()">测试JavaScript</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>3. 后端API连接测试</h3>
+            <p id="api-test">⏳ 等待测试...</p>
+            <button onclick="testAPI()">测试API连接</button>
+            <div id="api-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>4. Vue CDN版本测试</h3>
+            <div id="vue-app">
+                <p>⏳ Vue应用加载中...</p>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>5. 系统信息</h3>
+            <p><strong>当前时间:</strong> <span id="current-time"></span></p>
+            <p><strong>浏览器:</strong> <span id="browser-info"></span></p>
+            <p><strong>页面URL:</strong> <span id="page-url"></span></p>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+        // 基本JavaScript测试
+        function testJS() {
+            document.getElementById('js-test').innerHTML = '<span class="success">✅ JavaScript正常工作</span>';
+        }
+        
+        // API测试
+        async function testAPI() {
+            const resultDiv = document.getElementById('api-result');
+            const statusP = document.getElementById('api-test');
+            
+            try {
+                statusP.innerHTML = '⏳ 正在测试API连接...';
+                
+                const response = await fetch('http://localhost:3000/students');
+                const data = await response.json();
+                
+                statusP.innerHTML = '<span class="success">✅ API连接成功</span>';
+                resultDiv.innerHTML = `<pre>获取到 ${data.length} 名学生数据:\n${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                statusP.innerHTML = '<span class="error">❌ API连接失败</span>';
+                resultDiv.innerHTML = `<pre class="error">错误: ${error.message}</pre>`;
+            }
+        }
+        
+        // Vue应用测试
+        if (window.Vue) {
+            const { createApp } = Vue;
+            
+            createApp({
+                data() {
+                    return {
+                        message: '✅ Vue 3 CDN版本正常工作',
+                        count: 0
+                    }
+                },
+                methods: {
+                    increment() {
+                        this.count++;
+                    }
+                },
+                template: `
+                    <div>
+                        <p class="success">{{ message }}</p>
+                        <p>计数器: {{ count }}</p>
+                        <button @click="increment">点击增加</button>
+                    </div>
+                `
+            }).mount('#vue-app');
+        } else {
+            document.getElementById('vue-app').innerHTML = '<p class="error">❌ Vue CDN加载失败</p>';
+        }
+        
+        // 系统信息
+        document.getElementById('current-time').textContent = new Date().toLocaleString();
+        document.getElementById('browser-info').textContent = navigator.userAgent;
+        document.getElementById('page-url').textContent = window.location.href;
+        
+        // 自动运行JavaScript测试
+        setTimeout(testJS, 1000);
+        
+        console.log('调试页面已加载');
+    </script>
+</body>
+</html>
