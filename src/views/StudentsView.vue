@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full max-w-full overflow-x-hidden space-y-6 page-content">
+  <div class="w-full space-y-6 page-content">
     <!-- 页面标题 -->
     <div>
       <h1 class="text-3xl font-bold tracking-tight text-gray-900">学生管理</h1>
@@ -20,7 +20,7 @@
       <div class="p-6">
         <!-- 操作栏 -->
         <div class="mb-6">
-          <div class="flex flex-col lg:flex-row gap-4">
+        <div class="flex flex-row gap-4">
             <!-- 搜索框 -->
             <div class="flex-1">
               <el-input v-model="searchQuery" placeholder="搜索学生姓名、学号或班级..." prefix-icon="Search" size="large" clearable
@@ -39,7 +39,7 @@
 
               <input ref="fileInput" type="file" accept=".xlsx,.xls" @change="handleImportExcel"
                 style="display: none" />
-              <el-button size="large" @click="$refs.fileInput.click()" class="action-button">
+              <el-button size="large" @click="triggerFileInput" class="action-button">
                 <el-icon>
                   <Upload />
                 </el-icon>
@@ -286,6 +286,12 @@ const paginatedStudents = computed(() => {
 // 方法
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString('zh-CN');
+};
+
+const triggerFileInput = () => {
+  if (fileInput.value) {
+    fileInput.value.click();
+  }
 };
 
 const addStudent = async () => {
@@ -628,17 +634,6 @@ onMounted(async () => {
   border-width: 0px;
 }
 
-@media (min-width: 640px) {
-  .sm\:flex-row {
-    flex-direction: row;
-  }
-}
-
-@media (min-width: 1024px) {
-  .lg\:flex-row {
-    flex-direction: row;
-  }
-}
 
 .bg-white {
   background-color: #ffffff;
@@ -695,93 +690,6 @@ onMounted(async () => {
   box-sizing: border-box !important;
 }
 
-/* 移动端表格适配 */
-@media (max-width: 768px) {
-  .page-content {
-    width: calc(100vw - 2rem) !important;
-    max-width: calc(100vw - 2rem) !important;
-    overflow-x: hidden !important;
-    padding: 0 !important;
-    margin: 0 1rem !important;
-    box-sizing: border-box !important;
-  }
-
-  /* 移动端表格样式已移除 */
-
-  /* 确保卡片不会超出屏幕 */
-  :deep(.el-card) {
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
-  }
-
-  /* 确保输入框和按钮不会超出 */
-  :deep(.el-input) {
-    max-width: 100%;
-  }
-
-  :deep(.el-button) {
-    white-space: nowrap;
-  }
-
-  .bg-white.rounded-lg.border.shadow-sm {
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
-  }
-
-  /* 表格固定列样式已移除 */
-
-  .action-button {
-    min-width: 80px;
-    font-size: 14px;
-    padding: 8px 16px;
-    height: 32px;
-  }
-
-  .flex.flex-col.lg\\:flex-row.gap-4 {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .flex.flex-wrap.gap-2 {
-    justify-content: flex-start;
-    gap: 0.5rem;
-  }
-
-  .action-link-button {
-    padding: 6px 8px !important;
-    min-width: 32px;
-    height: 32px;
-  }
-
-  /* 移动端操作栏固定优化 */
-  :deep(.el-table__fixed-right-patch) {
-    background-color: #f8fafc;
-  }
-
-  /* 搜索框移动端优化 */
-  .search-input {
-    margin-bottom: 0.5rem;
-  }
-
-  /* 分页移动端优化 */
-  .px-6.py-4.border-t.border-gray-200.bg-gray-50 {
-    padding: 1rem;
-  }
-
-  :deep(.el-pagination) {
-    justify-content: center;
-  }
-
-  :deep(.el-pagination .el-pager) {
-    display: none;
-  }
-
-  :deep(.el-pagination .el-pagination__jump) {
-    display: none;
-  }
-}
 
 /* 桌面端表格优化样式已移除 */
 </style>

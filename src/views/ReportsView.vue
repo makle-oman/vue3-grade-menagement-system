@@ -13,7 +13,7 @@
         <el-select 
           v-model="selectedExamId" 
           placeholder="请选择考试" 
-          class="w-full md:w-80"
+          class="w-80"
           @change="handleExamChange"
         >
           <el-option
@@ -41,7 +41,7 @@
         </div>
       </template>
 
-      <div class="grid gap-4 md:grid-cols-3">
+      <div class="grid gap-4 grid-cols-3">
         <el-card 
           shadow="hover" 
           :class="{'is-active': reportType === 'individual'}"
@@ -105,7 +105,7 @@
           </el-checkbox>
         </div>
         
-        <div class="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
+        <div class="grid gap-2 grid-cols-3">
           <el-checkbox 
             v-for="student in examStudents" 
             :key="student.id" 
@@ -127,7 +127,7 @@
         </div>
       </template>
 
-      <div class="flex flex-col sm:flex-row gap-4">
+      <div class="flex flex-row gap-4">
         <el-button 
           v-if="reportType === 'individual'" 
           type="primary" 
@@ -170,7 +170,7 @@
         </div>
       </template>
 
-      <div class="grid gap-4 md:grid-cols-2">
+      <div class="grid gap-4 grid-cols-2">
         <div>
           <h4 class="font-medium mb-2">考试信息</h4>
           <div class="space-y-1 text-sm text-gray-500">
@@ -576,22 +576,4 @@ const generateSummaryReport = () => {
   border-radius: 12px;
 }
 
-/* 移动端表格优化 */
-@media (max-width: 768px) {
-  :deep(.el-table) {
-    font-size: 12px;
-  }
-  
-  :deep(.el-table .el-table__cell) {
-    padding: 8px 4px;
-  }
-  
-  :deep(.el-table th) {
-    font-size: 11px;
-  }
-  
-  :deep(.el-table td) {
-    font-size: 12px;
-  }
-}
 </style>

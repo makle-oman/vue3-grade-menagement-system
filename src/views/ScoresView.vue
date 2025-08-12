@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full max-w-full overflow-x-hidden scores-container page-content scores-content">
+  <div class="w-full scores-container page-content scores-content">
     <div class="page-header">
       <h1 class="text-3xl font-bold">成绩录入</h1>
       <p class="text-gray-500">录入和管理考试成绩，支持Excel批量导入</p>
@@ -13,8 +13,8 @@
           <p class="text-gray-500">选择要录入成绩的考试</p>
         </div>
       </template>
-      <div class="flex flex-wrap items-center gap-4">
-        <el-select v-model="selectedExam" placeholder="请选择考试" class="flex-1 min-w-200px" @change="handleExamSelect">
+      <div class="flex items-center gap-4">
+        <el-select v-model="selectedExam" placeholder="请选择考试" class="w-80" @change="handleExamSelect">
           <el-option v-for="exam in sortedExams" :key="exam.id" :label="getExamLabel(exam)" :value="exam.id" />
         </el-select>
         <div v-if="currentExam" class="flex gap-2">
@@ -593,30 +593,36 @@ const getScoreStatusText = (studentId: string) => {
 @tailwind components;
 @tailwind utilities;
 
+/* 页面布局 */
 .scores-container {
-  padding: 0;
-}
-
-@media (max-width: 768px) {
-  .scores-container {
-    padding: 0;
-  }
-}
-
-@media (min-width: 769px) {
-  .scores-container {
-    padding: 20px;
-  }
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .page-header {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #eaeaea;
+  padding-bottom: 16px;
 }
 
 .card-header {
-  margin-bottom: 10px;
+  margin-bottom: 16px;
 }
 
+/* 表格样式 */
+.table-container {
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+}
+
+.el-table .cell {
+  padding: 12px;
+}
+
+/* 行状态样式 */
 .absent-row {
   background-color: #fef2f2;
   color: #b91c1c;
@@ -633,22 +639,114 @@ const getScoreStatusText = (studentId: string) => {
   font-style: italic;
 }
 
-.el-table .cell {
-  padding: 8px;
-}
-
+/* 空状态样式 */
 .empty-state {
-  margin-top: 20px;
+  margin-top: 24px;
+  border-radius: 8px;
 }
 
+/* 上传组件样式 */
 .hidden-upload .el-upload-list {
   display: none;
 }
 
-.min-w-200px {
-  min-width: 200px;
+/* 按钮样式 */
+.page-content :deep(.el-button) {
+  border-radius: 6px;
+  height: 40px;
+  padding: 0 20px;
+  font-weight: 500;
+  transition: all 0.3s;
 }
 
+.page-content :deep(.el-button:hover) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.page-content :deep(.el-button--small) {
+  height: 32px;
+  padding: 0 16px;
+  font-size: 13px;
+}
+
+/* 按钮组布局 */
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 24px;
+}
+
+.button-group {
+  display: flex;
+  gap: 12px;
+}
+
+/* 表单控件样式 */
+:deep(.el-select) {
+  min-width: 240px;
+}
+
+:deep(.el-input__inner) {
+  height: 40px;
+  line-height: 40px;
+}
+
+/* 卡片样式增强 */
+:deep(.el-card) {
+  border-radius: 8px;
+  transition: all 0.3s;
+  border: none;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+}
+
+:deep(.el-card:hover) {
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08);
+}
+
+:deep(.el-card__header) {
+  padding: 18px 24px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+:deep(.el-card__body) {
+  padding: 24px;
+}
+
+/* 文本样式 */
+.text-3xl {
+  font-size: 2rem;
+  line-height: 2.5rem;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.text-gray-500 {
+  color: #6b7280;
+}
+
+.text-gray-400 {
+  color: #9ca3af;
+}
+
+.text-lg {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+/* 通用工具类 */
 .flex {
   display: flex;
 }
@@ -690,153 +788,11 @@ const getScoreStatusText = (studentId: string) => {
   padding-bottom: 3rem;
 }
 
-.text-3xl {
-  font-size: 1.875rem;
-  line-height: 2.25rem;
-}
-
-.font-bold {
-  font-weight: 700;
-}
-
-.text-gray-500 {
-  color: #6b7280;
-}
-
-.text-gray-400 {
-  color: #9ca3af;
-}
-
-.text-lg {
-  font-size: 1.125rem;
-  line-height: 1.75rem;
-}
-
-.font-medium {
-  font-weight: 500;
-}
-
-.text-sm {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-}
-
 .mr-1 {
   margin-right: 0.25rem;
 }
 
-/* 表格容器样式 */
-.table-container {
-  border-radius: 0.5rem;
-  overflow: hidden;
-  background: white;
-}
-
-/* 胶囊型按钮样式 - 细长美观 - 只应用到页面内容区域 */
-.page-content :deep(.el-button) {
-  border-radius: 9999px;
-  height: 36px;
-  padding: 0 16px;
-  font-weight: 500;
-}
-
-.page-content :deep(.el-button--small) {
-  height: 28px;
-  padding: 0 12px;
-  font-size: 13px;
-}
-
-/* 按钮组布局 */
-.action-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.button-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-/* 移动端表格适配 */
-@media (max-width: 768px) {
-  .table-container {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    border-radius: 0.5rem;
-  }
-
-  :deep(.el-table) {
-    min-width: 600px;
-    font-size: 14px;
-  }
-
-  :deep(.el-table .el-table__cell) {
-    padding: 8px 6px;
-    font-size: 14px;
-  }
-
-  :deep(.el-input) {
-    font-size: 14px;
-  }
-
-  :deep(.el-input__inner) {
-    height: 32px;
-    line-height: 32px;
-  }
-
-  .action-buttons {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .button-group {
-    justify-content: flex-start;
-    gap: 0.5rem;
-  }
-
-  .page-content :deep(.el-button) {
-    height: 32px;
-    padding: 0 12px;
-    font-size: 14px;
-  }
-
-  /* 考试选择区域优化 */
-  :deep(.el-select) {
-    width: 100% !important;
-    min-width: auto !important;
-  }
-
-  .flex.flex-wrap.items-center.gap-4 {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
-  }
-
-  .flex.gap-2 {
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-}
-
-/* 桌面端表格优化 */
-@media (min-width: 769px) {
-  .table-container {
-    /* box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); */
-  }
-}
-
-/* 移动端边距适配 */
-@media (max-width: 768px) {
-  .scores-content {
-    width: calc(100vw - 2rem) !important;
-    max-width: calc(100vw - 2rem) !important;
-    overflow-x: hidden !important;
-    padding: 0 !important;
-    margin: 0 1rem !important;
-    box-sizing: border-box !important;
-  }
+.min-w-200px {
+  min-width: 200px;
 }
 </style>

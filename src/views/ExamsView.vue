@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full max-w-full overflow-x-hidden space-y-6 page-content">
+  <div class="w-full space-y-6 page-content">
     <!-- 页面标题 -->
     <div>
       <h1 class="text-3xl font-bold tracking-tight text-gray-900">考试管理</h1>
@@ -9,7 +9,7 @@
     <!-- 考试信息管理卡片 -->
     <div class="bg-white rounded-lg border shadow-sm">
       <div class="p-6 border-b border-gray-200">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="flex flex-row justify-between items-center gap-4">
           <div>
             <h2 class="text-lg font-semibold text-gray-900">考试信息管理</h2>
             <p class="text-sm text-gray-600 mt-1">添加、编辑考试信息，支持Excel批量导入</p>
@@ -587,46 +587,13 @@ const updateExamStatus = async (examId: string, status: string) => {
   width: 100%;
 }
 
-/* 响应式设计 */
-@media (min-width: 640px) {
-  .sm\:flex-row {
-    flex-direction: row;
-  }
-
-  .sm\:items-center {
-    align-items: center;
-  }
-}
 
 /* 表格样式已移除，使用Element Plus默认样式 */
 
 /* 内容区域边距适配 */
 .page-content {
   width: 100% !important;
-  max-width: 100% !important;
-  overflow-x: hidden !important;
   padding: 0 1.5rem !important;
   box-sizing: border-box !important;
-}
-
-/* 移动端适配 */
-@media (max-width: 768px) {
-  .page-content {
-    width: calc(100vw - 2rem) !important;
-    max-width: calc(100vw - 2rem) !important;
-    overflow-x: hidden !important;
-    padding: 0 !important;
-    margin: 0 1rem !important;
-    box-sizing: border-box !important;
-  }
-
-  .w-80 {
-    width: 100%;
-  }
-
-  .flex.gap-2 {
-    flex-direction: column;
-    gap: 0.25rem;
-  }
 }
 </style>

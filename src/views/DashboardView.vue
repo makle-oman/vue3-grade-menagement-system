@@ -9,7 +9,7 @@
     </div>
 
     <!-- 统计卡片 -->
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div class="grid gap-4 grid-cols-4">
       <div class="bg-white rounded-lg border p-6 shadow-sm">
         <div class="flex items-center justify-between pb-2">
           <h3 class="text-sm font-medium text-gray-600">学生总数</h3>
@@ -53,7 +53,7 @@
         <h3 class="text-lg font-semibold">快捷操作</h3>
         <p class="text-sm text-gray-500">常用功能快速入口</p>
       </div>
-      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div class="grid gap-4 grid-cols-4">
         <button 
           @click="$router.push('/students')"
           class="h-20 flex flex-col items-center justify-center gap-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
@@ -120,7 +120,7 @@
     </div>
 
     <!-- 数据可视化区域 -->
-    <div class="grid gap-4 md:grid-cols-2">
+    <div class="grid gap-4 grid-cols-2">
       <!-- 班级分布 -->
       <div class="bg-white rounded-lg border p-6 shadow-sm">
         <div class="mb-4">
@@ -610,17 +610,6 @@ onMounted(async () => {
   gap: 0.75rem;
 }
 
-@media (min-width: 768px) {
-  .md\:grid-cols-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1024px) {
-  .lg\:grid-cols-4 {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
 
 .text-3xl {
   font-size: 1.875rem;
@@ -884,21 +873,7 @@ onMounted(async () => {
 /* 内容区域边距适配 */
 .dashboard-content {
   width: 100% !important;
-  max-width: 100% !important;
-  overflow-x: hidden !important;
   padding: 0 1.5rem !important;
   box-sizing: border-box !important;
-}
-
-/* 移动端边距适配 */
-@media (max-width: 768px) {
-  .dashboard-content {
-    width: calc(100vw - 2rem) !important;
-    max-width: calc(100vw - 2rem) !important;
-    overflow-x: hidden !important;
-    padding: 0 !important;
-    margin: 0 1rem !important;
-    box-sizing: border-box !important;
-  }
 }
 </style>

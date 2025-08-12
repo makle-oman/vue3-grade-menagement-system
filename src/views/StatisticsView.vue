@@ -10,7 +10,7 @@
 
       <!-- 考试选择 -->
       <div class="mb-4">
-        <el-select v-model="selectedExamId" placeholder="请选择考试" class="w-full md:w-80" @change="handleExamChange">
+        <el-select v-model="selectedExamId" placeholder="请选择考试" class="w-80" @change="handleExamChange">
           <el-option v-for="exam in sortedExams" :key="exam.id"
             :label="`${exam.name} - ${exam.subject} - ${exam.className}`" :value="exam.id" />
         </el-select>
@@ -26,7 +26,7 @@
     <!-- 统计概览 -->
     <div v-if="statistics" class="mb-4">
       <!-- 主要指标 -->
-      <div class="grid gap-4 md:grid-cols-3 lg:grid-cols-6 mb-4">
+      <div class="grid gap-4 grid-cols-6 mb-4">
         <el-card shadow="hover">
           <template #header>
             <div class="text-center">
@@ -107,7 +107,7 @@
       </div>
 
       <!-- 综合评分 -->
-      <div class="grid gap-4 md:grid-cols-3 mb-4">
+      <div class="grid gap-4 grid-cols-3 mb-4">
         <el-card shadow="hover" class="bg-gradient-to-r from-blue-50 to-indigo-50">
           <template #header>
             <div class="text-center">
@@ -155,7 +155,7 @@
     </div>
 
     <!-- 图表分析 -->
-    <div v-if="statistics" class="grid gap-6 md:grid-cols-2 mb-4">
+    <div v-if="statistics" class="grid gap-6 grid-cols-2 mb-4">
       <!-- 分数段分布柱状图 -->
       <el-card>
         <template #header>
@@ -867,118 +867,22 @@ const getRowClassName = ({ row }: { row: any }) => {
 <style scoped>
 .statistics-container {
   min-height: calc(100vh - 120px);
-  padding: 0;
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 /* 表格容器样式 */
 .table-container {
-  border-radius: 0.5rem;
-  /* border: 1px solid #e5e7eb; */
+  border-radius: 8px;
   overflow: hidden;
   background: white;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
 }
 
-/* 移动端适配 */
-@media (max-width: 768px) {
-  .statistics-container {
-    padding: 0;
-    max-width: 100vw;
-    overflow-x: hidden;
-  }
-
-  /* 考试选择区域 */
-  :deep(.el-select) {
-    width: 100% !important;
-  }
-
-  /* 统计卡片网格 */
-  .grid.gap-4.md\\:grid-cols-2.lg\\:grid-cols-4 {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
-  }
-
-  /* 图表区域 */
-  .grid.gap-6.md\\:grid-cols-2 {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .h-80 {
-    height: 12rem;
-  }
-
-  /* 表格适配 */
-  .table-container {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    border-radius: 0.5rem;
-  }
-
-  :deep(.el-table) {
-    min-width: 600px;
-    font-size: 14px;
-  }
-
-  :deep(.el-table .el-table__cell) {
-    padding: 8px 6px;
-    font-size: 14px;
-  }
-
-  /* 卡片头部优化 */
-  :deep(.el-card__header) {
-    padding: 12px 16px;
-  }
-
-  :deep(.el-card__body) {
-    padding: 16px;
-  }
-
-  /* 统计数字优化 */
-  .text-2xl {
-    font-size: 1.5rem;
-    line-height: 2rem;
-  }
-
-  .text-xs {
-    font-size: 0.75rem;
-    line-height: 1rem;
-  }
-
-  /* 图表容器优化 */
-  .h-80>div {
-    width: 100% !important;
-    height: 100% !important;
-  }
-}
-
-/* 桌面端优化 */
-@media (min-width: 769px) {
-  .statistics-container {
-    padding: 1.5rem;
-  }
-
-  .h-80 {
-    height: 20rem;
-  }
-}
-
-/* 桌面端表格优化 */
-@media (min-width: 769px) {
-  .table-container {
-    /* box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); */
-  }
-}
-
-/* 移动端边距适配 */
-@media (max-width: 768px) {
-  .statistics-content {
-    width: calc(100vw - 2rem) !important;
-    max-width: calc(100vw - 2rem) !important;
-    overflow-x: hidden !important;
-    padding: 0 !important;
-    margin: 0 1rem !important;
-    box-sizing: border-box !important;
-  }
+/* 图表高度设置 */
+.h-80 {
+  height: 24rem;
 }
 
 /* 不及格和缺考行样式 */
@@ -988,5 +892,175 @@ const getRowClassName = ({ row }: { row: any }) => {
 
 :deep(.failed-row td) {
   color: #F56C6C !important;
+}
+
+/* 卡片样式优化 */
+:deep(.el-card) {
+  border-radius: 8px;
+  transition: all 0.3s;
+  border: none;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+  margin-bottom: 24px;
+}
+
+:deep(.el-card:hover) {
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08);
+}
+
+:deep(.el-card__header) {
+  padding: 18px 24px;
+  border-bottom: 2px solid #fff;
+}
+
+:deep(.el-card__body) {
+  padding: 24px;
+}
+
+/* 表格样式优化 */
+:deep(.el-table) {
+  font-size: 14px;
+}
+
+:deep(.el-table th) {
+  background-color: #f9fafb;
+  font-weight: 600;
+}
+
+:deep(.el-table--striped .el-table__body tr.el-table__row--striped td) {
+  background-color: #f9fafb;
+}
+
+/* 统计数字样式 */
+.text-2xl {
+  font-size: 2rem;
+  line-height: 2.5rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.text-3xl {
+  font-size: 2.25rem;
+  line-height: 2.75rem;
+  font-weight: 700;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+/* 图表容器样式 */
+.chart-container {
+  background-color: white;
+  border-radius: 8px;
+  padding: 16px;
+  height: 100%;
+}
+
+/* 渐变背景卡片 */
+.bg-gradient-to-r {
+  background-size: 200% 200%;
+  animation: gradient 15s ease infinite;
+  position: relative;
+  overflow: visible;
+}
+
+/* 添加卡片之间的分隔线效果 */
+.grid.gap-8 .el-card {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08) !important;
+  position: relative;
+}
+
+.grid.gap-8 .el-card::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -24px;
+  transform: translateY(-50%);
+  height: 80%;
+  width: 2px;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.grid.gap-8 .el-card:last-child::after {
+  display: none;
+}
+
+.border-blue-100 {
+  border-color: #bfdbfe !important;
+}
+
+.border-green-100 {
+  border-color: #bbf7d0 !important;
+}
+
+.border-purple-100 {
+  border-color: #e9d5ff !important;
+}
+
+.border-2 {
+  border-width: 2px !important;
+}
+
+/* 增强数字显示效果 */
+.text-3xl {
+  font-size: 2.5rem !important;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.text-blue-600 {
+  color: #3b82f6 !important;
+}
+
+.text-green-600 {
+  color: #16a34a !important;
+}
+
+.text-purple-600 {
+  color: #9333ea !important;
+}
+
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.from-blue-50.to-indigo-50 {
+  background-image: linear-gradient(120deg, #e0f2fe 0%, #e0e7ff 100%);
+}
+
+.from-green-50.to-teal-50 {
+  background-image: linear-gradient(120deg, #dcfce7 0%, #ccfbf1 100%);
+}
+
+.from-purple-50.to-pink-50 {
+  background-image: linear-gradient(120deg, #f3e8ff 0%, #fce7f3 100%);
+}
+
+/* 选择器样式 */
+:deep(.el-select) {
+  min-width: 240px;
+}
+
+:deep(.el-select .el-input__inner) {
+  height: 40px;
+  line-height: 40px;
+}
+
+/* 标签样式 */
+:deep(.el-tag) {
+  border-radius: 4px;
+  padding: 0 10px;
+  height: 24px;
+  line-height: 22px;
 }
 </style>
