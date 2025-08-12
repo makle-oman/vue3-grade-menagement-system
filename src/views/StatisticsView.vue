@@ -24,71 +24,134 @@
     </el-card>
 
     <!-- 统计概览 -->
-    <div v-if="statistics" class="grid gap-4 md:grid-cols-2 lg:grid-cols-5 mb-4">
-      <el-card shadow="hover">
-        <template #header>
-          <div class="text-center">
-            <h3 class="text-lg font-medium mb-2">考试人数</h3>
-            <div class="text-gray-500 text-sm">考试的基本统计信息</div>
-          </div>
-        </template>
-        <div class="text-2xl font-bold">{{ statistics.participantCount }}</div>
-        <p class="text-xs text-gray-500">
-          缺考 {{ statistics.absentCount }} 人
-        </p>
-      </el-card>
+    <div v-if="statistics" class="mb-4">
+      <!-- 主要指标 -->
+      <div class="grid gap-4 md:grid-cols-3 lg:grid-cols-6 mb-4">
+        <el-card shadow="hover">
+          <template #header>
+            <div class="text-center">
+              <h3 class="text-lg font-medium mb-2">考试人数</h3>
+              <div class="text-gray-500 text-sm">考试的基本统计信息</div>
+            </div>
+          </template>
+          <div class="text-2xl font-bold">{{ statistics.participantCount }}</div>
+          <p class="text-xs text-gray-500">
+            缺考 {{ statistics.absentCount }} 人
+          </p>
+        </el-card>
 
-      <el-card shadow="hover">
-        <template #header>
-          <div class="text-center">
-            <h3 class="text-lg font-medium mb-2">平均分</h3>
-            <div class="text-gray-500 text-sm">成绩分布情况</div>
-          </div>
-        </template>
-        <div class="text-2xl font-bold">{{ statistics.averageScore }}</div>
-        <p class="text-xs text-gray-500">
-          最高分 {{ statistics.highestScore }} / 最低分 {{ statistics.lowestScore }}
-        </p>
-      </el-card>
+        <el-card shadow="hover">
+          <template #header>
+            <div class="text-center">
+              <h3 class="text-lg font-medium mb-2">平均分</h3>
+              <div class="text-gray-500 text-sm">成绩分布情况</div>
+            </div>
+          </template>
+          <div class="text-2xl font-bold">{{ statistics.averageScore }}</div>
+          <p class="text-xs text-gray-500">
+            最高分 {{ statistics.highestScore }} / 最低分 {{ statistics.lowestScore }}
+          </p>
+        </el-card>
 
-      <el-card shadow="hover">
-        <template #header>
-          <div class="text-center">
-            <h3 class="text-lg font-medium mb-2">及格率</h3>
-            <div class="text-gray-500 text-sm">及格人数占比</div>
-          </div>
-        </template>
-        <div class="text-2xl font-bold">{{ statistics.passRate }}%</div>
-        <p class="text-xs text-gray-500">
-          及格人数 {{ Math.round(statistics.participantCount * statistics.passRate / 100) }} 人
-        </p>
-      </el-card>
+        <el-card shadow="hover">
+          <template #header>
+            <div class="text-center">
+              <h3 class="text-lg font-medium mb-2">及格率</h3>
+              <div class="text-gray-500 text-sm">及格人数占比</div>
+            </div>
+          </template>
+          <div class="text-2xl font-bold">{{ statistics.passRate }}%</div>
+          <p class="text-xs text-gray-500">
+            及格人数 {{ Math.round(statistics.participantCount * statistics.passRate / 100) }} 人
+          </p>
+        </el-card>
 
-      <el-card shadow="hover">
-        <template #header>
-          <div class="text-center">
-            <h3 class="text-lg font-medium mb-2">优秀率</h3>
-            <div class="text-gray-500 text-sm">优秀人数占比</div>
-          </div>
-        </template>
-        <div class="text-2xl font-bold">{{ statistics.excellentRate }}%</div>
-        <p class="text-xs text-gray-500">
-          优秀人数 {{ Math.round(statistics.participantCount * statistics.excellentRate / 100) }} 人
-        </p>
-      </el-card>
+        <el-card shadow="hover">
+          <template #header>
+            <div class="text-center">
+              <h3 class="text-lg font-medium mb-2">优秀率</h3>
+              <div class="text-gray-500 text-sm">优秀人数占比</div>
+            </div>
+          </template>
+          <div class="text-2xl font-bold">{{ statistics.excellentRate }}%</div>
+          <p class="text-xs text-gray-500">
+            优秀人数 {{ Math.round(statistics.participantCount * statistics.excellentRate / 100) }} 人
+          </p>
+        </el-card>
 
-      <el-card shadow="hover">
-        <template #header>
-          <div class="text-center">
-            <h3 class="text-lg font-medium mb-2">班级成绩</h3>
-            <div class="text-gray-500 text-sm">班级总分与平均分</div>
+        <el-card shadow="hover">
+          <template #header>
+            <div class="text-center">
+              <h3 class="text-lg font-medium mb-2">优生率</h3>
+              <div class="text-gray-500 text-sm">优生人数占比</div>
+            </div>
+          </template>
+          <div class="text-2xl font-bold">{{ statistics.goodStudentRate }}%</div>
+          <p class="text-xs text-gray-500">
+            优生人数 {{ statistics.goodStudentCount }} 人
+          </p>
+        </el-card>
+
+        <el-card shadow="hover">
+          <template #header>
+            <div class="text-center">
+              <h3 class="text-lg font-medium mb-2">差生率</h3>
+              <div class="text-gray-500 text-sm">差生人数占比</div>
+            </div>
+          </template>
+          <div class="text-2xl font-bold">{{ statistics.poorStudentRate }}%</div>
+          <p class="text-xs text-gray-500">
+            差生人数 {{ statistics.poorStudentCount }} 人
+          </p>
+        </el-card>
+      </div>
+
+      <!-- 综合评分 -->
+      <div class="grid gap-4 md:grid-cols-3 mb-4">
+        <el-card shadow="hover" class="bg-gradient-to-r from-blue-50 to-indigo-50">
+          <template #header>
+            <div class="text-center">
+              <h3 class="text-lg font-medium mb-2">综合分</h3>
+              <div class="text-gray-500 text-sm">及格率×0.5 + 平均分×0.3 + 优生率×0.2</div>
+            </div>
+          </template>
+          <div class="text-3xl font-bold text-blue-600">{{ statistics.compositeScore }}</div>
+          <div class="flex justify-between text-xs text-gray-500 mt-2">
+            <span>及格率贡献: {{ (statistics.passRate * 0.5).toFixed(1) }}</span>
+            <span>平均分贡献: {{ (statistics.averageScore * 0.3).toFixed(1) }}</span>
+            <span>优生率贡献: {{ (statistics.goodStudentRate * 0.2).toFixed(1) }}</span>
           </div>
-        </template>
-        <div class="text-2xl font-bold">{{ statistics.totalClassScore }}</div>
-        <p class="text-xs text-gray-500">
-          总分 {{ currentExam?.totalScore || 100 }} / 班级排名 {{ classRank || '-' }}
-        </p>
-      </el-card>
+        </el-card>
+
+        <el-card shadow="hover" class="bg-gradient-to-r from-green-50 to-teal-50">
+          <template #header>
+            <div class="text-center">
+              <h3 class="text-lg font-medium mb-2">总积分</h3>
+              <div class="text-gray-500 text-sm">及格率 + 优生率 + 平均分</div>
+            </div>
+          </template>
+          <div class="text-3xl font-bold text-green-600">{{ statistics.totalPoints }}</div>
+          <div class="flex justify-between text-xs text-gray-500 mt-2">
+            <span>及格率: {{ statistics.passRate }}</span>
+            <span>优生率: {{ statistics.goodStudentRate }}</span>
+            <span>平均分: {{ statistics.averageScore }}</span>
+          </div>
+        </el-card>
+
+        <el-card shadow="hover" class="bg-gradient-to-r from-purple-50 to-pink-50">
+          <template #header>
+            <div class="text-center">
+              <h3 class="text-lg font-medium mb-2">班级成绩总分</h3>
+              <div class="text-gray-500 text-sm">班级总分与平均分</div>
+            </div>
+          </template>
+          <div class="text-3xl font-bold text-purple-600">{{ statistics.totalClassScore }}</div>
+          <div class="flex justify-between text-xs text-gray-500 mt-2">
+            <span>总分: {{ currentExam?.totalScore || 100 }}</span>
+            <span>班级排名: {{ classRank || '-' }}</span>
+          </div>
+        </el-card>
+      </div>
     </div>
 
     <!-- 图表分析 -->
@@ -312,18 +375,26 @@ const examStudents = computed(() => {
     const passLine = 60; // 及格线固定为60分
     const goodLine = 70; // 良好线固定为70分
     const excellentLine = 90; // 优秀线固定为90分
+    const goodStudentLine = 80; // 优生线固定为80分
+    const poorStudentLine = 40; // 差生线固定为40分
 
     // 计算各分数段的学生数量
     const failCount = scoreValues.filter(score => score < passLine).length;
     const passCount = scoreValues.filter(score => score >= passLine && score < goodLine).length;
     const goodCount = scoreValues.filter(score => score >= goodLine && score < excellentLine).length;
     const excellentCount = scoreValues.filter(score => score >= excellentLine).length;
+    
+    // 计算优生和差生
+    const goodStudentCount = scoreValues.filter(score => score >= goodStudentLine).length;
+    const poorStudentCount = scoreValues.filter(score => score < poorStudentLine).length;
 
     console.log('分数段统计:', {
       '不及格(0-59)': failCount,
       '及格(60-69)': passCount,
       '良好(70-89)': goodCount,
-      '优秀(90-100)': excellentCount
+      '优秀(90-100)': excellentCount,
+      '优生(≥80)': goodStudentCount,
+      '差生(<40)': poorStudentCount
     });
 
     // 计算分数段分布
@@ -357,18 +428,40 @@ const examStudents = computed(() => {
 
     // 计算班级总分
     const totalClassScore = scoreValues.reduce((sum, score) => sum + score, 0);
+    
+    // 计算各种率 - 保留2位小数
+    const passRate = Number(((passCount + goodCount + excellentCount) / validScores.length * 100).toFixed(2));
+    const excellentRate = Number((excellentCount / validScores.length * 100).toFixed(2));
+    const goodRate = Number((goodCount / validScores.length * 100).toFixed(2));
+    const goodStudentRate = Number((goodStudentCount / validScores.length * 100).toFixed(2));
+    const poorStudentRate = Number((poorStudentCount / validScores.length * 100).toFixed(2));
+    
+    // 计算平均分 - 保留2位小数
+    const averageScore = Number((totalClassScore / validScores.length).toFixed(2));
+    
+    // 计算综合分 (及格率×0.5 + 平均分×0.3 + 优生率×0.2) - 保留2位小数
+    const compositeScore = Number((passRate * 0.5 + averageScore * 0.3 + goodStudentRate * 0.2).toFixed(2));
+    
+    // 计算总积分 (及格率 + 优生率 + 平均分) - 保留2位小数
+    const totalPoints = Number((passRate + goodStudentRate + averageScore).toFixed(2));
 
     return {
       participantCount: validScores.length,
       absentCount: filteredScores.length - validScores.length,
-      averageScore: Math.round(totalClassScore / validScores.length * 10) / 10,
+      averageScore,
       highestScore: Math.max(...scoreValues),
       lowestScore: Math.min(...scoreValues),
-      passRate: Math.round((passCount + goodCount + excellentCount) / validScores.length * 100),
-      excellentRate: Math.round(excellentCount / validScores.length * 100),
-      goodRate: Math.round(goodCount / validScores.length * 100),
+      passRate,
+      excellentRate,
+      goodRate,
+      goodStudentCount,
+      goodStudentRate,
+      poorStudentCount,
+      poorStudentRate,
+      compositeScore,
+      totalPoints,
       scoreDistribution: distribution,
-      totalClassScore: totalClassScore // 班级总分
+      totalClassScore // 班级总分
     };
   });
 
@@ -546,6 +639,15 @@ const handleExamChange = () => {
                 if (range === '90-100') return '#409EFF'; // 优秀蓝色
                 return '#409EFF';
               }
+            },
+            label: {
+              show: true,
+              position: 'top',
+              formatter: function(params: any) {
+                return params.data.value + '人';
+              },
+              fontSize: 12,
+              fontWeight: 'bold'
             }
           }
         ]
@@ -598,6 +700,13 @@ const handleExamChange = () => {
             radius: '60%',
             center: ['40%', '50%'],
             data: pieData,
+            label: {
+              show: true,
+              formatter: function(params: any) {
+                return params.name + '\n' + params.value + '人';
+              },
+              fontSize: 12
+            },
             emphasis: {
               itemStyle: {
                 shadowBlur: 10,
@@ -650,19 +759,40 @@ const handleExamChange = () => {
         {
           name: '平均分',
           type: 'line',
-          data: trendData.value.map(item => item.averageScore)
+          data: trendData.value.map(item => item.averageScore),
+          label: {
+            show: true,
+            position: 'top',
+            formatter: '{c}',
+            fontSize: 12,
+            fontWeight: 'bold'
+          }
         },
         {
           name: '及格率',
           type: 'line',
           yAxisIndex: 1,
-          data: trendData.value.map(item => item.passRate)
+          data: trendData.value.map(item => item.passRate),
+          label: {
+            show: true,
+            position: 'top',
+            formatter: '{c}%',
+            fontSize: 12,
+            fontWeight: 'bold'
+          }
         },
         {
           name: '优秀率',
           type: 'line',
           yAxisIndex: 1,
-          data: trendData.value.map(item => item.excellentRate)
+          data: trendData.value.map(item => item.excellentRate),
+          label: {
+            show: true,
+            position: 'top',
+            formatter: '{c}%',
+            fontSize: 12,
+            fontWeight: 'bold'
+          }
         }
       ]
     };

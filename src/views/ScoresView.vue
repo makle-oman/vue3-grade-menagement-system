@@ -181,6 +181,16 @@ const examStudents = computed(() => {
 // 按学号排序的学生列表
 const sortedExamStudents = computed(() => {
   return [...examStudents.value].sort((a, b) => {
+    // 将学号转换为数字进行比较，确保正确的数字排序
+    const numA = parseInt(a.studentNumber);
+    const numB = parseInt(b.studentNumber);
+    
+    // 如果都能转换为有效数字，则按数字大小排序
+    if (!isNaN(numA) && !isNaN(numB)) {
+      return numA - numB;
+    }
+    
+    // 如果有非数字学号，则按字符串排序
     return a.studentNumber.localeCompare(b.studentNumber);
   });
 });
@@ -219,8 +229,19 @@ const initializeScoreData = (exam: Exam) => {
 
   classStudents.forEach(student => {
     const existingScore = examScores.find(score => score.studentId === student.id);
+    
+    // 特殊处理0分的情况，确保0分被正确显示为'0'而不是空字符串
+    let scoreValue = '';
+    if (existingScore) {
+      if (existingScore.score === 0) {
+        scoreValue = '0';
+      } else if (existingScore.score !== null) {
+        scoreValue = existingScore.score.toString();
+      }
+    }
+    
     data[student.id] = {
-      score: existingScore ? (existingScore.score?.toString() || '') : '',
+      score: scoreValue,
       isAbsent: existingScore ? existingScore.isAbsent : false,
     };
   });
@@ -271,6 +292,13 @@ const handleScoreChange = (studentId: string, score: string) => {
     if (numScore > currentExam.value.totalScore) {
       ElMessage.warning(`成绩不能超过考试总分 ${currentExam.value.totalScore}`);
       scoreData.value[studentId].score = currentExam.value.totalScore.toString();
+      hasChanges.value = true;
+      return;
+    }
+    
+    // 特殊处理0分的情况，确保0分被正确显示
+    if (numScore === 0) {
+      scoreData.value[studentId].score = '0';
       hasChanges.value = true;
       return;
     }
@@ -352,7 +380,8 @@ const handleImportExcel = (file: any) => {
 
       jsonData.forEach((row: any, index) => {
         const studentNumber = String(row['学号'] || row['studentNumber'] || '');
-        const score = row['成绩'] || row['score'];
+        // 特别处理成绩，确保0值被正确识别
+        let score = row['成绩'] !== undefined ? row['成绩'] : (row['score'] !== undefined ? row['score'] : '');
         const isAbsent = row['缺考'] === '是' || row['absent'] === true || row['缺考'] === true;
 
         if (!studentNumber) {
@@ -366,18 +395,27 @@ const handleImportExcel = (file: any) => {
           return;
         }
 
-        if (!isAbsent && score !== undefined && score !== null && score !== '') {
-          const numScore = Number(score);
+        // 检查是否为缺考
+        if (!isAbsent) {
+          // 将空字符串视为有效的0分
+          // 特别处理0值的情况
+          const numScore = (score === 0 || score === '0' || score === '') ? 0 : Number(score);
+          
           if (isNaN(numScore) || numScore < 0 || numScore > currentExam.value!.totalScore) {
             errorMessages.push(`第${index + 2}行：成绩必须在0-${currentExam.value!.totalScore}分之间`);
             return;
           }
+          
+          // 确保0分被正确转换为字符串'0'
+          score = numScore === 0 ? '0' : String(numScore);
         }
 
         importData[student.id] = {
-          score: isAbsent ? '' : String(score || ''),
+          score: isAbsent ? '' : score,
           isAbsent,
         };
+        
+        console.log(`导入学生 ${studentNumber}(${student.name}) 成绩: ${score}, 缺考: ${isAbsent}`);
         successCount++;
       });
 
