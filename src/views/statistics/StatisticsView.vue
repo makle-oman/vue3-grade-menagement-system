@@ -22,10 +22,22 @@
         </div>
         
         <div class="filter-item">
+          <label>班级</label>
+          <el-select v-model="selectedClassId" placeholder="选择班级" @change="onClassChange">
+            <el-option
+              v-for="classItem in classes"
+              :key="classItem.id"
+              :label="classItem.name"
+              :value="classItem.id"
+            />
+          </el-select>
+        </div>
+        
+        <div class="filter-item">
           <label>考试</label>
           <el-select v-model="selectedExamId" placeholder="选择考试" @change="onExamChange">
             <el-option
-              v-for="exam in exams"
+              v-for="exam in filteredExams"
               :key="exam.id"
               :label="exam.name"
               :value="exam.id"
@@ -37,7 +49,7 @@
           <label>科目</label>
           <el-select v-model="selectedSubject" placeholder="选择科目" @change="onSubjectChange">
             <el-option
-              v-for="subject in subjects"
+              v-for="subject in filteredSubjects"
               :key="subject"
               :label="subject"
               :value="subject"
@@ -205,7 +217,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
 import { User, Star, TrendCharts, Trophy, Medal, Warning, DocumentRemove } from '@element-plus/icons-vue'
 import { statisticsApi, examApi, classApi, semesterApi, scoreApi } from '@/services/api'
@@ -230,6 +242,51 @@ const displayStudents = computed(() => {
   return []
 })
 
+// 根据选择的班级过滤考试
+const filteredExams = computed(() => {
+  if (!selectedClassId.value) {
+    console.log('No class selected, returning all exams:', exams.value.length)
+    return exams.value
+  }
+  
+  const selectedClass = classes.value.find(c => c.id === selectedClassId.value)
+  if (!selectedClass) {
+    console.log('Selected class not found, returning all exams')
+    return exams.value
+  }
+  
+  // 调试信息
+  console.log('=== FILTERING EXAMS ===')
+  console.log('Selected class ID:', selectedClassId.value)
+  console.log('Selected class:', selectedClass)
+  console.log('All classes:', classes.value)
+  console.log('All exams:', exams.value)
+  console.log('Looking for exams with className:', selectedClass.name)
+  
+  const filtered = exams.value.filter(exam => {
+    const match = exam.className === selectedClass.name
+    console.log(`Exam "${exam.name}" - className: "${exam.className}" vs "${selectedClass.name}" - Match: ${match}`)
+    return match
+  })
+  
+  console.log('Filtered exams result:', filtered)
+  console.log('=== END FILTERING ===')
+  return filtered
+})
+
+// 根据过滤后的考试获取科目列表
+const filteredSubjects = computed(() => {
+  const subjectSet = new Set<string>()
+  filteredExams.value.forEach(exam => {
+    if (exam.subject) {
+      subjectSet.add(exam.subject)
+    }
+  })
+  const subjects = Array.from(subjectSet).sort()
+  console.log('Filtered subjects:', subjects)
+  return subjects
+})
+
 // 加载基础数据
 const loadBaseData = async () => {
   try {
@@ -243,15 +300,6 @@ const loadBaseData = async () => {
     classes.value = classesResponse
     semesters.value = semestersResponse
     
-    // 从考试数据中提取科目列表
-    const subjectSet = new Set<string>()
-    examsResponse.forEach(exam => {
-      if (exam.subject) {
-        subjectSet.add(exam.subject)
-      }
-    })
-    subjects.value = Array.from(subjectSet).sort()
-    
     // 默认选择当前学期
     const currentSemester = semesters.value.find(s => s.isCurrent)
     if (currentSemester) {
@@ -260,19 +308,9 @@ const loadBaseData = async () => {
       selectedSemesterId.value = semesters.value[0].id
     }
     
-    // 默认选择第一个考试
-    if (exams.value.length > 0) {
-      selectedExamId.value = exams.value[0].id
-    }
-    
-    // 默认选择第一个科目
-    if (subjects.value.length > 0) {
-      selectedSubject.value = subjects.value[0]
-    }
-    
-    // 如果有默认选择的考试，自动生成统计数据
-    if (selectedExamId.value) {
-      await generateStatistics()
+    // 默认选择第一个班级
+    if (classes.value.length > 0) {
+      selectedClassId.value = classes.value[0].id
     }
   } catch (error) {
     console.error('加载基础数据失败:', error)
@@ -282,21 +320,73 @@ const loadBaseData = async () => {
 
 // 学期变化处理
 const onSemesterChange = () => {
-  generateStatistics()
+  // 重置选择
+  selectedClassId.value = null
+  selectedExamId.value = null
+  selectedSubject.value = null
+  statistics.value = null
+}
+
+// 班级变化处理
+const onClassChange = async () => {
+  console.log('=== CLASS CHANGE ===')
+  console.log('Selected class ID:', selectedClassId.value)
+  
+  // 重置考试和科目选择
+  selectedExamId.value = null
+  selectedSubject.value = null
+  statistics.value = null
+  
+  // 等待下一个tick，确保计算属性已更新
+  await nextTick()
+  
+  console.log('After nextTick - filtered exams:', filteredExams.value)
+  console.log('After nextTick - filtered subjects:', filteredSubjects.value)
+  
+  // 自动选择第一个考试
+  if (filteredExams.value.length > 0) {
+    selectedExamId.value = filteredExams.value[0].id
+    console.log('Auto-selected exam:', selectedExamId.value)
+  } else {
+    console.log('No exams found for selected class')
+  }
+  
+  // 自动选择第一个科目
+  if (filteredSubjects.value.length > 0) {
+    selectedSubject.value = filteredSubjects.value[0]
+    console.log('Auto-selected subject:', selectedSubject.value)
+  } else {
+    console.log('No subjects found for selected class')
+  }
+  
+  // 如果有选中的考试，自动生成统计
+  if (selectedExamId.value) {
+    await generateStatistics()
+  }
+  console.log('=== END CLASS CHANGE ===')
 }
 
 // 考试变化处理
 const onExamChange = () => {
-  generateStatistics()
+  if (selectedExamId.value) {
+    generateStatistics()
+  }
 }
 
 // 科目变化处理
 const onSubjectChange = () => {
-  generateStatistics()
+  if (selectedExamId.value) {
+    generateStatistics()
+  }
 }
 
 // 生成统计数据
 const generateStatistics = async () => {
+  if (!selectedClassId.value) {
+    ElMessage.warning('请先选择班级')
+    return
+  }
+  
   if (!selectedExamId.value) {
     ElMessage.warning('请先选择考试')
     return
