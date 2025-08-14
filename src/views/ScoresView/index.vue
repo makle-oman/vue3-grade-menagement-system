@@ -1,8 +1,8 @@
 <template>
-  <div class="w-full scores-container page-content scores-content">
-    <div class="page-header">
-      <h1 class="text-3xl font-bold">成绩录入</h1>
-      <p class="text-gray-500">录入和管理考试成绩，支持Excel批量导入</p>
+  <div class="p-6">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-gray-900 mb-2">成绩录入</h1>
+      <p class="text-gray-600">录入和管理考试成绩，支持Excel批量导入</p>
     </div>
 
     <!-- 考试选择 -->
@@ -129,10 +129,10 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { useStudentStore } from '../stores/student';
-import { useExamStore } from '../stores/exam';
-import { useScoreStore } from '../stores/score';
-import type { Student, Exam } from '../types';
+import { useStudentStore } from '@/stores/student';
+import { useExamStore } from '@/stores/exam';
+import { useScoreStore } from '@/stores/score';
+import type { Student, Exam } from '@/types';
 import * as XLSX from 'xlsx';
 import { Edit, Upload, Download, Document, Check, RefreshRight, Search } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
@@ -184,12 +184,12 @@ const sortedExamStudents = computed(() => {
     // 将学号转换为数字进行比较，确保正确的数字排序
     const numA = parseInt(a.studentNumber);
     const numB = parseInt(b.studentNumber);
-    
+
     // 如果都能转换为有效数字，则按数字大小排序
     if (!isNaN(numA) && !isNaN(numB)) {
       return numA - numB;
     }
-    
+
     // 如果有非数字学号，则按字符串排序
     return a.studentNumber.localeCompare(b.studentNumber);
   });
@@ -211,7 +211,8 @@ onMounted(async () => {
     ]);
 
     // 默认选择最新的考试
-    if (exams.value.length > 0) {
+    if (sortedExams.value.length > 0) {
+      selectedExam.value = sortedExams.value[0].id;
       handleExamSelect(sortedExams.value[0].id);
     }
   } catch (error) {
@@ -229,7 +230,7 @@ const initializeScoreData = (exam: Exam) => {
 
   classStudents.forEach(student => {
     const existingScore = examScores.find(score => score.studentId === student.id);
-    
+
     // 特殊处理0分的情况，确保0分被正确显示为'0'而不是空字符串
     let scoreValue = '';
     if (existingScore) {
@@ -239,7 +240,7 @@ const initializeScoreData = (exam: Exam) => {
         scoreValue = existingScore.score.toString();
       }
     }
-    
+
     data[student.id] = {
       score: scoreValue,
       isAbsent: existingScore ? existingScore.isAbsent : false,
@@ -272,14 +273,14 @@ const handleScoreChange = (studentId: string, score: string) => {
   // 验证输入值范围
   if (score !== '' && currentExam.value) {
     const numScore = Number(score);
-    
+
     // 处理非数字输入
     if (isNaN(numScore)) {
       ElMessage.warning('请输入有效的数字');
       scoreData.value[studentId].score = '';
       return;
     }
-    
+
     // 处理负数
     if (numScore < 0) {
       ElMessage.warning('成绩不能小于0');
@@ -287,7 +288,7 @@ const handleScoreChange = (studentId: string, score: string) => {
       hasChanges.value = true;
       return;
     }
-    
+
     // 处理超过最大值的情况
     if (numScore > currentExam.value.totalScore) {
       ElMessage.warning(`成绩不能超过考试总分 ${currentExam.value.totalScore}`);
@@ -295,7 +296,7 @@ const handleScoreChange = (studentId: string, score: string) => {
       hasChanges.value = true;
       return;
     }
-    
+
     // 特殊处理0分的情况，确保0分被正确显示
     if (numScore === 0) {
       scoreData.value[studentId].score = '0';
@@ -400,12 +401,12 @@ const handleImportExcel = (file: any) => {
           // 将空字符串视为有效的0分
           // 特别处理0值的情况
           const numScore = (score === 0 || score === '0' || score === '') ? 0 : Number(score);
-          
+
           if (isNaN(numScore) || numScore < 0 || numScore > currentExam.value!.totalScore) {
             errorMessages.push(`第${index + 2}行：成绩必须在0-${currentExam.value!.totalScore}分之间`);
             return;
           }
-          
+
           // 确保0分被正确转换为字符串'0'
           score = numScore === 0 ? '0' : String(numScore);
         }
@@ -414,7 +415,7 @@ const handleImportExcel = (file: any) => {
           score: isAbsent ? '' : score,
           isAbsent,
         };
-        
+
         console.log(`导入学生 ${studentNumber}(${student.name}) 成绩: ${score}, 缺考: ${isAbsent}`);
         successCount++;
       });
@@ -449,7 +450,7 @@ const handleDownloadTemplate = () => {
     return;
   }
 
-  const templateData = examStudents.value.map(student => ({
+  const templateData = sortedExamStudents.value.map(student => ({
     学号: student.studentNumber,
     姓名: student.name,
     成绩: '',
@@ -494,16 +495,25 @@ const getRowClass = ({ row }: { row: Student }) => {
     return 'absent-row';
   }
 
-  const score = Number(studentData.score);
-  if (score > 0 && score < 60) {
-    return 'failing-row';
-  }
-
-  // 添加待保存状态的样式
+  // 检查是否有分数输入
   if (studentData.score && studentData.score.trim() !== '') {
+    const score = Number(studentData.score);
+
+    // 0分或小于60分都标记为不及格
+    if (score >= 0 && score < 60) {
+      return 'failing-row';
+    }
+
+    // 添加待保存状态的样式
     const existingScore = existingScores.value.find(s => s.studentId === row.id);
     if (!existingScore || existingScore.score !== score) {
       return 'pending-save';
+    }
+  } else {
+    // 检查已保存的成绩
+    const existingScore = existingScores.value.find(s => s.studentId === row.id);
+    if (existingScore && existingScore.score !== null && existingScore.score >= 0 && existingScore.score < 60) {
+      return 'failing-row';
     }
   }
 
@@ -523,17 +533,17 @@ const getScoreStatusType = (studentId: string) => {
   if (studentData.score && studentData.score.trim() !== '') {
     const score = Number(studentData.score);
     const existingScore = existingScores.value.find(s => s.studentId === studentId);
-    
+
     // 如果没有现有记录或分数不同，显示"待保存"状态
     if (!existingScore || existingScore.score !== score) {
       return 'info'; // 使用info类型表示待保存
     }
-    
+
     // 分数小于60显示警告
     if (score < 60) {
       return 'warning';
     }
-    
+
     return 'success';
   }
 
@@ -561,17 +571,17 @@ const getScoreStatusText = (studentId: string) => {
   if (studentData.score && studentData.score.trim() !== '') {
     const score = Number(studentData.score);
     const existingScore = existingScores.value.find(s => s.studentId === studentId);
-    
+
     // 如果没有现有记录或分数不同，显示"待保存"
     if (!existingScore || existingScore.score !== score) {
       return '待保存';
     }
-    
+
     // 分数小于60显示"不及格"
     if (score < 60) {
       return '不及格';
     }
-    
+
     return '已录入';
   }
 
@@ -589,210 +599,5 @@ const getScoreStatusText = (studentId: string) => {
 </script>
 
 <style>
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* 页面布局 */
-.scores-container {
-  padding: 24px;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-.page-header {
-  margin-bottom: 24px;
-  border-bottom: 1px solid #eaeaea;
-  padding-bottom: 16px;
-}
-
-.card-header {
-  margin-bottom: 16px;
-}
-
-/* 表格样式 */
-.table-container {
-  border-radius: 8px;
-  overflow: hidden;
-  background: white;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
-}
-
-.el-table .cell {
-  padding: 12px;
-}
-
-/* 行状态样式 */
-.absent-row {
-  background-color: #fef2f2;
-  color: #b91c1c;
-}
-
-.failing-row {
-  background-color: #fff7ed;
-  color: #c2410c;
-}
-
-.pending-save {
-  background-color: #f0f9ff;
-  color: #0369a1;
-  font-style: italic;
-}
-
-/* 空状态样式 */
-.empty-state {
-  margin-top: 24px;
-  border-radius: 8px;
-}
-
-/* 上传组件样式 */
-.hidden-upload .el-upload-list {
-  display: none;
-}
-
-/* 按钮样式 */
-.page-content :deep(.el-button) {
-  border-radius: 6px;
-  height: 40px;
-  padding: 0 20px;
-  font-weight: 500;
-  transition: all 0.3s;
-}
-
-.page-content :deep(.el-button:hover) {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.page-content :deep(.el-button--small) {
-  height: 32px;
-  padding: 0 16px;
-  font-size: 13px;
-}
-
-/* 按钮组布局 */
-.action-buttons {
-  display: flex;
-  justify-content: space-between;
-  gap: 1.5rem;
-  margin-bottom: 24px;
-}
-
-.button-group {
-  display: flex;
-  gap: 12px;
-}
-
-/* 表单控件样式 */
-:deep(.el-select) {
-  min-width: 240px;
-}
-
-:deep(.el-input__inner) {
-  height: 40px;
-  line-height: 40px;
-}
-
-/* 卡片样式增强 */
-:deep(.el-card) {
-  border-radius: 8px;
-  transition: all 0.3s;
-  border: none;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
-}
-
-:deep(.el-card:hover) {
-  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08);
-}
-
-:deep(.el-card__header) {
-  padding: 18px 24px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-:deep(.el-card__body) {
-  padding: 24px;
-}
-
-/* 文本样式 */
-.text-3xl {
-  font-size: 2rem;
-  line-height: 2.5rem;
-}
-
-.font-bold {
-  font-weight: 700;
-}
-
-.text-gray-500 {
-  color: #6b7280;
-}
-
-.text-gray-400 {
-  color: #9ca3af;
-}
-
-.text-lg {
-  font-size: 1.25rem;
-  line-height: 1.75rem;
-}
-
-.font-medium {
-  font-weight: 500;
-}
-
-.text-sm {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-}
-
-/* 通用工具类 */
-.flex {
-  display: flex;
-}
-
-.flex-wrap {
-  flex-wrap: wrap;
-}
-
-.items-center {
-  align-items: center;
-}
-
-.justify-between {
-  justify-content: space-between;
-}
-
-.gap-2 {
-  gap: 0.5rem;
-}
-
-.gap-4 {
-  gap: 1rem;
-}
-
-.mb-4 {
-  margin-bottom: 1rem;
-}
-
-.mb-6 {
-  margin-bottom: 1.5rem;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.py-12 {
-  padding-top: 3rem;
-  padding-bottom: 3rem;
-}
-
-.mr-1 {
-  margin-right: 0.25rem;
-}
-
-.min-w-200px {
-  min-width: 200px;
-}
+@import "./index.css";
 </style>

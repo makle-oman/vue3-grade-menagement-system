@@ -28,13 +28,28 @@
       <div class="p-6">
         <!-- 搜索区域 -->
         <div class="mb-6">
-          <el-input v-model="searchQuery" placeholder="搜索考试名称、科目或班级" class="w-80" clearable @input="handleSearch">
-            <template #prefix>
-              <el-icon>
-                <Search />
-              </el-icon>
-            </template>
-          </el-input>
+          <div class="flex flex-row gap-4">
+            <!-- 班级筛选 -->
+            <div class="w-48">
+              <el-select v-model="selectedClass" placeholder="选择班级" size="large" clearable @change="handleClassChange"
+                class="w-full">
+                <el-option label="全部班级" value="" />
+                <el-option v-for="className in availableClasses" :key="className" :label="className"
+                  :value="className" />
+              </el-select>
+            </div>
+
+            <!-- 搜索框 -->
+            <div class="flex-1">
+              <el-input v-model="searchQuery" placeholder="搜索考试名称、科目..." clearable @input="handleSearch">
+                <template #prefix>
+                  <el-icon>
+                    <Search />
+                  </el-icon>
+                </template>
+              </el-input>
+            </div>
+          </div>
         </div>
 
         <!-- 考试表格 -->
@@ -102,10 +117,7 @@
         <div v-if="filteredExams.length === 0 && !loading" class="text-center py-12">
           <div class="text-6xl text-gray-300 mb-4">📝</div>
           <h3 class="text-lg font-medium text-gray-900 mb-2">暂无考试数据</h3>
-          <p class="text-gray-500 mb-4">
-            {{ searchQuery ? '没有找到匹配的考试' : '还没有创建任何考试' }}
-          </p>
-          <el-button v-if="!searchQuery" type="primary" @click="openAddDialog">
+          <el-button v-if="!searchQuery" type="primary" @click="openAddDialog" class="!bg-[#409eff]">
             <el-icon class="mr-1">
               <Plus />
             </el-icon>
@@ -136,7 +148,7 @@
             value-format="YYYY-MM-DD HH:mm" style="width: 100%;" />
         </el-form-item>
         <el-form-item label="总分" prop="totalScore">
-          <el-input-number v-model="examForm.totalScore" :min="1" :max="1000" class="w-full" />
+          <el-input v-model.number="examForm.totalScore" :min="1" :max="100" class="w-full" />
         </el-form-item>
         <el-form-item label="考试类型" prop="examType">
           <el-select v-model="examForm.examType" placeholder="请选择考试类型" class="w-full">
@@ -145,6 +157,11 @@
             <el-option label="期中考试" value="midterm" />
             <el-option label="期末考试" value="final" />
             <el-option label="其他" value="other" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="所属学期" prop="semesterId">
+          <el-select v-model="examForm.semesterId" placeholder="请选择学期" class="w-full">
+            <el-option v-for="semester in semesters" :key="semester.id" :label="semester.name" :value="semester.id" />
           </el-select>
         </el-form-item>
       </el-form>
@@ -162,7 +179,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="deleteDialogVisible = false">取消</el-button>
-          <el-button type="danger" @click="deleteExam">确认删除</el-button>
+          <el-button type="danger" @click="deleteExam" class="!bg-[#F56C6C]">确认删除</el-button>
         </span>
       </template>
     </el-dialog>
@@ -175,23 +192,56 @@ import { ElMessage, ElMessageBox, FormInstance } from 'element-plus';
 import { Search, Calendar, Plus, Edit, Delete } from '@element-plus/icons-vue';
 import { useExamStore } from '@/stores/exam';
 import { useStudentStore } from '@/stores/student';
-import { Exam } from '@/types';
+import { useAuthStore } from '@/stores/auth';
+import { Exam, Student, Semester } from '@/types';
+import { semesterApi } from '@/services/api';
 
 // 状态管理
 const examStore = useExamStore();
 const studentStore = useStudentStore();
+const authStore = useAuthStore();
 const loading = ref(false);
 const exams = computed(() => examStore.exams);
 const students = computed(() => studentStore.students);
+const semesters = ref<Semester[]>([]);
 
-// 搜索和排序
+// 搜索和筛选
 const searchQuery = ref('');
+const selectedClass = ref('');
 
 // 对话框状态
 const dialogVisible = ref(false);
 const deleteDialogVisible = ref(false);
 const isEditing = ref(false);
 const examFormRef = ref<FormInstance>();
+
+// 科目选项
+const subjectOptions = ['语文', '数学', '英语', '物理', '化学', '生物', '历史', '地理', '政治'];
+
+// 获取所有班级
+const allClasses = computed(() => {
+  return Array.from(new Set(students.value.map(s => s.className))).filter(Boolean);
+});
+
+// 可用班级列表（根据用户角色）
+const availableClasses = computed(() => {
+  if (authStore.user?.role === 'admin' || authStore.user?.role === 'grade_leader') {
+    // 管理员和年级组长可以看到所有班级
+    const allClasses = [...new Set(students.value.map(s => s.className))].filter(Boolean);
+    return allClasses.sort();
+  } else if (authStore.user?.role === 'teacher') {
+    // 教师只能看到自己负责的班级
+    return authStore.user?.classNames || [];
+  }
+  return [];
+});
+
+// 班级变化处理
+const handleClassChange = (className: string) => {
+  selectedClass.value = className;
+};
+
+// 考试表单数据
 const examForm = reactive<{
   id: string;
   name: string;
@@ -201,25 +251,20 @@ const examForm = reactive<{
   totalScore: number;
   examType: 'unit_practice' | 'unit_test' | 'midterm' | 'final' | 'other';
   status: 'not_started' | 'in_progress' | 'completed' | 'analyzed';
+  semesterId: string;
 }>({
   id: '',
   name: '',
-  subject: '数学',
+  subject: '数学', // 默认值，将在onMounted中更新
   className: '',
   examDate: new Date().toISOString().split('T')[0] + ' ' + new Date().toTimeString().slice(0, 5),
   totalScore: 100,
   examType: 'unit_test',
-  status: 'not_started'
+  status: 'not_started',
+  semesterId: ''
 });
+
 const examToDelete = ref<Exam | null>(null);
-
-// 科目选项
-const subjectOptions = ['语文', '数学', '英语'];
-
-// 获取所有班级
-const allClasses = computed(() => {
-  return Array.from(new Set(students.value.map(s => s.className))).filter(Boolean);
-});
 
 // 考试类型映射
 const examTypeMap = {
@@ -259,6 +304,9 @@ const rules = {
   ],
   examType: [
     { required: true, message: '请选择考试类型', trigger: 'change' }
+  ],
+  semesterId: [
+    { required: true, message: '请选择所属学期', trigger: 'change' }
   ]
 };
 
@@ -266,13 +314,17 @@ const rules = {
 const filteredExams = computed(() => {
   let result = [...exams.value];
 
+  // 班级筛选
+  if (selectedClass.value) {
+    result = result.filter(exam => exam.className === selectedClass.value);
+  }
+
   // 搜索过滤
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();
     result = result.filter(exam =>
       exam.name.toLowerCase().includes(query) ||
-      exam.subject.toLowerCase().includes(query) ||
-      exam.className.toLowerCase().includes(query)
+      exam.subject.toLowerCase().includes(query)
     );
   }
 
@@ -288,8 +340,19 @@ onMounted(async () => {
   try {
     await Promise.all([
       examStore.fetchExams(),
-      studentStore.fetchStudents()
+      studentStore.fetchStudents(),
+      fetchSemesters()
     ]);
+
+    // 如果当前用户有科目信息，自动设置为默认科目
+    if (authStore.user?.subject) {
+      examForm.subject = authStore.user.subject;
+    }
+
+    // 设置默认筛选班级（选择第一个可用班级）
+    if (availableClasses.value.length > 0) {
+      selectedClass.value = availableClasses.value[0];
+    }
   } catch (error) {
     ElMessage.error('获取考试数据失败');
     console.error(error);
@@ -325,12 +388,26 @@ const getExamTypeLabel = (type: string) => {
 const resetForm = () => {
   examForm.id = '';
   examForm.name = '';
-  examForm.subject = '数学';
+  // 使用当前用户的科目作为默认值，如果没有则使用数学
+  examForm.subject = authStore.user?.subject || '数学';
   examForm.className = allClasses.value[0] || '';
   examForm.examDate = new Date().toISOString().split('T')[0] + ' ' + new Date().toTimeString().slice(0, 5);
   examForm.totalScore = 100;
   examForm.examType = 'unit_test';
   examForm.status = 'not_started';
+  // 默认选择当前学期
+  const currentSemester = semesters.value.find(s => s.isCurrent);
+  examForm.semesterId = currentSemester ? currentSemester.id : (semesters.value[0]?.id || '');
+};
+
+// 获取学期列表
+const fetchSemesters = async () => {
+  try {
+    semesters.value = await semesterApi.getAll();
+  } catch (error) {
+    console.error('获取学期列表失败:', error);
+    ElMessage.error('获取学期列表失败');
+  }
 };
 
 const openAddDialog = () => {
@@ -352,6 +429,7 @@ const openEditDialog = (exam: Exam) => {
   examForm.totalScore = exam.totalScore;
   examForm.examType = exam.examType as any;
   examForm.status = exam.status as any;
+  examForm.semesterId = exam.semesterId || '';
   dialogVisible.value = true;
 };
 
@@ -421,179 +499,5 @@ const updateExamStatus = async (examId: string, status: string) => {
 </script>
 
 <style scoped>
-/* 基础样式 */
-.space-y-6>*+* {
-  margin-top: 1.5rem;
-}
-
-.text-3xl {
-  font-size: 1.875rem;
-  line-height: 2.25rem;
-}
-
-.font-bold {
-  font-weight: 700;
-}
-
-.tracking-tight {
-  letter-spacing: -0.025em;
-}
-
-.text-gray-900 {
-  color: #111827;
-}
-
-.text-gray-600 {
-  color: #4b5563;
-}
-
-.text-gray-500 {
-  color: #6b7280;
-}
-
-.text-gray-300 {
-  color: #d1d5db;
-}
-
-.text-lg {
-  font-size: 1.125rem;
-  line-height: 1.75rem;
-}
-
-.text-sm {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-}
-
-.text-6xl {
-  font-size: 3.75rem;
-  line-height: 1;
-}
-
-.font-semibold {
-  font-weight: 600;
-}
-
-.font-medium {
-  font-weight: 500;
-}
-
-.mt-2 {
-  margin-top: 0.5rem;
-}
-
-.mt-1 {
-  margin-top: 0.25rem;
-}
-
-.mb-6 {
-  margin-bottom: 1.5rem;
-}
-
-.mb-4 {
-  margin-bottom: 1rem;
-}
-
-.mb-2 {
-  margin-bottom: 0.5rem;
-}
-
-.mr-1 {
-  margin-right: 0.25rem;
-}
-
-.p-6 {
-  padding: 1.5rem;
-}
-
-.py-12 {
-  padding-top: 3rem;
-  padding-bottom: 3rem;
-}
-
-.flex {
-  display: flex;
-}
-
-.flex-col {
-  flex-direction: column;
-}
-
-.items-center {
-  align-items: center;
-}
-
-.items-start {
-  align-items: flex-start;
-}
-
-.justify-between {
-  justify-content: space-between;
-}
-
-.justify-center {
-  justify-content: center;
-}
-
-.gap-4 {
-  gap: 1rem;
-}
-
-.gap-2 {
-  gap: 0.5rem;
-}
-
-.gap-1 {
-  gap: 0.25rem;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.rounded-lg {
-  border-radius: 1rem;
-}
-
-.border {
-  border-width: 1px;
-}
-
-.border-b {
-  border-bottom-width: 1px;
-}
-
-.border-gray-200 {
-  border-color: #e5e7eb;
-}
-
-.bg-white {
-  background-color: #ffffff;
-}
-
-.overflow-hidden {
-  overflow: hidden;
-}
-
-.shadow-sm {
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-}
-
-.w-80 {
-  width: 20rem;
-}
-
-.w-full {
-  width: 100%;
-}
-
-
-/* 表格样式已移除，使用Element Plus默认样式 */
-
-/* 内容区域边距适配 */
-.page-content {
-  width: 100% !important;
-  padding: 0 1.5rem !important;
-  box-sizing: border-box !important;
-}
+@import './index.css';
 </style>

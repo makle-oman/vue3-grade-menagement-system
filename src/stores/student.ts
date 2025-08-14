@@ -1,139 +1,103 @@
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
-import type { Student } from '../types';
+import { ref } from 'vue';
 import { studentApi } from '../services/api';
+import { useAuthStore } from './auth';
+import type { Student } from '../types';
 
 export const useStudentStore = defineStore('student', () => {
   const students = ref<Student[]>([]);
   const isLoading = ref(false);
-  const error = ref<string | null>(null);
 
-  // 获取所有学生
   const fetchStudents = async () => {
     isLoading.value = true;
-    error.value = null;
     try {
       students.value = await studentApi.getAll();
-    } catch (err: any) {
-      error.value = err.message || '获取学生列表失败';
-      console.error('获取学生列表失败:', err);
+    } catch (error) {
+      console.error('获取学生列表失败:', error);
+      throw error;
     } finally {
       isLoading.value = false;
     }
   };
 
-  // 按班级获取学生
-  const fetchStudentsByClass = async (className: string) => {
-    isLoading.value = true;
-    error.value = null;
+  const addStudent = async (studentData: Omit<Student, 'id' | 'createdAt' | 'teacher'>) => {
     try {
-      students.value = await studentApi.getByClass(className);
-    } catch (err: any) {
-      error.value = err.message || `获取班级 ${className} 的学生失败`;
-      console.error(`获取班级 ${className} 的学生失败:`, err);
-    } finally {
-      isLoading.value = false;
-    }
-  };
-
-  // 添加学生
-  const addStudent = async (student: Omit<Student, 'id' | 'createdAt'>) => {
-    isLoading.value = true;
-    error.value = null;
-    try {
-      const newStudent = await studentApi.create(student);
+      const newStudent = await studentApi.create(studentData);
       students.value.push(newStudent);
       return newStudent;
-    } catch (err: any) {
-      error.value = err.message || '添加学生失败';
-      console.error('添加学生失败:', err);
-      throw err;
-    } finally {
-      isLoading.value = false;
+    } catch (error) {
+      console.error('添加学生失败:', error);
+      throw error;
     }
   };
 
-  // 更新学生
-  const updateStudent = async (id: string, student: Partial<Omit<Student, 'id' | 'createdAt'>>) => {
-    isLoading.value = true;
-    error.value = null;
+  const updateStudent = async (id: string, studentData: Partial<Student>) => {
     try {
-      const updatedStudent = await studentApi.update(id, student);
+      const updatedStudent = await studentApi.update(id, studentData);
       const index = students.value.findIndex(s => s.id === id);
       if (index !== -1) {
         students.value[index] = updatedStudent;
       }
       return updatedStudent;
-    } catch (err: any) {
-      error.value = err.message || '更新学生失败';
-      console.error('更新学生失败:', err);
-      throw err;
-    } finally {
-      isLoading.value = false;
+    } catch (error) {
+      console.error('更新学生失败:', error);
+      throw error;
     }
   };
 
-  // 删除学生
   const deleteStudent = async (id: string) => {
-    isLoading.value = true;
-    error.value = null;
     try {
       await studentApi.delete(id);
       students.value = students.value.filter(s => s.id !== id);
-    } catch (err: any) {
-      error.value = err.message || '删除学生失败';
-      console.error('删除学生失败:', err);
-      throw err;
-    } finally {
-      isLoading.value = false;
+    } catch (error) {
+      console.error('删除学生失败:', error);
+      throw error;
     }
   };
 
-  // 批量导入学生
-  const importStudents = async (studentsData: Omit<Student, 'id' | 'createdAt'>[]) => {
-    isLoading.value = true;
-    error.value = null;
+  const batchDeleteStudents = async (ids: string[]) => {
+    try {
+      // 使用批量删除接口，一次性删除所有选中的学生
+      await studentApi.batchDelete(ids);
+      // 从本地状态中移除已删除的学生
+      students.value = students.value.filter(s => !ids.includes(s.id));
+    } catch (error) {
+      console.error('批量删除学生失败:', error);
+      throw error;
+    }
+  };
+
+  const importStudents = async (studentsData: Omit<Student, 'id' | 'createdAt' | 'teacher'>[]) => {
     try {
       const importedStudents = await studentApi.import(studentsData);
-      students.value = [...students.value, ...importedStudents];
+      // 重新获取所有学生数据以确保数据同步
+      await fetchStudents();
+      
+      // 刷新用户信息以获取最新的班级列表
+      const authStore = useAuthStore();
+      await authStore.fetchUserProfile();
+      
       return importedStudents;
-    } catch (err: any) {
-      error.value = err.message || '批量导入学生失败';
-      console.error('批量导入学生失败:', err);
-      throw err;
-    } finally {
-      isLoading.value = false;
+    } catch (error) {
+      console.error('导入学生失败:', error);
+      throw error;
     }
   };
 
-  // 按班级分组的学生
-  const studentsByClass = computed(() => {
-    const grouped: Record<string, Student[]> = {};
-    students.value.forEach(student => {
-      if (!grouped[student.className]) {
-        grouped[student.className] = [];
-      }
-      grouped[student.className].push(student);
-    });
-    return grouped;
-  });
-
-  // 班级列表
-  const classes = computed(() => {
-    return [...new Set(students.value.map(s => s.className))].sort();
-  });
+  // 强制刷新学生数据
+  const refreshStudents = async () => {
+    await fetchStudents();
+  };
 
   return {
     students,
     isLoading,
-    error,
     fetchStudents,
-    fetchStudentsByClass,
     addStudent,
     updateStudent,
     deleteStudent,
+    batchDeleteStudents,
     importStudents,
-    studentsByClass,
-    classes,
+    refreshStudents
   };
 });

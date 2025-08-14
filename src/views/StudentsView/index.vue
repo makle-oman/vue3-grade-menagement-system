@@ -20,21 +20,38 @@
       <div class="p-6">
         <!-- 操作栏 -->
         <div class="mb-6">
-        <div class="flex flex-row gap-4">
+          <div class="flex flex-row gap-4">
+            <!-- 班级筛选 -->
+            <div class="w-48">
+              <el-select v-model="selectedClass" placeholder="选择班级" size="large" clearable @change="handleClassChange"
+                class="w-full">
+                <el-option label="全部班级" value="" />
+                <el-option v-for="className in availableClasses" :key="className" :label="className"
+                  :value="className" />
+              </el-select>
+            </div>
+
             <!-- 搜索框 -->
             <div class="flex-1">
-              <el-input v-model="searchQuery" placeholder="搜索学生姓名、学号或班级..." prefix-icon="Search" size="large" clearable
+              <el-input v-model="searchQuery" placeholder="搜索学生姓名、学号..." prefix-icon="Search" size="large" clearable
                 class="search-input" />
             </div>
 
             <!-- 操作按钮组 -->
             <div class="flex flex-wrap gap-2">
               <el-button type="primary" size="large" @click="showAddDialog = true" class="action-button !bg-[#409eff]">
-
                 <el-icon>
                   <Plus />
                 </el-icon>
                 添加学生
+              </el-button>
+
+              <el-button type="danger" size="large" @click="batchDeleteStudents"
+                :disabled="selectedStudents.length === 0" class="action-button">
+                <el-icon>
+                  <Delete />
+                </el-icon>
+                批量删除 ({{ selectedStudents.length }})
               </el-button>
 
               <input ref="fileInput" type="file" accept=".xlsx,.xls" @change="handleImportExcel"
@@ -73,7 +90,7 @@
             {{ searchQuery ? '没有找到匹配的学生' : '开始添加学生信息或导入Excel文件' }}
           </p>
           <div v-if="!searchQuery" class="flex gap-2 justify-center">
-            <el-button type="primary" @click="showAddDialog = true">
+            <el-button type="primary" @click="showAddDialog = true" class="!bg-[#409eff]">
               <el-icon>
                 <Plus />
               </el-icon>
@@ -90,7 +107,11 @@
 
         <div v-else class="w-full">
           <div class="table-container">
-            <el-table :data="paginatedStudents" style="width: 100%;" v-loading="studentStore.isLoading" border>
+            <el-table :data="paginatedStudents" style="width: 100%;" v-loading="studentStore.isLoading" border
+              @selection-change="handleSelectionChange">
+
+              <el-table-column type="selection" width="55" />
+
               <el-table-column prop="studentNumber" label="学号" min-width="120" sortable>
                 <template #default="scope">
                   <span class="font-medium text-gray-900">{{ scope.row.studentNumber }}</span>
@@ -157,19 +178,22 @@
     <el-dialog v-model="showAddDialog" title="添加学生" width="500px" :close-on-click-modal="false">
       <el-form :model="newStudent" label-width="80px" :rules="studentRules" ref="addFormRef">
         <el-form-item label="学号" prop="studentNumber">
-          <el-input v-model="newStudent.studentNumber" placeholder="请输入学号" />
+          <el-input v-model="newStudent.studentNumber" placeholder="请输入学号" style="flex: 1" />
         </el-form-item>
         <el-form-item label="姓名" prop="name">
           <el-input v-model="newStudent.name" placeholder="请输入姓名" />
         </el-form-item>
         <el-form-item label="班级" prop="className">
-          <el-input v-model="newStudent.className" placeholder="请输入班级" />
+          <el-select v-model="newStudent.className" placeholder="请选择或输入班级" filterable allow-create default-first-option
+            style="width: 100%">
+            <el-option v-for="cls in savedClassNames" :key="cls" :label="cls" :value="cls" />
+          </el-select>
         </el-form-item>
       </el-form>
       <template #footer>
         <div class="flex gap-2 justify-end">
           <el-button @click="showAddDialog = false">取消</el-button>
-          <el-button type="primary" @click="addStudent">添加</el-button>
+          <el-button type="primary" @click="addStudent" class="!bg-[#409eff]">添加</el-button>
         </div>
       </template>
     </el-dialog>
@@ -184,7 +208,10 @@
           <el-input v-model="editingStudent.name" placeholder="请输入姓名" />
         </el-form-item>
         <el-form-item label="班级" prop="className">
-          <el-input v-model="editingStudent.className" placeholder="请输入班级" />
+          <el-select v-model="editingStudent.className" placeholder="请选择或输入班级" filterable allow-create
+            default-first-option style="width: 100%">
+            <el-option v-for="cls in savedClassNames" :key="cls" :label="cls" :value="cls" />
+          </el-select>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -198,8 +225,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { useStudentStore } from '../stores/student';
+import { ref, computed, onMounted, watch } from 'vue';
+import { useStudentStore } from '@/stores/student';
+import { useAuthStore } from '@/stores/auth';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import {
   Plus,
@@ -215,9 +243,11 @@ import {
 import * as XLSX from 'xlsx';
 
 const studentStore = useStudentStore();
+const authStore = useAuthStore();
 
 // 响应式数据
 const searchQuery = ref('');
+const selectedClass = ref('');
 const showAddDialog = ref(false);
 const showEditDialog = ref(false);
 const addFormRef = ref();
@@ -228,10 +258,42 @@ const fileInput = ref();
 const currentPage = ref(1);
 const pageSize = ref(10);
 
+// 批量选择
+const selectedStudents = ref<string[]>([]);
+const selectAll = ref(false);
+
+// 保存的班级名称列表
+const savedClassNames = ref<string[]>([]);
+
+// 从本地存储加载班级列表
+const loadSavedClassNames = () => {
+  try {
+    const saved = localStorage.getItem('savedClassNames');
+    if (saved) {
+      savedClassNames.value = JSON.parse(saved);
+    }
+  } catch (e) {
+    console.error('加载保存的班级名称失败', e);
+    savedClassNames.value = [];
+  }
+};
+
+// 保存班级名称到本地存储
+const saveClassName = (className: string) => {
+  if (!className || savedClassNames.value.includes(className)) return;
+
+  savedClassNames.value.push(className);
+  try {
+    localStorage.setItem('savedClassNames', JSON.stringify(savedClassNames.value));
+  } catch (e) {
+    console.error('保存班级名称失败', e);
+  }
+};
+
 const newStudent = ref({
   studentNumber: '',
   name: '',
-  className: ''
+  className: savedClassNames.value && savedClassNames.value.length > 0 ? savedClassNames.value[0] : ''
 });
 
 const editingStudent = ref({
@@ -254,27 +316,49 @@ const studentRules = {
   ]
 };
 
+// 可用班级列表
+const availableClasses = computed(() => {
+  if (authStore.user?.role === 'admin' || authStore.user?.role === 'grade_leader') {
+    // 管理员和年级组长可以看到所有班级
+    const allClasses = [...new Set(studentStore.students.map(s => s.className))].filter(Boolean);
+    return allClasses.sort();
+  } else if (authStore.user?.role === 'teacher') {
+    // 教师只能看到自己负责的班级
+    return authStore.user?.classNames || [];
+  }
+  return [];
+});
+
 // 计算属性
 const filteredStudents = computed(() => {
-  if (!searchQuery.value) {
-    return [...studentStore.students].sort((a, b) => {
-      const numA = parseInt(a.studentNumber) || 0;
-      const numB = parseInt(b.studentNumber) || 0;
-      return numA - numB;
-    });
+  let filtered = studentStore.students;
+
+  // 班级筛选
+  if (selectedClass.value) {
+    filtered = filtered.filter(student => student.className === selectedClass.value);
   }
-  return studentStore.students
-    .filter(student =>
+
+  // 搜索筛选
+  if (searchQuery.value) {
+    filtered = filtered.filter(student =>
       student.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      student.studentNumber.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      student.className.toLowerCase().includes(searchQuery.value.toLowerCase())
-    )
-    .sort((a, b) => {
-      const numA = parseInt(a.studentNumber) || 0;
-      const numB = parseInt(b.studentNumber) || 0;
-      return numA - numB;
-    });
+      student.studentNumber.toLowerCase().includes(searchQuery.value.toLowerCase())
+    );
+  }
+
+  // 排序
+  return filtered.sort((a, b) => {
+    const numA = parseInt(a.studentNumber) || 0;
+    const numB = parseInt(b.studentNumber) || 0;
+    return numA - numB;
+  });
 });
+
+// 班级变化处理
+const handleClassChange = (className: string) => {
+  selectedClass.value = className;
+  currentPage.value = 1; // 重置到第一页
+};
 
 // 分页后的学生列表
 const paginatedStudents = computed(() => {
@@ -294,10 +378,32 @@ const triggerFileInput = () => {
   }
 };
 
+
+// 生成学号的方法
+const generateStudentNumber = () => {
+  if (studentStore.students.length === 0) {
+    newStudent.value.studentNumber = '1';
+    return;
+  }
+
+  // 找到最大的数字学号
+  const maxNumber = studentStore.students
+    .map(s => parseInt(s.studentNumber))
+    .filter(num => !isNaN(num))
+    .reduce((max, current) => Math.max(max, current), 0);
+
+  newStudent.value.studentNumber = (maxNumber + 1).toString();
+};
+
 const addStudent = async () => {
   if (!addFormRef.value) return;
 
   try {
+    // 如果学号为空，先自动生成
+    if (!newStudent.value.studentNumber) {
+      generateStudentNumber();
+    }
+
     await addFormRef.value.validate();
 
     // 检查学号是否重复
@@ -306,11 +412,20 @@ const addStudent = async () => {
       return;
     }
 
+    // 保存班级名称到本地存储
+    saveClassName(newStudent.value.className);
+
+    // 添加学生
     await studentStore.addStudent(newStudent.value);
+
     ElMessage.success('添加学生成功');
     showAddDialog.value = false;
-    newStudent.value = { studentNumber: '', name: '', className: '' };
+    // 保留班级选择，只清空学号和姓名
+    const currentClassName = newStudent.value.className;
+    newStudent.value = { studentNumber: '', name: '', className: currentClassName };
     addFormRef.value.resetFields();
+    // 重新设置班级值，因为resetFields会清空所有字段
+    newStudent.value.className = currentClassName;
   } catch (error) {
     if (error !== false) { // 不是表单验证错误
       ElMessage.error('添加学生失败');
@@ -338,11 +453,15 @@ const updateStudent = async () => {
       return;
     }
 
+    // 保存班级名称到本地存储
+    saveClassName(editingStudent.value.className);
+
     await studentStore.updateStudent(editingStudent.value.id, {
       studentNumber: editingStudent.value.studentNumber,
       name: editingStudent.value.name,
       className: editingStudent.value.className
     });
+
     ElMessage.success('更新学生成功');
     showEditDialog.value = false;
   } catch (error) {
@@ -373,6 +492,56 @@ const deleteStudent = async (student: any) => {
   }
 };
 
+// 批量选择相关方法
+const handleSelectAll = (val: boolean) => {
+  if (val) {
+    selectedStudents.value = paginatedStudents.value.map(s => s.id);
+  } else {
+    selectedStudents.value = [];
+  }
+};
+
+const handleSelectionChange = (selection: any[]) => {
+  selectedStudents.value = selection.map(s => s.id);
+  selectAll.value = selection.length === paginatedStudents.value.length;
+};
+
+// 批量删除
+const batchDeleteStudents = async () => {
+  if (selectedStudents.value.length === 0) {
+    ElMessage.warning('请先选择要删除的学生');
+    return;
+  }
+
+  try {
+    const selectedNames = studentStore.students
+      .filter(s => selectedStudents.value.includes(s.id))
+      .map(s => s.name)
+      .join('、');
+
+    const delStuSum = JSON.parse(JSON.stringify(selectedStudents.value.length))
+    await ElMessageBox.confirm(
+      `确定要删除选中的 ${selectedStudents.value.length} 名学生吗？\n学生：${selectedNames}\n这将同时删除这些学生的所有成绩记录。`,
+      '确认批量删除',
+      {
+        confirmButtonText: '确定删除',
+        cancelButtonText: '取消',
+        type: 'warning',
+        dangerouslyUseHTMLString: true,
+      }
+    );
+
+    await studentStore.batchDeleteStudents(selectedStudents.value);
+    ElMessage.success(`成功删除 ${delStuSum} 名学生`);
+    selectedStudents.value = [];
+    selectAll.value = false;
+  } catch (error) {
+    if (error !== 'cancel') {
+      ElMessage.error('批量删除学生失败');
+    }
+  }
+};
+
 // Excel导入
 const handleImportExcel = (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -388,11 +557,19 @@ const handleImportExcel = (event: Event) => {
       const worksheet = workbook.Sheets[sheetName];
       const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-      const studentsData = jsonData.map((row: any) => ({
-        studentNumber: String(row['学号'] || row['studentNumber'] || ''),
-        name: String(row['姓名'] || row['name'] || ''),
-        className: String(row['班级'] || row['className'] || ''),
-      })).filter(student => student.studentNumber && student.name && student.className);
+      const studentsData = jsonData.map((row: any) => {
+        const className = String(row['班级'] || row['className'] || '');
+        // 保存班级名称到本地存储
+        if (className) {
+          saveClassName(className);
+        }
+
+        return {
+          studentNumber: String(row['学号'] || row['studentNumber'] || ''),
+          name: String(row['姓名'] || row['name'] || ''),
+          className
+        };
+      }).filter(student => student.studentNumber && student.name && student.className);
 
       if (studentsData.length === 0) {
         ElMessage.error('Excel文件格式不正确，请确保包含"学号"、"姓名"、"班级"列');
@@ -454,10 +631,39 @@ const handleDownloadTemplate = () => {
   ElMessage.success('模板下载成功');
 };
 
+// 监听添加对话框的打开状态
+watch(showAddDialog, (newVal) => {
+  if (newVal) {
+    // 对话框打开时自动生成学号
+    generateStudentNumber();
+  }
+});
+
 // 生命周期
 onMounted(async () => {
   try {
+    // 加载保存的班级名称
+    loadSavedClassNames();
+
+    // 获取学生列表
     await studentStore.fetchStudents();
+
+    // 从现有学生数据中提取班级名称
+    studentStore.students.forEach(student => {
+      if (student.className) {
+        saveClassName(student.className);
+      }
+    });
+
+    // 设置默认班级
+    if (savedClassNames.value.length > 0) {
+      newStudent.value.className = savedClassNames.value[0];
+    }
+
+    // 设置默认筛选班级（选择第一个可用班级）
+    if (availableClasses.value.length > 0) {
+      selectedClass.value = availableClasses.value[0];
+    }
   } catch (error) {
     ElMessage.error('获取学生列表失败');
   }
@@ -465,231 +671,5 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.space-y-6>*+* {
-  margin-top: 1.5rem;
-}
-
-.text-3xl {
-  font-size: 1.875rem;
-  line-height: 2.25rem;
-}
-
-.font-bold {
-  font-weight: 700;
-}
-
-.tracking-tight {
-  letter-spacing: -0.025em;
-}
-
-.text-gray-900 {
-  color: #111827;
-}
-
-.text-gray-600 {
-  color: #4b5563;
-}
-
-.text-gray-500 {
-  color: #6b7280;
-}
-
-.text-gray-300 {
-  color: #d1d5db;
-}
-
-.mt-2 {
-  margin-top: 0.5rem;
-}
-
-.mt-1 {
-  margin-top: 0.25rem;
-}
-
-.mb-6 {
-  margin-bottom: 1.5rem;
-}
-
-.mb-4 {
-  margin-bottom: 1rem;
-}
-
-.mb-2 {
-  margin-bottom: 0.5rem;
-}
-
-.mr-1 {
-  margin-right: 0.25rem;
-}
-
-.p-6 {
-  padding: 1.5rem;
-}
-
-.p-4 {
-  padding: 1rem;
-}
-
-.py-12 {
-  padding-top: 3rem;
-  padding-bottom: 3rem;
-}
-
-.flex {
-  display: flex;
-}
-
-.flex-col {
-  flex-direction: column;
-}
-
-.flex-1 {
-  flex: 1 1 0%;
-}
-
-.items-center {
-  align-items: center;
-}
-
-.justify-between {
-  justify-content: space-between;
-}
-
-.justify-center {
-  justify-content: center;
-}
-
-.justify-end {
-  justify-content: flex-end;
-}
-
-.gap-4 {
-  gap: 1rem;
-}
-
-.gap-2 {
-  gap: 0.5rem;
-}
-
-.gap-1 {
-  gap: 0.25rem;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.text-lg {
-  font-size: 1.125rem;
-  line-height: 1.75rem;
-}
-
-.text-sm {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-}
-
-.text-6xl {
-  font-size: 3.75rem;
-  line-height: 1;
-}
-
-.font-semibold {
-  font-weight: 600;
-}
-
-.font-medium {
-  font-weight: 500;
-}
-
-.rounded-lg {
-  border-radius: 1rem;
-}
-
-.border {
-  border-width: 1px;
-}
-
-.border-t {
-  border-top-width: 1px;
-}
-
-.border-gray-200 {
-  border-color: #e5e7eb;
-}
-
-.bg-gray-50 {
-  background-color: #f9fafb;
-}
-
-.overflow-hidden {
-  overflow: hidden;
-}
-
-.shadow-sm {
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-}
-
-.border-0 {
-  border-width: 0px;
-}
-
-
-.bg-white {
-  background-color: #ffffff;
-}
-
-.border-b {
-  border-bottom-width: 1px;
-}
-
-.px-6 {
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-}
-
-.py-4 {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-}
-
-.flex-wrap {
-  flex-wrap: wrap;
-}
-
-.w-full {
-  width: 100%;
-}
-
-/* 胶囊型按钮样式 - 细长美观 - 只应用到页面内容区域 */
-.page-content :deep(.el-button) {
-  border-radius: 9999px;
-  height: 36px;
-  padding: 0 16px;
-  font-weight: 500;
-}
-
-.action-button {
-  min-width: 100px;
-}
-
-.action-link-button {
-  padding: 4px 8px !important;
-  min-width: 28px;
-  height: 28px;
-}
-
-/* 表格容器样式已移除 */
-
-/* 内容区域边距适配 */
-.page-content {
-  width: 100% !important;
-  max-width: 100% !important;
-  overflow-x: hidden !important;
-  padding: 0 1.5rem !important;
-  box-sizing: border-box !important;
-}
-
-
-/* 桌面端表格优化样式已移除 */
+@import './index.css';
 </style>

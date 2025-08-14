@@ -1,0 +1,17 @@
+.reports-container {
+  min-height: calc(100vh - 120px);
+}
+
+.is-active {
+  border: 2px solid #000000;
+  border-radius: 12px;
+}
+
+:deep(.el-card) {
+  border-radius: 12px;
+}
+
+:deep(.el-card.is-active) {
+  border: 2px solid #000000;
+  border-radius: 12px;
+}

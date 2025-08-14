@@ -1,0 +1,511 @@
+/* 统计视图样式 */
+.statistics {
+  padding: 1.5rem;
+}
+
+.statistics__header {
+  margin-bottom: 1.5rem;
+}
+
+.statistics__title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.statistics__description {
+  color: #6b7280;
+}
+
+/* 筛选条件样式 */
+.statistics__filters {
+  margin-bottom: 1.5rem;
+  background-color: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.statistics__filters-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .statistics__filters-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.statistics__filter-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.statistics__filter-button {
+  display: flex;
+  align-items: flex-end;
+}
+
+/* 综合评分卡片样式 */
+.statistics__score-cards {
+  margin-bottom: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .statistics__score-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.statistics__score-card {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  text-align: center;
+}
+
+.statistics__score-card--blue {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+}
+
+.statistics__score-card--green {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+}
+
+.statistics__score-card--purple {
+  background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+}
+
+.statistics__score-card-value {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.statistics__score-card-value--blue {
+  color: #2563eb;
+}
+
+.statistics__score-card-value--green {
+  color: #059669;
+}
+
+.statistics__score-card-value--purple {
+  color: #7c3aed;
+}
+
+.statistics__score-card-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.statistics__score-card-label--blue {
+  color: #1e40af;
+}
+
+.statistics__score-card-label--green {
+  color: #047857;
+}
+
+.statistics__score-card-label--purple {
+  color: #6b21a8;
+}
+
+.statistics__score-card-description {
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.statistics__score-card-description--blue {
+  color: #3b82f6;
+}
+
+.statistics__score-card-description--green {
+  color: #10b981;
+}
+
+.statistics__score-card-description--purple {
+  color: #8b5cf6;
+}
+
+.statistics__score-card-breakdown {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+}
+
+/* 统计卡片样式 */
+.statistics__stats-cards {
+  margin-bottom: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .statistics__stats-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .statistics__stats-cards {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+.statistics__stats-card {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.statistics__stats-card-content {
+  display: flex;
+  align-items: center;
+}
+
+.statistics__stats-card-icon {
+  padding: 0.75rem;
+  border-radius: 50%;
+  margin-right: 1rem;
+}
+
+.statistics__stats-card-icon--blue {
+  background-color: #dbeafe;
+  color: #2563eb;
+}
+
+.statistics__stats-card-icon--green {
+  background-color: #dcfce7;
+  color: #059669;
+}
+
+.statistics__stats-card-icon--yellow {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.statistics__stats-card-icon--purple {
+  background-color: #f3e8ff;
+  color: #7c3aed;
+}
+
+.statistics__stats-card-icon--red {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.statistics__stats-card-info {
+  flex: 1;
+}
+
+.statistics__stats-card-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.statistics__stats-card-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.statistics__stats-card-description {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* 学生成绩排名表格样式 */
+.statistics__ranking-table {
+  margin-bottom: 1.5rem;
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.statistics__ranking-title {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 1rem;
+}
+
+.statistics__ranking-table-wrapper {
+  overflow-x: auto;
+}
+
+.statistics__ranking-table-element {
+  min-width: 100%;
+}
+
+.statistics__ranking-table-element thead {
+  background-color: #f9fafb;
+}
+
+.statistics__ranking-table-element th {
+  padding: 0.75rem 1.5rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.statistics__ranking-table-element tbody {
+  background-color: white;
+}
+
+.statistics__ranking-table-element tbody tr {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.statistics__ranking-table-element td {
+  padding: 1rem 1.5rem;
+  white-space: nowrap;
+  font-size: 0.875rem;
+}
+
+/* 排名图标样式 */
+.statistics__rank-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: 0.5rem;
+}
+
+.statistics__rank-icon--gold {
+  color: #eab308;
+}
+
+.statistics__rank-icon--silver {
+  color: #9ca3af;
+}
+
+.statistics__rank-icon--bronze {
+  color: #a16207;
+}
+
+.statistics__rank-icon--top10 {
+  color: #60a5fa;
+}
+
+/* 成绩等级样式 */
+.statistics__grade-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.statistics__grade-badge--excellent {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.statistics__grade-badge--good {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.statistics__grade-badge--average {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.statistics__grade-badge--below-average {
+  background-color: #fed7aa;
+  color: #c2410c;
+}
+
+.statistics__grade-badge--poor {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.statistics__grade-badge--absent {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+/* 评级标签样式 */
+.statistics__rating-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.statistics__rating-badge--a {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.statistics__rating-badge--b {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.statistics__rating-badge--c {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.statistics__rating-badge--d {
+  background-color: #fed7aa;
+  color: #c2410c;
+}
+
+.statistics__rating-badge--f {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+/* 考试综合分析样式 */
+.statistics__analysis {
+  margin-bottom: 1.5rem;
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.statistics__analysis-title {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 1rem;
+}
+
+.statistics__analysis-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  color: #374151;
+}
+
+.statistics__analysis-paragraph {
+  line-height: 1.625;
+}
+
+.statistics__analysis-highlight {
+  font-weight: 600;
+}
+
+.statistics__analysis-highlight--blue {
+  color: #2563eb;
+}
+
+.statistics__analysis-highlight--yellow {
+  color: #d97706;
+}
+
+.statistics__analysis-highlight--green {
+  color: #059669;
+}
+
+.statistics__analysis-highlight--red {
+  color: #dc2626;
+}
+
+.statistics__analysis-suggestions {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+}
+
+.statistics__analysis-suggestions-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.statistics__analysis-suggestions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* 空状态样式 */
+.statistics__empty {
+  text-align: center;
+  padding: 3rem 0;
+}
+
+.statistics__empty-icon {
+  margin: 0 auto;
+  height: 3rem;
+  width: 3rem;
+  color: #9ca3af;
+}
+
+.statistics__empty-title {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #111827;
+}
+
+.statistics__empty-description {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .statistics {
+    padding: 1rem;
+  }
+  
+  .statistics__filters-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .statistics__score-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .statistics__stats-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .statistics__ranking-table-wrapper {
+    overflow-x: scroll;
+  }
+}
+
+/* 特殊样式 */
+.statistics__failed-student {
+  color: #dc2626 !important;
+  font-weight: 500 !important;
+}
+
+.statistics__absent-student {
+  color: #dc2626 !important;
+  font-weight: 500 !important;
+}

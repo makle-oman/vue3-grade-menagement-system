@@ -10,18 +10,9 @@
 
       <!-- 考试选择 -->
       <div class="mb-4">
-        <el-select 
-          v-model="selectedExamId" 
-          placeholder="请选择考试" 
-          class="w-80"
-          @change="handleExamChange"
-        >
-          <el-option
-            v-for="exam in sortedExams"
-            :key="exam.id"
-            :label="`${exam.name} - ${exam.subject} - ${exam.className}`"
-            :value="exam.id"
-          />
+        <el-select v-model="selectedExamId" placeholder="请选择考试" class="w-80" @change="handleExamChange">
+          <el-option v-for="exam in sortedExams" :key="exam.id"
+            :label="`${exam.name} - ${exam.subject} - ${exam.className}`" :value="exam.id" />
         </el-select>
 
         <div v-if="currentExam" class="mt-2 flex gap-2">
@@ -42,13 +33,11 @@
       </template>
 
       <div class="grid gap-4 grid-cols-3">
-        <el-card 
-          shadow="hover" 
-          :class="{'is-active': reportType === 'individual'}"
-          @click="reportType = 'individual'"
-        >
+        <el-card shadow="hover" :class="{ 'is-active': reportType === 'individual' }" @click="reportType = 'individual'">
           <div class="p-4 text-center cursor-pointer">
-            <el-icon :size="32" class="mb-2 text-primary"><Document /></el-icon>
+            <el-icon :size="32" class="mb-2 text-primary">
+              <Document />
+            </el-icon>
             <h3 class="font-medium mb-1">个人成绩单</h3>
             <p class="text-sm text-gray-500">
               生成单个或多个学生的详细成绩单
@@ -56,13 +45,11 @@
           </div>
         </el-card>
 
-        <el-card 
-          shadow="hover" 
-          :class="{'is-active': reportType === 'class'}"
-          @click="reportType = 'class'"
-        >
+        <el-card shadow="hover" :class="{ 'is-active': reportType === 'class' }" @click="reportType = 'class'">
           <div class="p-4 text-center cursor-pointer">
-            <el-icon :size="32" class="mb-2 text-primary"><User /></el-icon>
+            <el-icon :size="32" class="mb-2 text-primary">
+              <User />
+            </el-icon>
             <h3 class="font-medium mb-1">班级成绩汇总</h3>
             <p class="text-sm text-gray-500">
               生成整个班级的成绩排名表
@@ -70,13 +57,11 @@
           </div>
         </el-card>
 
-        <el-card 
-          shadow="hover" 
-          :class="{'is-active': reportType === 'summary'}"
-          @click="reportType = 'summary'"
-        >
+        <el-card shadow="hover" :class="{ 'is-active': reportType === 'summary' }" @click="reportType = 'summary'">
           <div class="p-4 text-center cursor-pointer">
-            <el-icon :size="32" class="mb-2 text-primary"><Printer /></el-icon>
+            <el-icon :size="32" class="mb-2 text-primary">
+              <Printer />
+            </el-icon>
             <h3 class="font-medium mb-1">统计报表</h3>
             <p class="text-sm text-gray-500">
               生成详细的统计分析报表
@@ -97,21 +82,14 @@
 
       <div class="space-y-4">
         <div class="flex items-center space-x-2">
-          <el-checkbox 
-            v-model="selectAllStudents" 
-            @change="handleSelectAllStudents"
-          >
+          <el-checkbox v-model="selectAllStudents" @change="handleSelectAllStudents">
             全选 ({{ examStudents.length }} 名学生)
           </el-checkbox>
         </div>
-        
+
         <div class="grid gap-2 grid-cols-3">
-          <el-checkbox 
-            v-for="student in examStudents" 
-            :key="student.id" 
-            v-model="selectedStudentsMap[student.id]"
-            @change="updateSelectedStudents"
-          >
+          <el-checkbox v-for="student in examStudents" :key="student.id" v-model="selectedStudentsMap[student.id]"
+            @change="updateSelectedStudents">
             {{ student.name }} ({{ student.studentNumber }})
           </el-checkbox>
         </div>
@@ -128,34 +106,27 @@
       </template>
 
       <div class="flex flex-row gap-4">
-        <el-button 
-          v-if="reportType === 'individual'" 
-          type="primary" 
-          :disabled="selectedStudents.length === 0"
-          class="flex-1 bg-[#40b4ff]"
-          @click="generateIndividualReports"
-        >
-          <el-icon class="mr-1"><Download /></el-icon>
+        <el-button v-if="reportType === 'individual'" type="primary" :disabled="selectedStudents.length === 0"
+          class="flex-1 bg-[#40b4ff]" @click="generateIndividualReports">
+          <el-icon class="mr-1">
+            <Download />
+          </el-icon>
           生成个人成绩单 ({{ selectedStudents.length }} 人)
         </el-button>
-        
-        <el-button 
-          v-if="reportType === 'class'" 
-          type="primary" 
-          class="flex-1 bg-[#40b4ff]"
-          @click="generateClassReport"
-        >
-          <el-icon class="mr-1"><Download /></el-icon>
+
+        <el-button v-if="reportType === 'class'" type="primary" class="flex-1 bg-[#40b4ff]"
+          @click="generateClassReport">
+          <el-icon class="mr-1">
+            <Download />
+          </el-icon>
           生成班级成绩汇总
         </el-button>
-        
-        <el-button 
-          v-if="reportType === 'summary'" 
-          type="primary" 
-          class="flex-1 bg-[#40b4ff]"
-          @click="generateSummaryReport"
-        >
-          <el-icon class="mr-1"><Download /></el-icon>
+
+        <el-button v-if="reportType === 'summary'" type="primary" class="flex-1 bg-[#40b4ff]"
+          @click="generateSummaryReport">
+          <el-icon class="mr-1">
+            <Download />
+          </el-icon>
           生成统计报表
         </el-button>
       </div>
@@ -187,8 +158,13 @@
             <p>考试人数: {{ statistics.participantCount }}人</p>
             <p>缺考人数: {{ statistics.absentCount }}人</p>
             <p>平均分: {{ statistics.averageScore }}分</p>
+            <p>最高分: {{ statistics.highestScore }}分</p>
+            <p>最低分: {{ statistics.lowestScore }}分</p>
             <p>及格率: {{ statistics.passRate }}%</p>
             <p>优秀率: {{ statistics.excellentRate }}%</p>
+            <p>综合分: {{ statistics.compositeScore }}</p>
+            <p>总积分: {{ statistics.totalPoints }}</p>
+            <p>班级成绩总分: {{ statistics.classTotal }}</p>
           </div>
         </div>
       </div>
@@ -197,7 +173,9 @@
     <!-- 空状态 -->
     <el-card v-if="!selectedExamId">
       <div class="text-center py-12">
-        <el-icon class="text-gray-400 mb-4" :size="48"><Document /></el-icon>
+        <el-icon class="text-gray-400 mb-4" :size="48">
+          <Document />
+        </el-icon>
         <h3 class="text-lg font-medium mb-2">选择考试生成成绩单</h3>
         <p v-if="exams.length === 0" class="text-sm text-gray-500">
           暂无可用考试，请先创建考试并录入成绩
@@ -233,7 +211,7 @@ const currentExam = computed(() => exams.value.find(exam => exam.id === selected
 
 // 按日期降序排序的考试列表
 const sortedExams = computed(() => {
-  return [...exams.value].sort((a, b) => 
+  return [...exams.value].sort((a, b) =>
     new Date(b.examDate).getTime() - new Date(a.examDate).getTime()
   );
 });
@@ -279,7 +257,7 @@ const rankedStudentData = computed(() => {
   const validScores = studentScoreData.value
     .filter(item => !item.isAbsent && item.score !== null)
     .sort((a, b) => (b.score || 0) - (a.score || 0));
-  
+
   return validScores.map((item, index) => ({ ...item, rank: index + 1 }));
 });
 
@@ -290,14 +268,32 @@ const statistics = computed(() => {
   const examId = selectedExamId.value;
   const filteredScores = examScores.value;
   const validScores = filteredScores.filter(s => !s.isAbsent);
-  
+
   if (validScores.length === 0) return null;
 
   const scoreValues = validScores.map(s => s.score);
   const totalScore = currentExam.value.totalScore;
   const passLine = totalScore * 0.6;
-  const excellentLine = totalScore * 0.85;
-  
+  const excellentLine = totalScore * 0.8; // 修改为80分及以上为优秀
+
+  // 计算基本统计数据，保留两位小数
+  const averageScore = Number((scoreValues.reduce((sum, score) => sum + score, 0) / validScores.length).toFixed(2));
+  const passRate = Number(((scoreValues.filter(score => score >= passLine).length / validScores.length) * 100).toFixed(2));
+  const excellentRate = Number(((scoreValues.filter(score => score >= excellentLine).length / validScores.length) * 100).toFixed(2));
+
+  // 计算综合分 = 及格率×0.5 + 平均分×0.3 + 优秀率×0.2
+  const compositeScore = Number((
+    passRate * 0.5 +
+    averageScore * 0.3 +
+    excellentRate * 0.2
+  ).toFixed(2));
+
+  // 计算总积分 = 及格率 + 优秀率 + 平均分
+  const totalPoints = Number((passRate + excellentRate + averageScore).toFixed(2));
+
+  // 计算班级成绩总分 = 所有学生成绩的总和
+  const classTotal = scoreValues.reduce((sum, score) => sum + score, 0);
+
   // 计算分数段分布
   const ranges = [
     `0-${Math.floor(totalScore * 0.6) - 1}`,
@@ -306,7 +302,7 @@ const statistics = computed(() => {
     `${Math.floor(totalScore * 0.8)}-${Math.floor(totalScore * 0.9) - 1}`,
     `${Math.floor(totalScore * 0.9)}-${totalScore}`
   ];
-  
+
   const distribution = ranges.map(range => {
     const [min, max] = range.split('-').map(Number);
     const count = scoreValues.filter(score => score >= min && score <= max).length;
@@ -320,11 +316,14 @@ const statistics = computed(() => {
   return {
     participantCount: validScores.length,
     absentCount: filteredScores.length - validScores.length,
-    averageScore: Math.round(scoreValues.reduce((sum, score) => sum + score, 0) / validScores.length * 10) / 10,
+    averageScore,
     highestScore: Math.max(...scoreValues),
     lowestScore: Math.min(...scoreValues),
-    passRate: Math.round(scoreValues.filter(score => score >= passLine).length / validScores.length * 100),
-    excellentRate: Math.round(scoreValues.filter(score => score >= excellentLine).length / validScores.length * 100),
+    passRate,
+    excellentRate,
+    compositeScore,
+    totalPoints,
+    classTotal,
     scoreDistribution: distribution
   };
 });
@@ -338,10 +337,11 @@ onMounted(async () => {
       studentStore.fetchStudents(),
       scoreStore.fetchScores()
     ]);
-    
+
     // 默认选择最新的考试
     if (sortedExams.value.length > 0) {
       selectedExamId.value = sortedExams.value[0].id;
+      handleExamChange();
     }
   } catch (error) {
     ElMessage.error('获取数据失败');
@@ -367,7 +367,7 @@ const resetStudentSelection = () => {
     delete selectedStudentsMap[key];
   });
   selectAllStudents.value = false;
-  
+
   // 初始化当前考试的学生选择状态
   examStudents.value.forEach(student => {
     selectedStudentsMap[student.id] = false;
@@ -444,7 +444,7 @@ const generateIndividualReports = () => {
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, '个人成绩单');
   XLSX.writeFile(workbook, `${currentExam.value!.name}_个人成绩单.xlsx`);
-  
+
   ElMessage.success('个人成绩单生成成功');
 };
 
@@ -458,7 +458,7 @@ const generateClassReport = () => {
   // 处理正常参加考试的学生
   const classReportData = rankedStudentData.value.map(item => {
     const isFailingOrAbsent = item.isAbsent || (item.score !== null && item.score < 60);
-    
+
     return {
       排名: item.rank,
       学号: item.student.studentNumber,
@@ -483,19 +483,19 @@ const generateClassReport = () => {
   const allData = [...classReportData, ...absentStudents];
 
   const worksheet = XLSX.utils.json_to_sheet(allData);
-  
+
   // 设置单元格样式
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, '班级成绩汇总');
-  
+
   // 添加样式信息
   if (!workbook.Sheets['班级成绩汇总'].s) workbook.Sheets['班级成绩汇总'].s = {};
-  
+
   // 为每个单元格设置样式
   for (let i = 0; i < allData.length; i++) {
     const row = allData[i];
     const isFailingOrAbsent = row.状态 === '缺考' || row.状态 === '不及格';
-    
+
     if (isFailingOrAbsent) {
       // 设置行的所有单元格为红色文本
       const columns = Object.keys(row);
@@ -507,9 +507,9 @@ const generateClassReport = () => {
       });
     }
   }
-  
+
   XLSX.writeFile(workbook, `${currentExam.value.name}_班级成绩汇总.xlsx`);
-  
+
   ElMessage.success('班级成绩汇总表生成成功');
 };
 
@@ -542,38 +542,21 @@ const generateSummaryReport = () => {
   }));
 
   const workbook = XLSX.utils.book_new();
-  
+
   // 基本统计
   const summarySheet = XLSX.utils.json_to_sheet(summaryData);
   XLSX.utils.book_append_sheet(workbook, summarySheet, '基本统计');
-  
+
   // 分数段分布
   const distributionSheet = XLSX.utils.json_to_sheet(distributionData);
   XLSX.utils.book_append_sheet(workbook, distributionSheet, '分数段分布');
 
   XLSX.writeFile(workbook, `${currentExam.value.name}_统计报表.xlsx`);
-  
+
   ElMessage.success('统计报表生成成功');
 };
 </script>
 
 <style scoped>
-.reports-container {
-  min-height: calc(100vh - 120px);
-}
-
-.is-active {
-  border: 2px solid #000000;
-  border-radius: 12px;
-}
-
-:deep(.el-card) {
-  border-radius: 12px;
-}
-
-:deep(.el-card.is-active) {
-  border: 2px solid #000000;
-  border-radius: 12px;
-}
-
+@import './index.css';
 </style>

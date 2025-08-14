@@ -1,0 +1,195 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 页面布局 */
+.card-header {
+  margin-bottom: 16px;
+}
+
+/* 表格样式 */
+.table-container {
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+}
+
+.el-table .cell {
+  padding: 12px;
+}
+
+/* 行状态样式 */
+.absent-row {
+  background-color: #fef2f2;
+  color: #b91c1c;
+}
+
+.failing-row {
+  background-color: #fff7ed;
+  color: #c2410c;
+}
+
+.pending-save {
+  background-color: #f0f9ff;
+  color: #0369a1;
+  font-style: italic;
+}
+
+/* 空状态样式 */
+.empty-state {
+  margin-top: 24px;
+  border-radius: 8px;
+}
+
+/* 上传组件样式 */
+.hidden-upload .el-upload-list {
+  display: none;
+}
+
+/* 按钮样式 */
+.page-content :deep(.el-button) {
+  border-radius: 6px;
+  height: 40px;
+  padding: 0 20px;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.page-content :deep(.el-button:hover) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.page-content :deep(.el-button--small) {
+  height: 32px;
+  padding: 0 16px;
+  font-size: 13px;
+}
+
+/* 按钮组布局 */
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 24px;
+}
+
+.button-group {
+  display: flex;
+  gap: 12px;
+}
+
+/* 表单控件样式 */
+:deep(.el-select) {
+  min-width: 240px;
+}
+
+:deep(.el-input__inner) {
+  height: 40px;
+  line-height: 40px;
+}
+
+/* 卡片样式增强 */
+:deep(.el-card) {
+  border-radius: 8px;
+  transition: all 0.3s;
+  border: none;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+}
+
+:deep(.el-card:hover) {
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08);
+}
+
+:deep(.el-card__header) {
+  padding: 18px 24px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+:deep(.el-card__body) {
+  padding: 24px;
+}
+
+/* 文本样式 */
+.text-3xl {
+  font-size: 2rem;
+  line-height: 2.5rem;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.text-gray-500 {
+  color: #6b7280;
+}
+
+.text-gray-400 {
+  color: #9ca3af;
+}
+
+.text-lg {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+/* 通用工具类 */
+.flex {
+  display: flex;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.py-12 {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+.mr-1 {
+  margin-right: 0.25rem;
+}
+
+.min-w-200px {
+  min-width: 200px;
+}

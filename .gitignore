@@ -3,6 +3,7 @@
 /.pnp
 .pnp.js
 .codebuddy
+.git_disabled
 
 # 测试
 /coverage

@@ -1,0 +1,388 @@
+/* 学期统计视图样式 */
+.semester-statistics {
+  padding: 1.5rem;
+}
+
+.semester-statistics__header {
+  margin-bottom: 1.5rem;
+}
+
+.semester-statistics__title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.semester-statistics__description {
+  color: #6b7280;
+}
+
+/* 筛选条件样式 */
+.semester-statistics__filters {
+  margin-bottom: 1.5rem;
+  background-color: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.semester-statistics__filters-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .semester-statistics__filters-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.semester-statistics__filter-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.semester-statistics__filter-button {
+  display: flex;
+  align-items: flex-end;
+}
+
+/* 概览卡片样式 */
+.semester-statistics__overview {
+  margin-bottom: 1.5rem;
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.semester-statistics__overview-title {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 1rem;
+}
+
+.semester-statistics__overview-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .semester-statistics__overview-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.semester-statistics__overview-card {
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.semester-statistics__overview-card--blue {
+  background-color: #eff6ff;
+}
+
+.semester-statistics__overview-card--green {
+  background-color: #f0fdf4;
+}
+
+.semester-statistics__overview-card--yellow {
+  background-color: #fefce8;
+}
+
+.semester-statistics__overview-card--purple {
+  background-color: #faf5ff;
+}
+
+.semester-statistics__overview-card-label {
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.semester-statistics__overview-card-label--blue {
+  color: #1d4ed8;
+}
+
+.semester-statistics__overview-card-label--green {
+  color: #166534;
+}
+
+.semester-statistics__overview-card-label--yellow {
+  color: #a16207;
+}
+
+.semester-statistics__overview-card-label--purple {
+  color: #7c3aed;
+}
+
+.semester-statistics__overview-card-value {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.semester-statistics__overview-card-value--blue {
+  color: #1e3a8a;
+}
+
+.semester-statistics__overview-card-value--green {
+  color: #14532d;
+}
+
+.semester-statistics__overview-card-value--yellow {
+  color: #92400e;
+}
+
+.semester-statistics__overview-card-value--purple {
+  color: #6b21a8;
+}
+
+/* 表格样式 */
+.semester-statistics__table-container {
+  margin-bottom: 1.5rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.semester-statistics__table-header {
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.semester-statistics__table-title {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #111827;
+}
+
+.semester-statistics__table-wrapper {
+  overflow-x: auto;
+}
+
+.semester-statistics__table {
+  min-width: 100%;
+}
+
+.semester-statistics__table thead {
+  background-color: #f9fafb;
+}
+
+.semester-statistics__table th {
+  padding: 0.75rem 1.5rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.semester-statistics__table tbody {
+  background-color: white;
+}
+
+.semester-statistics__table tbody tr {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.semester-statistics__table td {
+  padding: 1rem 1.5rem;
+  white-space: nowrap;
+  font-size: 0.875rem;
+}
+
+/* 排序按钮样式 */
+.semester-statistics__sort-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.semester-statistics__sort-button {
+  font-size: 0.875rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.semester-statistics__sort-button:hover {
+  color: #60a5fa;
+}
+
+.semester-statistics__sort-button--active {
+  color: #3b82f6;
+}
+
+.semester-statistics__sort-button--inactive {
+  color: #d1d5db;
+}
+
+/* 成绩颜色样式 */
+.semester-statistics__score--excellent {
+  color: #059669;
+}
+
+.semester-statistics__score--good {
+  color: #2563eb;
+}
+
+.semester-statistics__score--average {
+  color: #d97706;
+}
+
+.semester-statistics__score--below-average {
+  color: #ea580c;
+}
+
+.semester-statistics__score--poor {
+  color: #dc2626;
+}
+
+/* 成绩背景颜色样式 */
+.semester-statistics__score-badge--excellent {
+  background-color: #10b981;
+}
+
+.semester-statistics__score-badge--good {
+  background-color: #3b82f6;
+}
+
+.semester-statistics__score-badge--average {
+  background-color: #f59e0b;
+}
+
+.semester-statistics__score-badge--below-average {
+  background-color: #f97316;
+}
+
+.semester-statistics__score-badge--poor {
+  background-color: #ef4444;
+}
+
+.semester-statistics__score-badge {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* 趋势图标样式 */
+.semester-statistics__trend--up {
+  color: #059669;
+}
+
+.semester-statistics__trend--down {
+  color: #dc2626;
+}
+
+.semester-statistics__trend--stable {
+  color: #6b7280;
+}
+
+/* 分析区域样式 */
+.semester-statistics__analysis {
+  margin-bottom: 1.5rem;
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.semester-statistics__analysis-title {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 1rem;
+}
+
+.semester-statistics__analysis-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.semester-statistics__analysis-text {
+  color: #374151;
+}
+
+.semester-statistics__analysis-section {
+  padding: 1rem;
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+}
+
+.semester-statistics__analysis-section-title {
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.semester-statistics__analysis-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: #374151;
+}
+
+.semester-statistics__analysis-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* 空状态样式 */
+.semester-statistics__empty {
+  text-align: center;
+  padding: 3rem 0;
+}
+
+.semester-statistics__empty-icon {
+  margin: 0 auto;
+  height: 3rem;
+  width: 3rem;
+  color: #9ca3af;
+}
+
+.semester-statistics__empty-title {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #111827;
+}
+
+.semester-statistics__empty-description {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .semester-statistics {
+    padding: 1rem;
+  }
+  
+  .semester-statistics__table-wrapper {
+    overflow-x: scroll;
+  }
+  
+  .semester-statistics__overview-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .semester-statistics__filters-grid {
+    grid-template-columns: 1fr;
+  }
+}

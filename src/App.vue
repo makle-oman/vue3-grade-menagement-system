@@ -1,338 +1,294 @@
 <template>
-  <div class="min-h-screen bg-gray-50 w-full">
-    <div class="flex w-full">
-      <!-- 侧边栏 -->
-      <div class="fixed left-0 top-0 h-full w-80 border-r bg-white shadow-sm">
-        <div class="pb-12 w-80">
-          <div class="space-y-4 py-4">
-            <!-- Logo区域 -->
-            <div class="px-4 py-3">
-              <div class="flex items-center gap-3 mb-4">
-                <svg class="h-7 w-7 text-blue-600" fill="#0a0a0a" stroke="#0a0a0a" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998a12.078 12.078 0 01.665-6.479L12 14z" />
-                </svg>
-                <h2 class="text-xl font-semibold text-gray-900">成绩管理系统</h2>
-              </div>
-              <div class="border-t border-gray-200"></div>
-            </div>
+  <div id="app">
+    <!-- 如果是登录页面或未认证，直接显示路由内容 -->
+    <router-view v-if="isLoginPage || !isAuthenticated" />
 
-            <!-- 菜单项 -->
-            <div>
-              <div class="space-y-2 sidebar-menu">
-                <div class="px-2" v-for="item in menuItems" :key="item.path">
-                  <router-link :to="item.path" :class="[
-                    'w-full flex items-center justify-start text-base h-12 px-4 rounded-lg transition-colors',
-                    activeMenu === item.path
-                      ? 'bg-gray-100 text-gray-900 font-medium'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                  ]">
-                    <component :is="item.icon" class="mr-3 h-5 w-5" />
-                    {{ item.label }}
-                  </router-link>
+    <!-- 已认证的主应用布局 -->
+    <div v-else class="app-layout">
+      <!-- 顶部导航栏 -->
+      <header class="app-header">
+        <div class="header-left">
+          <h1 class="app-title">成绩管理系统</h1>
+        </div>
+        <div class="header-right">
+          <span class="user-welcome">欢迎，{{ currentUser?.name }}</span>
+          <el-button @click="handleLogout" type="primary" link>退出登录</el-button>
+        </div>
+      </header>
+
+      <!-- 导航菜单 -->
+      <nav class="app-nav">
+        <el-menu :default-active="$route.path" mode="horizontal" router class="nav-menu">
+          <el-menu-item index="/dashboard">
+            <el-icon>
+              <House />
+            </el-icon>
+            <span>首页</span>
+          </el-menu-item>
+
+          <el-menu-item index="/students">
+            <el-icon>
+              <User />
+            </el-icon>
+            <span>学生管理</span>
+          </el-menu-item>
+
+          <el-menu-item index="/classes">
+            <el-icon>
+              <School />
+            </el-icon>
+            <span>班级管理</span>
+          </el-menu-item>
+
+          <el-menu-item index="/exams">
+            <el-icon>
+              <Document />
+            </el-icon>
+            <span>考试管理</span>
+          </el-menu-item>
+
+          <el-menu-item index="/scores">
+            <el-icon>
+              <Edit />
+            </el-icon>
+            <span>成绩管理</span>
+          </el-menu-item>
+
+          <el-menu-item index="/statistics">
+            <el-icon>
+              <DataAnalysis />
+            </el-icon>
+            <span>统计分析</span>
+          </el-menu-item>
+
+          <el-menu-item index="/semester-statistics">
+            <el-icon>
+              <Calendar />
+            </el-icon>
+            <span>学期统计</span>
+          </el-menu-item>
+
+          <el-menu-item index="/reports">
+            <el-icon>
+              <PieChart />
+            </el-icon>
+            <span>报表中心</span>
+          </el-menu-item>
+
+          <!-- 管理员专用菜单 -->
+          <el-menu-item v-if="currentUser?.role === 'admin'" index="/users">
+            <el-icon>
+              <UserFilled />
+            </el-icon>
+            <span>用户管理</span>
+          </el-menu-item>
+
+          <!-- 所有教师可访问的菜单 -->
+          <el-menu-item index="/semesters">
+            <el-icon>
+              <Calendar />
+            </el-icon>
+            <span>学期管理</span>
+          </el-menu-item>
+
+          <!-- 年级组长专用菜单 -->
+          <el-menu-item v-if="currentUser?.role === 'grade_leader'" index="/grade-analysis">
+            <el-icon>
+              <TrendCharts />
+            </el-icon>
+            <span>年级分析</span>
+          </el-menu-item>
+
+          <!-- 更多菜单 -->
+          <el-menu-item  @mouseenter="showMorePopover = true"
+            @mouseleave="showMorePopover = false">
+            <el-popover placement="bottom" :width="160" trigger="manual" v-model:visible="showMorePopover">
+              <template #reference>
+                <div class="flex items-center gap-2 cursor-pointer">
+                  <el-icon>
+                    <MoreFilled />
+                  </el-icon>
+                </div>
+              </template>
+              <div class="py-1" @mouseenter="showMorePopover = true" @mouseleave="showMorePopover = false">
+                <div
+                  class="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer rounded"
+                  @click="handleProfileClick">
+                  <el-icon>
+                    <User />
+                  </el-icon>
+                  <span>个人信息</span>
+                </div>
+                <div
+                  class="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer rounded"
+                  @click="handleSettings">
+                  <el-icon>
+                    <Setting />
+                  </el-icon>
+                  <span>系统设置</span>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
+            </el-popover>
+          </el-menu-item>
+        </el-menu>
+      </nav>
 
       <!-- 主内容区域 -->
-      <div class="flex-1 ml-80">
-        <main class="w-full main-content">
-          <router-view />
-        </main>
-      </div>
+      <main class="app-main">
+        <router-view />
+      </main>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useRoute } from 'vue-router';
-import { LayoutDashboard, Users, FileText, PenTool, BarChart3, Download } from './components/icons';
+import { computed, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import {
+  House,
+  User,
+  Document,
+  Edit,
+  DataAnalysis,
+  PieChart,
+  Calendar,
+  UserFilled,
+  TrendCharts,
+  School,
+  MoreFilled,
+  Setting,
+} from '@element-plus/icons-vue';
+import { useAuthStore } from './stores/auth';
+
+// 控制更多菜单弹出框的显示状态
+const showMorePopover = ref(false);
 
 const route = useRoute();
+const router = useRouter();
+const authStore = useAuthStore();
 
-// 菜单项配置
-const menuItems = [
-  {
-    path: '/',
-    label: '仪表盘',
-    icon: LayoutDashboard
-  },
-  {
-    path: '/students',
-    label: '学生管理',
-    icon: Users
-  },
-  {
-    path: '/exams',
-    label: '考试管理',
-    icon: FileText
-  },
-  {
-    path: '/scores',
-    label: '成绩录入',
-    icon: PenTool
-  },
-  {
-    path: '/statistics',
-    label: '统计分析',
-    icon: BarChart3
-  },
-  {
-    path: '/reports',
-    label: '成绩单生成',
-    icon: Download
+const isAuthenticated = computed(() => authStore.isAuthenticated);
+const currentUser = computed(() => authStore.user);
+const isLoginPage = computed(() => route.path === '/login');
+
+// 退出登录处理
+const handleLogout = async () => {
+  try {
+    await ElMessageBox.confirm('确定要退出登录吗？', '确认退出', {
+      confirmButtonText: '确定',
+      confirmButtonClass: '!bg-[#409EFF]',
+      cancelButtonText: '取消',
+      type: 'warning',
+    });
+
+    authStore.logout();
+    router.push('/login');
+  } catch {
+    // 用户取消退出
   }
-];
+};
 
-// 当前激活的菜单项
-const activeMenu = computed(() => {
-  return route.path;
-});
+// 处理个人信息点击
+const handleProfileClick = () => {
+  router.push('/profile');
+};
+
+// 处理系统设置
+const handleSettings = () => {
+  ElMessage.info('系统设置功能开发中...');
+};
 </script>
 
-<style>
-/* 菜单栏样式 */
-.sidebar-menu {
-  padding-left: 1rem !important;
-  padding-right: 1rem !important;
-}
-
-.sidebar-menu a {
-  color: #4b5563 !important;
-  text-decoration: none !important;
-  display: flex !important;
-  align-items: center !important;
-  padding: 0.75rem 1rem !important;
-  border-radius: 0.5rem !important;
-  transition: all 0.15s ease !important;
-  font-weight: 400 !important;
-}
-
-.sidebar-menu a:hover {
-  background-color: #f9fafb !important;
-  color: #111827 !important;
-}
-
-.sidebar-menu a.router-link-active {
-  background-color: #f3f4f6 !important;
-  color: #111827 !important;
-  font-weight: 500 !important;
-}
-
-.sidebar-menu svg {
-  margin-right: 0.75rem !important;
-  width: 1.25rem !important;
-  height: 1.25rem !important;
-  stroke: currentColor !important;
-}
-</style>
-
 <style scoped>
-/* 全局布局控制 */
-* {
-  box-sizing: border-box;
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
 }
 
-/* 基础布局样式 */
-.min-h-screen {
-  min-height: 100vh;
-}
-
-.w-full {
-  width: 100%;
-}
-
-.bg-gray-50 {
-  background-color: #f9fafb;
-}
-
-.bg-white {
-  background-color: #ffffff;
-}
-
-.bg-gray-100 {
-  background-color: #f3f4f6;
-}
-
-.flex {
+.app-layout {
+  height: 100vh;
   display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-.fixed {
-  position: fixed;
-}
-
-.left-0 {
-  left: 0;
-}
-
-.top-0 {
-  top: 0;
-}
-
-.h-full {
-  height: 100%;
-}
-
-.w-80 {
-  width: 20rem;
-}
-
-.border-r {
-  border-right-width: 1px;
-  border-color: #e5e7eb;
-}
-
-.shadow-sm {
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-}
-
-.pb-12 {
-  padding-bottom: 3rem;
-}
-
-.space-y-4>*+* {
-  margin-top: 1rem;
-}
-
-.space-y-2>*+* {
-  margin-top: 0.5rem;
-}
-
-.py-4 {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-}
-
-.px-4 {
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-.py-3 {
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
-}
-
-.items-center {
+.app-header {
+  background: #fff;
+  border-bottom: 1px solid #e4e7ed;
+  padding: 0 20px;
+  height: 60px;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1000;
 }
 
-.gap-3 {
-  gap: 0.75rem;
-}
-
-.mb-4 {
-  margin-bottom: 1rem;
-}
-
-.h-7 {
-  height: 1.75rem;
-}
-
-.w-7 {
-  width: 1.75rem;
-}
-
-.text-blue-600 {
-  color: #2563eb;
-}
-
-.text-xl {
-  font-size: 1.25rem;
-  line-height: 1.75rem;
-}
-
-.font-semibold {
+.header-left .app-title {
+  margin: 0;
+  font-size: 20px;
   font-weight: 600;
+  color: #409eff;
 }
 
-.text-gray-900 {
-  color: #111827;
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
-.border-t {
-  border-top-width: 1px;
+.user-welcome {
+  color: #606266;
+  font-size: 14px;
 }
 
-.border-gray-200 {
-  border-color: #e5e7eb;
+.app-nav {
+  background: #fff;
+  border-bottom: 1px solid #e4e7ed;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 999;
 }
 
-.w-full {
-  width: 100%;
+.nav-menu {
+  border-bottom: none;
 }
 
-.justify-start {
-  justify-content: flex-start;
+.nav-menu .el-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.text-base {
-  font-size: 1rem;
-  line-height: 1.5rem;
+.app-main {
+  flex: 1;
+  background: #f5f7fa;
+  padding: 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-.h-12 {
-  height: 3rem;
-}
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 0 10px;
+  }
 
-.rounded-lg {
-  border-radius: 0.5rem;
-}
+  .header-left .app-title {
+    font-size: 18px;
+  }
 
-.transition-colors {
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
+  .app-main {
+    padding: 10px;
+  }
 
-.font-medium {
-  font-weight: 500;
-}
-
-.text-gray-600 {
-  color: #4b5563;
-}
-
-.hover\:bg-gray-50:hover {
-  background-color: #f9fafb;
-}
-
-.hover\:text-gray-900:hover {
-  color: #111827;
-}
-
-.mr-3 {
-  margin-right: 0.75rem;
-}
-
-.h-5 {
-  height: 1.25rem;
-}
-
-.w-5 {
-  width: 1.25rem;
-}
-
-.flex-1 {
-  flex: 1 1 0%;
-}
-
-.ml-80 {
-  margin-left: 20rem;
-}
-
-/* 主内容区域样式 */
-.main-content {
-  padding: 1.5rem;
-  max-width: 1400px;
-  margin: 0 auto;
+  .nav-menu .el-menu-item span {
+    display: none;
+  }
 }
 </style>
