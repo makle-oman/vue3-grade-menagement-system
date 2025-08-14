@@ -34,7 +34,7 @@
         </div>
         
         <div class="filter-item">
-          <label>进度</label>
+          <label>科目</label>
           <el-select v-model="selectedSubject" placeholder="选择科目" @change="onSubjectChange">
             <el-option
               v-for="subject in subjects"
@@ -56,31 +56,31 @@
     <!-- 主要统计卡片 - 三个大卡片 -->
     <div v-if="statistics" class="main-stats-section">
       <div class="main-stat-card blue-card">
-        <div class="stat-value">{{ statistics.comprehensiveScore || '79.63' }}</div>
+        <div class="stat-value">{{ statistics.comprehensiveScore  }}</div>
         <div class="stat-label">综合分</div>
         <div class="stat-description">及格率=0.5 + 平均分=0.3 + 优生率=0.2</div>
         <div class="stat-details">
-          <span>及格率高: {{ statistics.passRateHigh || '44.1' }}</span>
-          <span>平均分高: {{ statistics.averageHigh || '23.4' }}</span>
-          <span>优生率高: {{ statistics.excellentHigh || '12.2' }}</span>
+          <span>及格率高: {{ statistics.passRateHigh  }}</span>
+          <span>平均分高: {{ statistics.averageHigh  }}</span>
+          <span>优生率高: {{ statistics.excellentHigh  }}</span>
         </div>
       </div>
       
       <div class="main-stat-card green-card">
-        <div class="stat-value">{{ statistics.totalScore || '227.01' }}</div>
+        <div class="stat-value">{{ statistics.totalScore  }}</div>
         <div class="stat-label">总积分</div>
         <div class="stat-description">及格率 + 优生率 + 平均分</div>
         <div class="stat-details">
-          <span>及格率: {{ statistics.passRate || '88.14' }}</span>
-          <span>优生率: {{ statistics.excellentRate || '61.02' }}</span>
-          <span>平均分: {{ statistics.averageScore || '77.85' }}</span>
+          <span>及格率: {{ statistics.passRate  }}</span>
+          <span>优生率: {{ statistics.excellentRate  }}</span>
+          <span>平均分: {{ statistics.averageScore  }}</span>
         </div>
       </div>
       
       <div class="main-stat-card purple-card">
-        <div class="stat-value">{{ statistics.progressTotalScore || '4593' }}</div>
+        <div class="stat-value">{{ statistics.progressTotalScore  }}</div>
         <div class="stat-label">进度成绩总分</div>
-        <div class="stat-description">进度总数: {{ statistics.progressTotal || '15' }}</div>
+        <div class="stat-description">进度总数: {{ statistics.progressTotal  }}</div>
       </div>
     </div>
 
@@ -92,8 +92,8 @@
         </div>
         <div class="stat-info">
           <div class="stat-label">总人数</div>
-          <div class="stat-value">{{ statistics.totalCount || '60' }}</div>
-          <div class="stat-description">参考学生总数: {{ statistics.totalStudents || '1' }}人</div>
+          <div class="stat-value">{{ statistics.totalCount  }}</div>
+          <div class="stat-description">参考学生总数: {{ statistics.totalStudents }}人</div>
         </div>
       </div>
       
@@ -103,8 +103,8 @@
         </div>
         <div class="stat-info">
           <div class="stat-label">优生人数</div>
-          <div class="stat-value">{{ statistics.excellentCount || '36' }}</div>
-          <div class="stat-description">优生率: {{ statistics.excellentRate || '61.02' }}%</div>
+          <div class="stat-value">{{ statistics.excellentCount  }}</div>
+          <div class="stat-description">优生率: {{ statistics.excellentRate  }}%</div>
         </div>
       </div>
       
@@ -114,8 +114,8 @@
         </div>
         <div class="stat-info">
           <div class="stat-label">平均分</div>
-          <div class="stat-value">{{ statistics.averageScore || '77.85' }}</div>
-          <div class="stat-description">及格率: {{ statistics.passRate || '88.14' }}%</div>
+          <div class="stat-value">{{ statistics.averageScore }}</div>
+          <div class="stat-description">及格率: {{ statistics.passRate  }}%</div>
         </div>
       </div>
       
@@ -125,8 +125,8 @@
         </div>
         <div class="stat-info">
           <div class="stat-label">最高分</div>
-          <div class="stat-value">{{ statistics.maxScore || '97' }}</div>
-          <div class="stat-description">最高分: {{ statistics.maxScore || '0' }}</div>
+          <div class="stat-value">{{ statistics.maxScore  }}</div>
+          <div class="stat-description">最高分: {{ statistics.maxScore  }}</div>
         </div>
       </div>
       
@@ -136,8 +136,8 @@
         </div>
         <div class="stat-info">
           <div class="stat-label">差生人数</div>
-          <div class="stat-value">{{ statistics.poorCount || '1' }}</div>
-          <div class="stat-description">差生率: {{ statistics.poorRate || '1.69' }}%</div>
+          <div class="stat-value">{{ statistics.poorCount  }}</div>
+          <div class="stat-description">差生率: {{ statistics.poorRate  }}%</div>
         </div>
       </div>
     </div>
@@ -161,33 +161,31 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(student, index) in displayStudents" :key="index">
+            <tr v-for="(student, index) in displayStudents" :key="index" :class="getRowClass(student)">
               <td>
                 <div class="rank-cell">
-                  <el-icon v-if="index === 0" class="rank-icon gold">
-                    <Trophy />
+                  <el-icon v-if="!student.isAbsent && index < 10" class="rank-icon" :class="getMedalClass(index)">
+                    <Trophy v-if="index === 0" />
+                    <Medal v-else />
                   </el-icon>
-                  <el-icon v-else-if="index === 1" class="rank-icon silver">
-                    <Medal />
-                  </el-icon>
-                  <el-icon v-else-if="index === 2" class="rank-icon bronze">
-                    <Medal />
-                  </el-icon>
-                  <span class="rank-number">{{ index + 1 }}</span>
+                  <span class="rank-number">{{ student.isAbsent ? '-' : index + 1 }}</span>
                 </div>
               </td>
               <td>{{ student.studentNumber }}</td>
               <td>{{ student.studentName }}</td>
               <td class="score-cell">
-                <span :class="getScoreClass(student.score)">{{ student.score }}</span>
+                <span v-if="student.isAbsent" class="absent-score">缺考</span>
+                <span v-else :class="getScoreClass(student.score)">{{ student.score }}</span>
               </td>
               <td>
-                <span :class="getGradeBadgeClass(student.score)" class="grade-badge">
+                <span v-if="student.isAbsent" class="grade-badge grade-absent">缺考</span>
+                <span v-else :class="getGradeBadgeClass(student.score)" class="grade-badge">
                   {{ getGradeText(student.score) }}
                 </span>
               </td>
               <td>
-                <span :class="getRatingBadgeClass(student.score)" class="rating-badge">
+                <span v-if="student.isAbsent" class="rating-badge rating-absent">-</span>
+                <span v-else :class="getRatingBadgeClass(student.score)" class="rating-badge">
                   {{ getRatingText(student.score) }}
                 </span>
               </td>
@@ -223,7 +221,7 @@ const statistics = ref<any>(null)
 const exams = ref<Exam[]>([])
 const classes = ref<Class[]>([])
 const semesters = ref<Semester[]>([])
-const subjects = ref<string[]>(['语文', '数学', '英语', '物理', '化学', '生物', '政治', '历史', '地理'])
+const subjects = ref<string[]>([])
 
 const displayStudents = computed(() => {
   if (statistics.value?.studentRankings?.length) {
@@ -244,6 +242,15 @@ const loadBaseData = async () => {
     exams.value = examsResponse
     classes.value = classesResponse
     semesters.value = semestersResponse
+    
+    // 从考试数据中提取科目列表
+    const subjectSet = new Set<string>()
+    examsResponse.forEach(exam => {
+      if (exam.subject) {
+        subjectSet.add(exam.subject)
+      }
+    })
+    subjects.value = Array.from(subjectSet).sort()
     
     // 默认选择当前学期
     const currentSemester = semesters.value.find(s => s.isCurrent)
@@ -329,15 +336,22 @@ const generateStatistics = async () => {
       averageHigh: Math.round(statsResponse.averageScore * 0.3 * 100) / 100,
       excellentHigh: Math.round(statsResponse.excellentRate * 0.2 * 100) / 100,
       
-      // 学生排名数据
+      // 学生排名数据 - 包含缺考学生
       studentRankings: scoresResponse
-        .filter(score => !score.isAbsent && score.score !== null)
         .map(score => ({
           studentNumber: score.student?.studentNumber || score.studentId,
           studentName: score.student?.name || '未知学生',
-          score: score.score
+          score: score.isAbsent ? null : score.score,
+          isAbsent: score.isAbsent
         }))
-        .sort((a, b) => b.score - a.score)
+        .sort((a, b) => {
+          // 缺考的排在最后
+          if (a.isAbsent && !b.isAbsent) return 1
+          if (!a.isAbsent && b.isAbsent) return -1
+          if (a.isAbsent && b.isAbsent) return 0
+          // 正常成绩按分数降序排列
+          return b.score - a.score
+        })
     }
     
     statistics.value = processedStats
@@ -390,6 +404,21 @@ const getRatingText = (score: number): string => {
   if (score >= 70) return 'B+'
   if (score >= 60) return 'B'
   return 'C'
+}
+
+// 获取行样式类
+const getRowClass = (student: any): string => {
+  if (student.isAbsent) return 'absent-row'
+  if (student.score < 60) return 'fail-row'
+  return ''
+}
+
+// 获取奖牌样式类
+const getMedalClass = (index: number): string => {
+  if (index === 0) return 'gold'
+  if (index === 1) return 'silver'
+  if (index === 2) return 'bronze'
+  return 'medal'
 }
 
 // 组件挂载时加载数据
@@ -697,6 +726,40 @@ onMounted(() => {
 .grade-poor, .rating-c {
   background: #ffebee;
   color: #d32f2f;
+}
+
+.grade-absent, .rating-absent {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
+.absent-score {
+  color: #d32f2f;
+  font-weight: 500;
+}
+
+.absent-row, .fail-row {
+  color: #d32f2f;
+}
+
+.absent-row td, .fail-row td {
+  color: #d32f2f;
+}
+
+.rank-icon.medal {
+  color: #ff9800;
+}
+
+.rank-icon.gold {
+  color: #ffd700;
+}
+
+.rank-icon.silver {
+  color: #c0c0c0;
+}
+
+.rank-icon.bronze {
+  color: #cd7f32;
 }
 
 .empty-state {
