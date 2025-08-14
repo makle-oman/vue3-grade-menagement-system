@@ -168,10 +168,10 @@
               </td>
               <td class="text-gray-500">{{ formatDateTime(exam.examDate) }}</td>
               <td class="text-gray-500">
-                <span v-if="(exam as any).averageScore !== undefined && (exam as any).averageScore !== null" 
+                <span v-if="exam.averageScore !== undefined && exam.averageScore !== null" 
                       class="font-semibold" 
-                      :class="getScoreColorClass((exam as any).averageScore)">
-                  {{ ((exam as any).averageScore).toFixed(2) }}
+                      :class="getScoreColorClass(exam.averageScore)">
+                  {{ exam.averageScore.toFixed(2) }}
                 </span>
                 <span v-else class="text-gray-400">未统计</span>
               </td>
@@ -428,7 +428,13 @@ const loadStatistics = async () => {
   try {
     loading.value = true;
     statistics.value = await statisticsApi.getSemesterStatistics(filters.semesterId, filters.className);
-    await updateSemesterExams();
+    
+    // 使用统计数据中的考试信息更新考试列表
+    if (statistics.value && statistics.value.exams) {
+      semesterExams.value = statistics.value.exams;
+    } else {
+      await updateSemesterExams();
+    }
   } catch (error) {
     console.error('Failed to load statistics:', error);
     ElMessage.error('获取统计数据失败');
@@ -439,13 +445,23 @@ const loadStatistics = async () => {
 
 const updateSemesterExams = async () => {
   try {
-    const allExams = await examApi.getAll();
-    if (filters.semesterId && filters.className) {
-      semesterExams.value = allExams.filter(exam => 
-        exam.semesterId === filters.semesterId && exam.className === filters.className
-      );
-    } else if (filters.semesterId) {
-      semesterExams.value = allExams.filter(exam => exam.semesterId === filters.semesterId);
+    // 如果有统计数据，直接使用统计数据中的考试信息（包含平均分）
+    if (statistics.value && statistics.value.exams) {
+      if (filters.className) {
+        semesterExams.value = statistics.value.exams.filter(exam => exam.className === filters.className);
+      } else {
+        semesterExams.value = statistics.value.exams;
+      }
+    } else {
+      // 否则从API获取考试列表
+      const allExams = await examApi.getAll();
+      if (filters.semesterId && filters.className) {
+        semesterExams.value = allExams.filter(exam => 
+          exam.semesterId === filters.semesterId && exam.className === filters.className
+        );
+      } else if (filters.semesterId) {
+        semesterExams.value = allExams.filter(exam => exam.semesterId === filters.semesterId);
+      }
     }
   } catch (error) {
     console.error('Failed to update semester exams:', error);
