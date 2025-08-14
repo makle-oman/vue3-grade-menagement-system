@@ -98,7 +98,7 @@
 
     <!-- 详细统计卡片 - 五个小卡片 -->
     <div v-if="statistics" class="detail-stats-section">
-      <div class="detail-stat-card">
+      <div class="detail-stat-card" v-if="false">
         <div class="stat-icon blue-icon">
           <el-icon><User /></el-icon>
         </div>
@@ -204,6 +204,274 @@
             </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- 考试统计分析 -->
+    <div v-if="statistics" class="exam-stats-section mt-[20px]">
+      <h3 class="section-title">
+        <el-icon><User /></el-icon>
+        考试统计分析
+      </h3>
+      <div class="exam-stats-grid">
+        <div class="exam-stat-item">
+          <div class="stat-circle total">
+            <div class="stat-number">{{ statistics.totalStudents }}</div>
+            <div class="stat-label">考试总人数</div>
+          </div>
+          <div class="stat-details">
+            <div class="detail-item">
+              <span class="detail-label">应考人数</span>
+              <span class="detail-value">{{ statistics.totalStudents }}人</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="exam-stat-item">
+          <div class="stat-circle absent">
+            <div class="stat-number">{{ statistics.totalStudents - statistics.progressTotal }}</div>
+            <div class="stat-label">缺考人数</div>
+          </div>
+          <div class="stat-details">
+            <div class="detail-item">
+              <span class="detail-label">缺考率</span>
+              <span class="detail-value">{{ getAbsentRate() }}%</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">实考人数</span>
+              <span class="detail-value">{{ statistics.progressTotal }}人</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="exam-stat-item">
+          <div class="stat-circle excellent">
+            <div class="stat-number">{{ statistics.excellentCount }}</div>
+            <div class="stat-label">优秀人数</div>
+          </div>
+          <div class="stat-details">
+            <div class="detail-item">
+              <span class="detail-label">优秀率</span>
+              <span class="detail-value">{{ statistics.excellentRate }}%</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">优秀占比</span>
+              <span class="detail-value">{{ getExcellentRatio() }}%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="exam-stat-item">
+          <div class="stat-circle poor">
+            <div class="stat-number">{{ statistics.poorCount }}</div>
+            <div class="stat-label">差生人数</div>
+          </div>
+          <div class="stat-details">
+            <div class="detail-item">
+              <span class="detail-label">差生率</span>
+              <span class="detail-value">{{ statistics.poorRate }}%</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">差生占比</span>
+              <span class="detail-value">{{ getPoorRatio() }}%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="exam-stat-item">
+          <div class="stat-circle pass">
+            <div class="stat-number">{{ getPassCount() }}</div>
+            <div class="stat-label">及格人数</div>
+          </div>
+          <div class="stat-details">
+            <div class="detail-item">
+              <span class="detail-label">及格率</span>
+              <span class="detail-value">{{ statistics.passRate }}%</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">及格占比</span>
+              <span class="detail-value">{{ getPassRatio() }}%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="exam-stat-item">
+          <div class="stat-circle average">
+            <div class="stat-number">{{ statistics.averageScore }}</div>
+            <div class="stat-label">平均分</div>
+          </div>
+          <div class="stat-details">
+            <div class="detail-item">
+              <span class="detail-label">最高分</span>
+              <span class="detail-value">{{ statistics.maxScore }}分</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">最低分</span>
+              <span class="detail-value">{{ getMinScore() }}分</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 考试分析 -->
+    <div v-if="statistics" class="analysis-section">
+      <h3 class="section-title">
+        <el-icon><TrendCharts /></el-icon>
+        考试分析
+      </h3>
+      <div class="analysis-grid">
+        <div class="analysis-card">
+          <div class="analysis-header">
+            <h4>成绩分布分析</h4>
+          </div>
+          <div class="analysis-content">
+            <div class="score-distribution">
+              <div class="distribution-item excellent">
+                <div class="distribution-bar" :style="{ width: statistics.excellentRate + '%' }"></div>
+                <span class="distribution-label">优秀 (90+分): {{ statistics.excellentCount }}人 ({{ statistics.excellentRate }}%)</span>
+              </div>
+              <div class="distribution-item good">
+                <div class="distribution-bar" :style="{ width: getGoodRate() + '%' }"></div>
+                <span class="distribution-label">良好 (80-89分): {{ getGoodCount() }}人 ({{ getGoodRate() }}%)</span>
+              </div>
+              <div class="distribution-item average">
+                <div class="distribution-bar" :style="{ width: getAverageRate() + '%' }"></div>
+                <span class="distribution-label">合格 (60-79分): {{ getAverageCount() }}人 ({{ getAverageRate() }}%)</span>
+              </div>
+              <div class="distribution-item poor">
+                <div class="distribution-bar" :style="{ width: statistics.poorRate + '%' }"></div>
+                <span class="distribution-label">不合格 (<60分): {{ statistics.poorCount }}人 ({{ statistics.poorRate }}%)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="analysis-card">
+          <div class="analysis-header">
+            <h4>考试难度评估</h4>
+          </div>
+          <div class="analysis-content">
+            <div class="difficulty-assessment">
+              <div class="assessment-item">
+                <span class="assessment-label">难度等级:</span>
+                <span class="assessment-value" :class="getDifficultyClass()">{{ getDifficultyLevel() }}</span>
+              </div>
+              <div class="assessment-item">
+                <span class="assessment-label">区分度:</span>
+                <span class="assessment-value">{{ getDiscrimination() }}</span>
+              </div>
+              <div class="assessment-item">
+                <span class="assessment-label">标准差:</span>
+                <span class="assessment-value">{{ getStandardDeviation() }}</span>
+              </div>
+            </div>
+            <div class="difficulty-description">
+              <p>{{ getDifficultyDescription() }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="analysis-card">
+          <div class="analysis-header">
+            <h4>班级表现分析</h4>
+          </div>
+          <div class="analysis-content">
+            <div class="performance-metrics">
+              <div class="metric-item">
+                <div class="metric-icon excellent-icon">
+                  <el-icon><Star /></el-icon>
+                </div>
+                <div class="metric-info">
+                  <div class="metric-label">整体表现</div>
+                  <div class="metric-value">{{ getOverallPerformance() }}</div>
+                </div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-icon warning-icon">
+                  <el-icon><Warning /></el-icon>
+                </div>
+                <div class="metric-info">
+                  <div class="metric-label">需关注学生</div>
+                  <div class="metric-value">{{ statistics.poorCount + (statistics.totalStudents - statistics.progressTotal) }}人</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 教学建议 -->
+    <div v-if="statistics" class="suggestions-section">
+      <h3 class="section-title">
+        <el-icon><DocumentRemove /></el-icon>
+        教学建议
+      </h3>
+      <div class="suggestions-grid">
+        <div class="suggestion-card priority-high" v-if="statistics.poorRate > 20">
+          <div class="suggestion-header">
+            <el-icon class="suggestion-icon"><Warning /></el-icon>
+            <h4>重点关注</h4>
+          </div>
+          <div class="suggestion-content">
+            <p><strong>不及格率偏高 ({{ statistics.poorRate }}%)</strong></p>
+            <ul>
+              <li>建议对不及格学生进行个别辅导</li>
+              <li>分析知识点掌握情况，针对性补习</li>
+              <li>适当降低教学难度，巩固基础知识</li>
+              <li>增加课堂练习和课后作业的针对性</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="suggestion-card priority-medium" v-if="statistics.excellentRate < 30">
+          <div class="suggestion-header">
+            <el-icon class="suggestion-icon"><TrendCharts /></el-icon>
+            <h4>提升优秀率</h4>
+          </div>
+          <div class="suggestion-content">
+            <p><strong>优秀率有待提高 ({{ statistics.excellentRate }}%)</strong></p>
+            <ul>
+              <li>为优秀学生提供拓展性学习材料</li>
+              <li>设置挑战性题目，激发学习潜能</li>
+              <li>建立学习小组，发挥优秀学生带头作用</li>
+              <li>适当增加综合性、应用性题目的训练</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="suggestion-card priority-low" v-if="statistics.averageScore >= 50">
+          <div class="suggestion-header">
+            <el-icon class="suggestion-icon"><Trophy /></el-icon>
+            <h4>保持优势</h4>
+          </div>
+          <div class="suggestion-content">
+            <p><strong>班级整体表现良好</strong></p>
+            <ul>
+              <li>继续保持现有教学方法和节奏</li>
+              <li>适当增加知识的深度和广度</li>
+              <li>培养学生的创新思维和实践能力</li>
+              <li>为学生提供更多展示和交流的机会</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="suggestion-card priority-medium" v-if="(statistics.totalStudents - statistics.progressTotal) > 0">
+          <div class="suggestion-header">
+            <el-icon class="suggestion-icon"><Warning /></el-icon>
+            <h4>缺考处理</h4>
+          </div>
+          <div class="suggestion-content">
+            <p><strong>有 {{ statistics.totalStudents - statistics.progressTotal }} 名学生缺考</strong></p>
+            <ul>
+              <li>及时联系缺考学生了解缺考原因</li>
+              <li>安排合适时间进行补考</li>
+              <li>关注学生身心健康状况</li>
+              <li>建立缺考预警机制，提前干预</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -528,6 +796,145 @@ const getMedalClass = (index: number): string => {
   return 'medal'
 }
 
+// 计算良好学生数量和比例
+const getGoodCount = (): number => {
+  if (!statistics.value?.studentRankings) return 0
+  return statistics.value.studentRankings.filter((student: any) => 
+    !student.isAbsent && student.score >= 80 && student.score < 90
+  ).length
+}
+
+const getGoodRate = (): number => {
+  if (!statistics.value?.progressTotal) return 0
+  return Math.round((getGoodCount() / statistics.value.progressTotal) * 100)
+}
+
+// 计算合格学生数量和比例
+const getAverageCount = (): number => {
+  if (!statistics.value?.studentRankings) return 0
+  return statistics.value.studentRankings.filter((student: any) => 
+    !student.isAbsent && student.score >= 60 && student.score < 80
+  ).length
+}
+
+const getAverageRate = (): number => {
+  if (!statistics.value?.progressTotal) return 0
+  return Math.round((getAverageCount() / statistics.value.progressTotal) * 100)
+}
+
+// 获取考试难度等级
+const getDifficultyLevel = (): string => {
+  if (!statistics.value?.averageScore) return '未知'
+  const avg = statistics.value.averageScore
+  if (avg >= 85) return '较易'
+  if (avg >= 75) return '适中'
+  if (avg >= 65) return '较难'
+  return '困难'
+}
+
+const getDifficultyClass = (): string => {
+  const level = getDifficultyLevel()
+  switch (level) {
+    case '较易': return 'difficulty-easy'
+    case '适中': return 'difficulty-medium'
+    case '较难': return 'difficulty-hard'
+    case '困难': return 'difficulty-very-hard'
+    default: return 'difficulty-unknown'
+  }
+}
+
+// 获取区分度
+const getDiscrimination = (): string => {
+  if (!statistics.value?.excellentRate || !statistics.value?.poorRate) return '良好'
+  const diff = statistics.value.excellentRate - statistics.value.poorRate
+  if (diff >= 40) return '优秀'
+  if (diff >= 30) return '良好'
+  if (diff >= 20) return '一般'
+  return '较差'
+}
+
+// 获取标准差（模拟计算）
+const getStandardDeviation = (): string => {
+  if (!statistics.value?.studentRankings) return '0.0'
+  const scores = statistics.value.studentRankings
+    .filter((student: any) => !student.isAbsent)
+    .map((student: any) => student.score)
+  
+  if (scores.length === 0) return '0.0'
+  
+  const mean = scores.reduce((sum: number, score: number) => sum + score, 0) / scores.length
+  const variance = scores.reduce((sum: number, score: number) => sum + Math.pow(score - mean, 2), 0) / scores.length
+  const stdDev = Math.sqrt(variance)
+  
+  return stdDev.toFixed(1)
+}
+
+// 获取难度描述
+const getDifficultyDescription = (): string => {
+  const level = getDifficultyLevel()
+  switch (level) {
+    case '较易':
+      return '考试难度偏低，大部分学生能够较好掌握知识点，建议适当增加题目难度。'
+    case '适中':
+      return '考试难度适中，能够较好地检验学生的学习效果，建议保持当前难度水平。'
+    case '较难':
+      return '考试难度偏高，部分学生可能存在知识点掌握不够扎实的问题，建议加强基础教学。'
+    case '困难':
+      return '考试难度过高，大部分学生未能达到预期水平，建议降低难度并加强基础知识教学。'
+    default:
+      return '暂无足够数据进行难度评估。'
+  }
+}
+
+// 获取整体表现评价
+const getOverallPerformance = (): string => {
+  if (!statistics.value?.averageScore) return '待评估'
+  const avg = statistics.value.averageScore
+  const passRate = statistics.value.passRate || 0
+  
+  if (avg >= 85 && passRate >= 95) return '优秀'
+  if (avg >= 75 && passRate >= 85) return '良好'
+  if (avg >= 65 && passRate >= 70) return '一般'
+  return '需改进'
+}
+
+// 考试统计分析相关函数
+const getAbsentRate = (): number => {
+  if (!statistics.value?.totalStudents) return 0
+  const absentCount = statistics.value.totalStudents - statistics.value.progressTotal
+  return Math.round((absentCount / statistics.value.totalStudents) * 100)
+}
+
+const getExcellentRatio = (): number => {
+  if (!statistics.value?.totalStudents) return 0
+  return Math.round((statistics.value.excellentCount / statistics.value.totalStudents) * 100)
+}
+
+const getPoorRatio = (): number => {
+  if (!statistics.value?.totalStudents) return 0
+  return Math.round((statistics.value.poorCount / statistics.value.totalStudents) * 100)
+}
+
+const getPassCount = (): number => {
+  if (!statistics.value?.studentRankings) return 0
+  return statistics.value.studentRankings.filter((student: any) => 
+    !student.isAbsent && student.score >= 60
+  ).length
+}
+
+const getPassRatio = (): number => {
+  if (!statistics.value?.totalStudents) return 0
+  return Math.round((getPassCount() / statistics.value.totalStudents) * 100)
+}
+
+const getMinScore = (): number => {
+  if (!statistics.value?.studentRankings) return 0
+  const scores = statistics.value.studentRankings
+    .filter((student: any) => !student.isAbsent)
+    .map((student: any) => student.score)
+  return scores.length > 0 ? Math.min(...scores) : 0
+}
+
 // 组件挂载时加载数据
 onMounted(() => {
   loadBaseData()
@@ -649,7 +1056,7 @@ onMounted(() => {
 
 .detail-stats-section {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 16px;
   margin-bottom: 24px;
 }
@@ -890,24 +1297,406 @@ onMounted(() => {
   color: #999;
 }
 
-@media (max-width: 1200px) {
-  .main-stats-section {
+/* 考试统计分析样式 */
+.exam-stats-section {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 24px;
+}
+
+.exam-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.exam-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  background: #fafafa;
+  transition: all 0.3s ease;
+}
+
+.exam-stat-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.stat-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.stat-circle.total {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.stat-circle.absent {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.stat-circle.excellent {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.stat-circle.poor {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.stat-circle.pass {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+}
+
+.stat-circle.average {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+}
+
+.stat-number {
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 12px;
+  margin-top: 4px;
+  opacity: 0.9;
+}
+
+.stat-details {
+  flex: 1;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.detail-item:last-child {
+  margin-bottom: 0;
+}
+
+.detail-label {
+  font-size: 14px;
+  color: #666;
+}
+
+.detail-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+/* 考试分析样式 */
+.analysis-section, .suggestions-section {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 24px;
+}
+
+.analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.analysis-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.analysis-header {
+  background: #f8f9fa;
+  padding: 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.analysis-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+.analysis-content {
+  padding: 20px;
+}
+
+/* 成绩分布样式 */
+.score-distribution {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.distribution-item {
+  position: relative;
+  padding: 8px 0;
+}
+
+.distribution-bar {
+  height: 20px;
+  border-radius: 10px;
+  margin-bottom: 4px;
+  transition: width 0.3s ease;
+}
+
+.distribution-item.excellent .distribution-bar {
+  background: linear-gradient(90deg, #4caf50, #66bb6a);
+}
+
+.distribution-item.good .distribution-bar {
+  background: linear-gradient(90deg, #2196f3, #42a5f5);
+}
+
+.distribution-item.average .distribution-bar {
+  background: linear-gradient(90deg, #ff9800, #ffb74d);
+}
+
+.distribution-item.poor .distribution-bar {
+  background: linear-gradient(90deg, #f44336, #ef5350);
+}
+
+.distribution-label {
+  font-size: 14px;
+  color: #666;
+}
+
+/* 难度评估样式 */
+.difficulty-assessment {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.assessment-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.assessment-label {
+  font-weight: 500;
+  color: #333;
+}
+
+.assessment-value {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.difficulty-easy {
+  background: #e8f5e8;
+  color: #388e3c;
+}
+
+.difficulty-medium {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.difficulty-hard {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+.difficulty-very-hard {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
+.difficulty-description {
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border-left: 4px solid #2196f3;
+}
+
+.difficulty-description p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* 班级表现样式 */
+.performance-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.metric-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.metric-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.excellent-icon {
+  background: #e8f5e8;
+  color: #388e3c;
+}
+
+.warning-icon {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
+.metric-info {
+  flex: 1;
+}
+
+.metric-label {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.metric-value {
+  font-size: 18px;
+  font-weight: 500;
+  color: #333;
+}
+
+/* 教学建议样式 */
+.suggestions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.suggestion-card {
+  border-radius: 8px;
+  padding: 20px;
+  border-left: 4px solid;
+}
+
+.priority-high {
+  background: #fff5f5;
+  border-left-color: #f56565;
+}
+
+.priority-medium {
+  background: #fffaf0;
+  border-left-color: #ed8936;
+}
+
+.priority-normal {
+  background: #f0f9ff;
+  border-left-color: #4299e1;
+}
+
+.priority-low {
+  background: #f0fff4;
+  border-left-color: #48bb78;
+}
+
+.suggestion-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.suggestion-icon {
+  font-size: 18px;
+}
+
+.priority-high .suggestion-icon {
+  color: #f56565;
+}
+
+.priority-medium .suggestion-icon {
+  color: #ed8936;
+}
+
+.priority-normal .suggestion-icon {
+  color: #4299e1;
+}
+
+.priority-low .suggestion-icon {
+  color: #48bb78;
+}
+
+.suggestion-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+.suggestion-content p {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.suggestion-content ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.suggestion-content li {
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+  .analysis-grid {
     grid-template-columns: 1fr;
   }
   
-  .detail-stats-section {
-    grid-template-columns: repeat(2, 1fr);
+  .suggestions-grid {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 768px) {
-  .filter-row {
-    flex-direction: column;
-    gap: 16px;
+  .analysis-section, .suggestions-section {
+    padding: 16px;
   }
   
-  .detail-stats-section {
-    grid-template-columns: 1fr;
+  .analysis-content {
+    padding: 16px;
+  }
+  
+  .suggestion-card {
+    padding: 16px;
   }
 }
 </style>

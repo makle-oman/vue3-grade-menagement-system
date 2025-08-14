@@ -41,7 +41,7 @@
 
             <!-- 搜索框 -->
             <div class="flex-1">
-              <el-input v-model="searchQuery" placeholder="搜索考试名称、科目..." clearable @input="handleSearch">
+              <el-input v-model="searchQuery" placeholder="搜索考试名称、科目..." clearable @input="handleSearch" size="large">
                 <template #prefix>
                   <el-icon>
                     <Search />
