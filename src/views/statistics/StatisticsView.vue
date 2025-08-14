@@ -91,7 +91,7 @@
       
       <div class="main-stat-card purple-card">
         <div class="stat-value">{{ statistics.progressTotalScore  }}</div>
-        <div class="stat-label">进度成绩总分</div>
+        <div class="stat-label">班级成绩总分</div>
         <div class="stat-description">进度总数: {{ statistics.progressTotal  }}</div>
       </div>
     </div>
@@ -105,7 +105,7 @@
         <div class="stat-info">
           <div class="stat-label">总人数</div>
           <div class="stat-value">{{ statistics.totalCount  }}</div>
-          <div class="stat-description">参考学生总数: {{ statistics.totalStudents }}人</div>
+          <div class="stat-description">参考 {{ statistics.progressTotal }}人/缺考:{{ statistics.totalStudents - statistics.progressTotal }}人</div>
         </div>
       </div>
       
@@ -311,6 +311,21 @@ const loadBaseData = async () => {
     // 默认选择第一个班级
     if (classes.value.length > 0) {
       selectedClassId.value = classes.value[0].id
+      
+      // 等待下一个tick，确保计算属性已更新
+      await nextTick()
+      
+      // 自动选择第一个考试和科目
+      if (filteredExams.value.length > 0) {
+        selectedExamId.value = filteredExams.value[0].id
+        
+        if (filteredSubjects.value.length > 0) {
+          selectedSubject.value = filteredSubjects.value[0]
+          
+          // 自动生成统计数据
+          await generateStatistics()
+        }
+      }
     }
   } catch (error) {
     console.error('加载基础数据失败:', error)
@@ -417,9 +432,11 @@ const generateStatistics = async () => {
       comprehensiveScore: Math.round((statsResponse.passRate * 0.5 + statsResponse.averageScore * 0.3 + statsResponse.excellentRate * 0.2) * 100) / 100,
       totalScore: Math.round((statsResponse.passRate + statsResponse.excellentRate + statsResponse.averageScore) * 100) / 100,
       
-      // 模拟进度相关数据（可以根据实际需求调整）
-      progressTotalScore: Math.round(statsResponse.averageScore * statsResponse.totalStudents),
-      progressTotal: Math.ceil(statsResponse.totalStudents / 4), // 假设每4个学生一个进度单位
+      // 计算班级成绩总分：所有参考学生的成绩总和
+      progressTotalScore: scoresResponse
+        .filter(score => !score.isAbsent)
+        .reduce((sum, score) => sum + score.score, 0),
+      progressTotal: scoresResponse.filter(score => !score.isAbsent).length, // 参考人数
       
       // 模拟高分段数据
       passRateHigh: Math.round(statsResponse.passRate * 0.5 * 100) / 100,
