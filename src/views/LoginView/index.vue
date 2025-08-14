@@ -66,7 +66,7 @@
 
             <el-form-item prop="classInfo">
               <el-select v-model="registerForm.classInfo" placeholder="请选择班级" size="large" style="width: 100%">
-                <el-option v-for="classOption in classOptions" :key="classOption.value" :label="classOption.label"
+                <el-option v-for="classOption in classOptions" :key="classOption.value" :label="formatClassName(classOption.label)"
                   :value="classOption.value" />
               </el-select>
             </el-form-item>
@@ -120,6 +120,7 @@ import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { User, Lock, UserFilled } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
 import type { LoginCredentials, RegisterData } from '@/stores/auth'
+import { formatClassName } from '@/utils/classUtils'
 
 const router = useRouter()
 const authStore = useAuthStore()

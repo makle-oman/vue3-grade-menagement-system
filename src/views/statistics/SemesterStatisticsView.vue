@@ -26,7 +26,7 @@
             <el-option
               v-for="className in classNames"
               :key="className"
-              :label="className"
+              :label="formatClassName(className)"
               :value="className"
             />
           </el-select>
@@ -164,7 +164,7 @@
               <td class="font-medium text-gray-900">{{ exam.name }}</td>
               <td class="text-gray-500">{{ exam.subject }}</td>
               <td class="text-gray-500">
-                <el-tag size="small" type="info">{{ exam.className }}</el-tag>
+                <el-tag size="small" type="info">{{ formatClassName(exam.className) }}</el-tag>
               </td>
               <td class="text-gray-500">{{ formatDateTime(exam.examDate) }}</td>
               <td class="text-gray-500">
@@ -259,6 +259,7 @@ import { useRouter } from 'vue-router';
 import { ArrowUp, ArrowDown, Minus, CaretTop, CaretBottom } from '@element-plus/icons-vue';
 import { semesterApi, examApi, statisticsApi } from '../../services/api';
 import type { Semester, Exam, SemesterStatistics } from '../../types';
+import { formatClassName } from '@/utils/classUtils';
 
 const router = useRouter();
 const loading = ref(false);

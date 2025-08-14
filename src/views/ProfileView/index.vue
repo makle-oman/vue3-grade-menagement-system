@@ -45,7 +45,7 @@
 
         <el-form-item v-if="userInfo.role === 'teacher'" label="班级" prop="classNames">
           <el-select v-model="formData.classNames" multiple filterable placeholder="选择班级" style="width: 100%">
-            <el-option v-for="className in primaryClassNames" :key="className" :label="className" :value="className" />
+            <el-option v-for="className in primaryClassNames" :key="className" :label="formatClassName(className)" :value="className" />
           </el-select>
         </el-form-item>
 
@@ -93,6 +93,7 @@ import type { FormInstance, FormRules } from 'element-plus';
 import { User } from '@element-plus/icons-vue';
 import { useAuthStore } from '@/stores/auth';
 import { userApi } from '@/services/api';
+import { formatClassName } from '@/utils/classUtils';
 
 const authStore = useAuthStore();
 const formRef = ref<FormInstance>();

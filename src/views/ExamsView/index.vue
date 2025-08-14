@@ -34,7 +34,7 @@
               <el-select v-model="selectedClass" placeholder="选择班级" size="large" clearable @change="handleClassChange"
                 class="w-full">
                 <el-option label="全部班级" value="" />
-                <el-option v-for="className in availableClasses" :key="className" :label="className"
+                <el-option v-for="className in availableClasses" :key="className" :label="formatClassName(className)"
                   :value="className" />
               </el-select>
             </div>
@@ -59,7 +59,7 @@
             <el-table-column prop="subject" label="科目" min-width="100" />
             <el-table-column prop="className" label="班级" min-width="120">
               <template #default="scope">
-                <el-tag size="small" type="info">{{ scope.row.className }}</el-tag>
+                <el-tag size="small" type="info">{{ formatClassName(scope.row.className) }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column prop="examDate" label="考试日期" min-width="180">
@@ -140,7 +140,7 @@
         </el-form-item>
         <el-form-item label="班级" prop="className">
           <el-select v-model="examForm.className" placeholder="请选择班级" class="w-full">
-            <el-option v-for="className in allClasses" :key="className" :label="className" :value="className" />
+            <el-option v-for="className in allClasses" :key="className" :label="formatClassName(className)" :value="className" />
           </el-select>
         </el-form-item>
         <el-form-item label="考试日期" prop="examDate">
@@ -195,6 +195,7 @@ import { useStudentStore } from '@/stores/student';
 import { useAuthStore } from '@/stores/auth';
 import { Exam, Student, Semester } from '@/types';
 import { semesterApi } from '@/services/api';
+import { formatClassName } from '@/utils/classUtils';
 
 // 状态管理
 const examStore = useExamStore();

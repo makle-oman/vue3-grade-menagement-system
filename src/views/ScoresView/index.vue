@@ -19,7 +19,7 @@
         </el-select>
         <div v-if="currentExam" class="flex gap-2">
           <el-tag>{{ currentExam.subject }}</el-tag>
-          <el-tag type="info">{{ currentExam.className }}</el-tag>
+          <el-tag type="info">{{ formatClassName(currentExam.className) }}</el-tag>
           <el-tag type="success">总分: {{ currentExam.totalScore }}</el-tag>
         </div>
       </div>
@@ -35,7 +35,7 @@
             </el-icon>
             <h3>成绩录入 - {{ currentExam.name }}</h3>
           </div>
-          <p class="text-gray-500">为 {{ currentExam.className }} 的学生录入 {{ currentExam.subject }} 成绩</p>
+          <p class="text-gray-500">为 {{ formatClassName(currentExam.className) }} 的学生录入 {{ currentExam.subject }} 成绩</p>
         </div>
       </template>
 
@@ -136,6 +136,7 @@ import type { Student, Exam } from '@/types';
 import * as XLSX from 'xlsx';
 import { Edit, Upload, Download, Document, Check, RefreshRight, Search } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { formatClassName, sortClasses } from '@/utils/classUtils'
 
 // 引入 store
 const studentStore = useStudentStore();
@@ -164,7 +165,7 @@ const sortedExams = computed(() => {
 
 // 获取考试标签
 const getExamLabel = (exam: Exam) => {
-  return `${exam.name} - ${exam.subject} - ${exam.className}`;
+  return `${exam.name} - ${exam.subject} - ${formatClassName(exam.className)}`;
 };
 
 // 当前选中的考试

@@ -147,7 +147,7 @@
           <div class="space-y-1 text-sm text-gray-500">
             <p>考试名称: {{ currentExam.name }}</p>
             <p>科目: {{ currentExam.subject }}</p>
-            <p>班级: {{ currentExam.className }}</p>
+            <p>班级: {{ formatClassName(currentExam.className) }}</p>
             <p>考试日期: {{ formatDate(currentExam.examDate) }}</p>
             <p>总分: {{ currentExam.totalScore }}分</p>
           </div>
@@ -194,6 +194,7 @@ import { useStudentStore } from '@/stores/student';
 import { useScoreStore } from '@/stores/score';
 import { Exam, Student, Score } from '@/types';
 import * as XLSX from 'xlsx';
+import { formatClassName } from '@/utils/classUtils';
 
 // 状态管理
 const examStore = useExamStore();
@@ -424,7 +425,7 @@ const generateIndividualReports = () => {
     return {
       学号: student.studentNumber,
       姓名: student.name,
-      班级: student.className,
+      班级: formatClassName(student.className),
       考试名称: currentExam.value!.name,
       科目: currentExam.value!.subject,
       考试日期: formatDate(currentExam.value!.examDate),
@@ -523,7 +524,7 @@ const generateSummaryReport = () => {
   const summaryData = [
     { 项目: '考试名称', 数值: currentExam.value.name },
     { 项目: '科目', 数值: currentExam.value.subject },
-    { 项目: '班级', 数值: currentExam.value.className },
+    { 项目: '班级', 数值: formatClassName(currentExam.value.className) },
     { 项目: '考试日期', 数值: formatDate(currentExam.value.examDate) },
     { 项目: '总分', 数值: currentExam.value.totalScore },
     { 项目: '考试人数', 数值: statistics.value.participantCount },

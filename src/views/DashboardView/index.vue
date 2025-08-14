@@ -151,7 +151,7 @@
                     <div class="exam-name font-medium">{{ exam.name }}</div>
                     <el-tag v-if="isToday(exam.examDate)" type="primary" size="small">今天</el-tag>
                   </div>
-                  <div class="exam-meta text-sm text-gray-500">{{ exam.subject }} - {{ exam.className }}</div>
+                  <div class="exam-meta text-sm text-gray-500">{{ exam.subject }} - {{ formatClassName(exam.className) }}</div>
                   <div class="exam-date text-sm text-gray-500 flex items-center gap-1">
                     <el-icon class="h-3 w-3">
                       <Clock />
@@ -220,7 +220,7 @@
                 <div class="text-sm text-gray-500 flex items-center gap-2 flex-wrap">
                   <span>{{ exam.subject || '未知科目' }}</span>
                   <span>•</span>
-                  <span>{{ exam.className || '未分班' }}</span>
+                  <span>{{ formatClassName(exam.className) || '未分班' }}</span>
                   <span>•</span>
                   <span class="flex items-center gap-1">
                     <el-icon class="h-3 w-3">
@@ -260,6 +260,7 @@ import { User, Calendar, Edit, DataAnalysis, TrendCharts, Clock, Document, Circl
 import { useAuthStore } from '@/stores/auth';
 import { studentApi, examApi, scoreApi } from '@/services/api';
 import type { Student, Exam, Score } from '@/types';
+import { formatClassName, sortClasses } from '@/utils/classUtils'
 
 const router = useRouter();
 const authStore = useAuthStore();

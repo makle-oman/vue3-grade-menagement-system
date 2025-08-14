@@ -138,7 +138,7 @@
           <tbody class="bg-white divide-y divide-gray-200">
             <tr v-for="(classData, index) in analysis.classComparison" :key="classData.className">
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {{ classData.className }}
+                {{ formatClassName(classData.className) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {{ classData.teacher || '-' }}
@@ -193,6 +193,7 @@ import { ref, reactive, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { semesterApi } from '@/services/api';
 import type { Semester } from '@/types';
+import { formatClassName } from '@/utils/classUtils';
 
 interface ClassComparison {
   className: string;
@@ -260,7 +261,7 @@ const loadAnalysis = async () => {
       excellentRate: 25.6,
       classComparison: [
         {
-          className: `${filters.gradeLevel}(1)班`,
+          className: `第二单元测试-数学-六(1)班`,
           teacher: '张老师',
           studentCount: 40,
           averageScore: 82.3,
@@ -269,7 +270,7 @@ const loadAnalysis = async () => {
           improvement: 2.1,
         },
         {
-          className: `${filters.gradeLevel}(2)班`,
+          className: `第二单元测试-语文-一(2)班`,
           teacher: '李老师',
           studentCount: 39,
           averageScore: 80.1,
@@ -278,7 +279,7 @@ const loadAnalysis = async () => {
           improvement: -1.2,
         },
         {
-          className: `${filters.gradeLevel}(3)班`,
+          className: `第一单元测试-语文-一(2)班`,
           teacher: '王老师',
           studentCount: 41,
           averageScore: 79.8,
@@ -287,7 +288,7 @@ const loadAnalysis = async () => {
           improvement: 0.5,
         },
         {
-          className: `${filters.gradeLevel}(4)班`,
+          className: `第一单元测试-数学-六(2)班`,
           teacher: '刘老师',
           studentCount: 40,
           averageScore: 77.2,

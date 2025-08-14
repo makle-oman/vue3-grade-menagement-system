@@ -30,7 +30,11 @@
       </template>
 
       <el-table :data="classes" v-loading="loading">
-        <el-table-column prop="name" label="班级名称" />
+        <el-table-column prop="name" label="班级名称">
+          <template #default="{ row }">
+            {{ formatClassName(row.name) }}
+          </template>
+        </el-table-column>
         <el-table-column prop="grade" label="年级" />
         <el-table-column prop="description" label="描述" />
         <el-table-column label="学生数量">
@@ -119,6 +123,7 @@ import { Plus } from '@element-plus/icons-vue'
 import { classApi } from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
 import type { Class } from '@/types'
+import { formatClassName, sortClasses } from '@/utils/classUtils'
 
 const authStore = useAuthStore()
 
@@ -177,11 +182,14 @@ const classFormRef = ref()
 const loadClasses = async () => {
   loading.value = true
   try {
+    let classList: Class[]
     if (showInactiveClasses.value) {
-      classes.value = await classApi.getAll()
+      classList = await classApi.getAll()
     } else {
-      classes.value = await classApi.getActive()
+      classList = await classApi.getActive()
     }
+    // 排序班级列表
+    classes.value = sortClasses(classList)
   } catch (error) {
     ElMessage.error('加载班级列表失败')
     console.error('加载班级列表失败:', error)

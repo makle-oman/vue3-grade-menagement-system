@@ -152,7 +152,7 @@
 
         <el-form-item label="班级" prop="classNames" v-if="userForm.role === 'teacher'">
           <el-select v-model="userForm.classNames" multiple filterable placeholder="选择班级" style="width: 100%">
-            <el-option v-for="className in primaryClassNames" :key="className" :label="className" :value="className" />
+            <el-option v-for="className in primaryClassNames" :key="className" :label="formatClassName(className)" :value="className" />
           </el-select>
         </el-form-item>
       </el-form>
@@ -182,6 +182,7 @@ import {
 } from '@element-plus/icons-vue';
 import { userApi } from '@/services/api';
 import type { User as UserType, UserRole } from '@/types';
+import { formatClassName } from '@/utils/classUtils';
 
 const loading = ref(false);
 const saving = ref(false);
@@ -298,16 +299,16 @@ const formatDate = (dateString: string) => {
 const formatClassNames = (classNames: string[] | string) => {
   if (Array.isArray(classNames)) {
     return classNames.length > 2
-      ? `${classNames.slice(0, 2).join(', ')} 等${classNames.length}个班级`
-      : classNames.join(', ');
+      ? `${classNames.slice(0, 2).map(name => formatClassName(name)).join(', ')} 等${classNames.length}个班级`
+      : classNames.map(name => formatClassName(name)).join(', ');
   } else if (typeof classNames === 'string') {
     try {
       // 尝试解析 JSON 字符串
       const parsedClassNames = JSON.parse(classNames);
       if (Array.isArray(parsedClassNames)) {
         return parsedClassNames.length > 2
-          ? `${parsedClassNames.slice(0, 2).join(', ')} 等${parsedClassNames.length}个班级`
-          : parsedClassNames.join(', ');
+          ? `${parsedClassNames.slice(0, 2).map(name => formatClassName(name)).join(', ')} 等${parsedClassNames.length}个班级`
+          : parsedClassNames.map(name => formatClassName(name)).join(', ');
       }
     } catch (e) {
       // 如果解析失败，直接返回原字符串

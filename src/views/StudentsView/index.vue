@@ -26,7 +26,7 @@
               <el-select v-model="selectedClass" placeholder="选择班级" size="large" clearable @change="handleClassChange"
                 class="w-full">
                 <el-option label="全部班级" value="" />
-                <el-option v-for="className in availableClasses" :key="className" :label="className"
+                <el-option v-for="className in availableClasses" :key="className" :label="formatClassName(className)"
                   :value="className" />
               </el-select>
             </div>
@@ -127,7 +127,7 @@
               <el-table-column prop="className" label="班级" min-width="150">
                 <template #default="scope">
                   <el-tag type="info" effect="light" class="class-tag">
-                    {{ scope.row.className }}
+                    {{ formatClassName(scope.row.className) }}
                   </el-tag>
                 </template>
               </el-table-column>
@@ -186,7 +186,7 @@
         <el-form-item label="班级" prop="className">
           <el-select v-model="newStudent.className" placeholder="请选择或输入班级" filterable allow-create default-first-option
             style="width: 100%">
-            <el-option v-for="cls in savedClassNames" :key="cls" :label="cls" :value="cls" />
+            <el-option v-for="cls in savedClassNames" :key="cls" :label="formatClassName(cls)" :value="cls" />
           </el-select>
         </el-form-item>
       </el-form>
@@ -241,6 +241,7 @@ import {
   Calendar
 } from '@element-plus/icons-vue';
 import * as XLSX from 'xlsx';
+import { formatClassName, sortClasses } from '@/utils/classUtils';
 
 const studentStore = useStudentStore();
 const authStore = useAuthStore();

@@ -27,7 +27,7 @@
             <el-option
               v-for="classItem in classes"
               :key="classItem.id"
-              :label="classItem.name"
+              :label="formatClassName(classItem.name)"
               :value="classItem.id"
             />
           </el-select>
@@ -58,7 +58,7 @@
         </div>
         
         <div class="filter-item">
-          <el-button type="primary" @click="generateStatistics" :loading="loading">
+          <el-button type="primary" @click="generateStatistics" :loading="loading" class="!bg-[#409EFF]">
             查询统计
           </el-button>
         </div>
@@ -490,6 +490,7 @@ import { ElMessage } from 'element-plus'
 import { User, Star, TrendCharts, Trophy, Medal, Warning, DocumentRemove } from '@element-plus/icons-vue'
 import { statisticsApi, examApi, classApi, semesterApi, scoreApi } from '@/services/api'
 import type { ExamStatistics, Exam, Class, Semester } from '@/types'
+import { formatClassName } from '@/utils/classUtils'
 
 // 响应式数据
 const loading = ref(false)
