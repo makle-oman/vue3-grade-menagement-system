@@ -944,4 +944,5 @@ onMounted(() => {
 
 <style>
 @import "../../styles/views/statistics.css";
+@import "./StatisticsView.css";
 </style>
