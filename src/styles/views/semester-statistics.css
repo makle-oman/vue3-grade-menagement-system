@@ -5,32 +5,44 @@
 
 .semester-statistics__header {
   margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
 }
 
 .semester-statistics__title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #111827;
+  font-size: 1.75rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   margin-bottom: 0.5rem;
 }
 
 .semester-statistics__description {
   color: #6b7280;
+  font-size: 1rem;
 }
 
 /* 筛选条件样式 */
 .semester-statistics__filters {
   margin-bottom: 1.5rem;
-  background-color: white;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+}
+
+.semester-statistics__filters:hover {
+  box-shadow: 0 6px 24px rgba(102, 126, 234, 0.15);
 }
 
 .semester-statistics__filters-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 @media (min-width: 768px) {
@@ -42,9 +54,10 @@
 .semester-statistics__filter-label {
   display: block;
   font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
+  font-weight: 600;
+  color: #4b5563;
   margin-bottom: 0.5rem;
+  letter-spacing: 0.025em;
 }
 
 .semester-statistics__filter-button {
@@ -52,26 +65,49 @@
   align-items: flex-end;
 }
 
+.semester-statistics__filter-button .el-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.semester-statistics__filter-button .el-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.35);
+}
+
 /* 概览卡片样式 */
 .semester-statistics__overview {
   margin-bottom: 1.5rem;
-  background-color: white;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
   padding: 1.5rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+}
+
+.semester-statistics__overview:hover {
+  box-shadow: 0 6px 24px rgba(102, 126, 234, 0.15);
 }
 
 .semester-statistics__overview-title {
-  font-size: 1.125rem;
-  font-weight: 500;
+  font-size: 1.25rem;
+  font-weight: 600;
   color: #111827;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .semester-statistics__overview-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 @media (min-width: 768px) {
@@ -81,29 +117,73 @@
 }
 
 .semester-statistics__overview-card {
-  padding: 1rem;
-  border-radius: 0.5rem;
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.semester-statistics__overview-card:hover {
+  transform: translateY(-3px);
+}
+
+.semester-statistics__overview-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  border-radius: 4px 4px 0 0;
 }
 
 .semester-statistics__overview-card--blue {
-  background-color: #eff6ff;
+  background: linear-gradient(135deg, rgba(239, 246, 255, 0.8) 0%, rgba(219, 234, 254, 0.8) 100%);
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.1);
+  border-color: rgba(191, 219, 254, 0.5);
+}
+
+.semester-statistics__overview-card--blue::before {
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
 }
 
 .semester-statistics__overview-card--green {
-  background-color: #f0fdf4;
+  background: linear-gradient(135deg, rgba(240, 253, 244, 0.8) 0%, rgba(220, 252, 231, 0.8) 100%);
+  box-shadow: 0 4px 15px rgba(22, 163, 74, 0.1);
+  border-color: rgba(187, 247, 208, 0.5);
+}
+
+.semester-statistics__overview-card--green::before {
+  background: linear-gradient(90deg, #22c55e, #16a34a);
 }
 
 .semester-statistics__overview-card--yellow {
-  background-color: #fefce8;
+  background: linear-gradient(135deg, rgba(254, 252, 232, 0.8) 0%, rgba(254, 249, 195, 0.8) 100%);
+  box-shadow: 0 4px 15px rgba(202, 138, 4, 0.1);
+  border-color: rgba(254, 240, 138, 0.5);
+}
+
+.semester-statistics__overview-card--yellow::before {
+  background: linear-gradient(90deg, #eab308, #ca8a04);
 }
 
 .semester-statistics__overview-card--purple {
-  background-color: #faf5ff;
+  background: linear-gradient(135deg, rgba(250, 245, 255, 0.8) 0%, rgba(243, 232, 255, 0.8) 100%);
+  box-shadow: 0 4px 15px rgba(126, 34, 206, 0.1);
+  border-color: rgba(233, 213, 255, 0.5);
+}
+
+.semester-statistics__overview-card--purple::before {
+  background: linear-gradient(90deg, #a855f7, #7e22ce);
 }
 
 .semester-statistics__overview-card-label {
   font-size: 0.875rem;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  letter-spacing: 0.025em;
 }
 
 .semester-statistics__overview-card-label--blue {
@@ -123,79 +203,130 @@
 }
 
 .semester-statistics__overview-card-value {
-  font-size: 1.25rem;
-  font-weight: bold;
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  letter-spacing: -0.025em;
 }
 
 .semester-statistics__overview-card-value--blue {
-  color: #1e3a8a;
+  background: linear-gradient(90deg, #3b82f6, #1e40af);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .semester-statistics__overview-card-value--green {
-  color: #14532d;
+  background: linear-gradient(90deg, #22c55e, #15803d);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .semester-statistics__overview-card-value--yellow {
-  color: #92400e;
+  background: linear-gradient(90deg, #eab308, #a16207);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .semester-statistics__overview-card-value--purple {
-  color: #6b21a8;
+  background: linear-gradient(90deg, #a855f7, #7e22ce);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* 表格样式 */
 .semester-statistics__table-container {
   margin-bottom: 1.5rem;
-  background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.semester-statistics__table-container:hover {
+  box-shadow: 0 6px 24px rgba(102, 126, 234, 0.15);
 }
 
 .semester-statistics__table-header {
   padding: 1.5rem 1.5rem 1rem 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+  background: rgba(249, 250, 251, 0.5);
 }
 
 .semester-statistics__table-title {
-  font-size: 1.125rem;
-  font-weight: 500;
-  color: #111827;
+  font-size: 1.25rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .semester-statistics__table-wrapper {
   overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+.semester-statistics__table-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.semester-statistics__table-wrapper::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.semester-statistics__table-wrapper::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 3px;
 }
 
 .semester-statistics__table {
   min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
 .semester-statistics__table thead {
-  background-color: #f9fafb;
+  background: linear-gradient(180deg, rgba(249, 250, 251, 0.9) 0%, rgba(243, 244, 246, 0.9) 100%);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .semester-statistics__table th {
-  padding: 0.75rem 1.5rem;
+  padding: 0.875rem 1.5rem;
   text-align: left;
   font-size: 0.75rem;
-  font-weight: 500;
-  color: #6b7280;
+  font-weight: 600;
+  color: #4b5563;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  border-bottom: 2px solid rgba(229, 231, 235, 0.7);
 }
 
 .semester-statistics__table tbody {
-  background-color: white;
+  background-color: transparent;
 }
 
 .semester-statistics__table tbody tr {
-  border-bottom: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+}
+
+.semester-statistics__table tbody tr:hover {
+  background-color: rgba(243, 244, 246, 0.5);
 }
 
 .semester-statistics__table td {
   padding: 1rem 1.5rem;
   white-space: nowrap;
   font-size: 0.875rem;
+  transition: all 0.2s ease;
 }
 
 /* 排序按钮样式 */
@@ -209,15 +340,16 @@
   font-size: 0.875rem;
   line-height: 1;
   cursor: pointer;
-  transition: color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .semester-statistics__sort-button:hover {
-  color: #60a5fa;
+  color: #667eea;
+  transform: scale(1.2);
 }
 
 .semester-statistics__sort-button--active {
-  color: #3b82f6;
+  color: #667eea;
 }
 
 .semester-statistics__sort-button--inactive {
@@ -226,46 +358,41 @@
 
 /* 成绩颜色样式 */
 .semester-statistics__score--excellent {
-  color: #059669;
+  font-weight: 600;
+  background: linear-gradient(90deg, #10b981, #059669);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .semester-statistics__score--good {
-  color: #2563eb;
+  font-weight: 600;
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .semester-statistics__score--average {
-  color: #d97706;
+  font-weight: 600;
+  background: linear-gradient(90deg, #f59e0b, #d97706);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .semester-statistics__score--below-average {
-  color: #ea580c;
+  font-weight: 600;
+  background: linear-gradient(90deg, #f97316, #ea580c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .semester-statistics__score--poor {
-  color: #dc2626;
+  font-weight: 600;
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* 成绩背景颜色样式 */
-.semester-statistics__score-badge--excellent {
-  background-color: #10b981;
-}
-
-.semester-statistics__score-badge--good {
-  background-color: #3b82f6;
-}
-
-.semester-statistics__score-badge--average {
-  background-color: #f59e0b;
-}
-
-.semester-statistics__score-badge--below-average {
-  background-color: #f97316;
-}
-
-.semester-statistics__score-badge--poor {
-  background-color: #ef4444;
-}
-
 .semester-statistics__score-badge {
   width: 2.5rem;
   height: 2.5rem;
@@ -275,114 +402,215 @@
   justify-content: center;
   color: white;
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.semester-statistics__score-badge:hover {
+  transform: scale(1.1);
+}
+
+.semester-statistics__score-badge--excellent {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.semester-statistics__score-badge--good {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+.semester-statistics__score-badge--average {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.semester-statistics__score-badge--below-average {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+}
+
+.semester-statistics__score-badge--poor {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
 }
 
 /* 趋势图标样式 */
 .semester-statistics__trend--up {
-  color: #059669;
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 500;
 }
 
 .semester-statistics__trend--down {
-  color: #dc2626;
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 500;
 }
 
 .semester-statistics__trend--stable {
   color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 500;
+}
+
+.semester-statistics__trend--up .el-icon,
+.semester-statistics__trend--down .el-icon,
+.semester-statistics__trend--stable .el-icon {
+  transition: transform 0.3s ease;
+}
+
+.semester-statistics__trend--up:hover .el-icon {
+  transform: translateY(-2px);
+}
+
+.semester-statistics__trend--down:hover .el-icon {
+  transform: translateY(2px);
+}
+
+.semester-statistics__trend--stable:hover .el-icon {
+  transform: scale(1.2);
 }
 
 /* 分析区域样式 */
 .semester-statistics__analysis {
   margin-bottom: 1.5rem;
-  background-color: white;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
   padding: 1.5rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+}
+
+.semester-statistics__analysis:hover {
+  box-shadow: 0 6px 24px rgba(102, 126, 234, 0.15);
 }
 
 .semester-statistics__analysis-title {
-  font-size: 1.125rem;
-  font-weight: 500;
-  color: #111827;
-  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .semester-statistics__analysis-content {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .semester-statistics__analysis-text {
-  color: #374151;
+  color: #4b5563;
+  line-height: 1.6;
 }
 
 .semester-statistics__analysis-section {
-  padding: 1rem;
-  background-color: #f9fafb;
-  border-radius: 0.5rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, rgba(249, 250, 251, 0.8) 0%, rgba(243, 244, 246, 0.8) 100%);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(229, 231, 235, 0.5);
+  transition: all 0.3s ease;
+}
+
+.semester-statistics__analysis-section:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
 }
 
 .semester-statistics__analysis-section-title {
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 1.125rem;
   color: #111827;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  border-left: 3px solid #667eea;
+  padding-left: 0.75rem;
 }
 
 .semester-statistics__analysis-list {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  color: #374151;
+  gap: 0.75rem;
+  color: #4b5563;
 }
 
 .semester-statistics__analysis-list li {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.semester-statistics__analysis-list li:hover {
+  background-color: rgba(255, 255, 255, 0.7);
 }
 
 /* 空状态样式 */
 .semester-statistics__empty {
   text-align: center;
-  padding: 3rem 0;
+  padding: 4rem 0;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  margin-bottom: 1.5rem;
 }
 
 .semester-statistics__empty-icon {
   margin: 0 auto;
-  height: 3rem;
-  width: 3rem;
-  color: #9ca3af;
+  height: 4rem;
+  width: 4rem;
+  color: #a5b4fc;
+  opacity: 0.8;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.8; }
 }
 
 .semester-statistics__empty-title {
-  margin-top: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #111827;
+  margin-top: 1rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .semester-statistics__empty-description {
-  margin-top: 0.25rem;
+  margin-top: 0.5rem;
   font-size: 0.875rem;
   color: #6b7280;
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .semester-statistics {
-    padding: 1rem;
-  }
-  
-  .semester-statistics__table-wrapper {
-    overflow-x: scroll;
-  }
-  
-  .semester-statistics__overview-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .semester-statistics__filters-grid {
-    grid-template-columns: 1fr;
-  }
+/* 页面背景 */
+.semester-statistics {
+  position: relative;
+  padding: 1.5rem;
+  min-height: calc(100vh - 64px);
+}
+
+.semester-statistics::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(243, 244, 246, 0.7) 0%, rgba(249, 250, 251, 0.7) 100%);
+  z-index: -1;
 }

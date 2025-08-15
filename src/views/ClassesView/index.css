@@ -1,5 +1,5 @@
 /* 页面容器样式 */
-.semesters-view {
+.classes-view {
   padding: 0 !important;
   background: transparent;
 }
@@ -84,6 +84,20 @@
   font-size: 20px;
   font-weight: 700;
   color: #1f2937;
+}
+
+/* 开关样式 */
+:deep(.el-switch) {
+  --el-switch-on-color: #667eea;
+  --el-switch-off-color: #ddd;
+}
+
+:deep(.el-switch__core) {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+:deep(.el-switch.is-checked .el-switch__core) {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 /* 现代化按钮样式 */
@@ -211,16 +225,6 @@
   color: #f5576c;
 }
 
-:deep(.el-tag--warning) {
-  background: linear-gradient(135deg, rgba(255, 152, 0, 0.1) 0%, rgba(255, 193, 7, 0.1) 100%);
-  color: #ff9800;
-}
-
-:deep(.el-tag--info) {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-  color: #667eea;
-}
-
 /* 对话框样式 */
 :deep(.el-dialog) {
   background: rgba(255, 255, 255, 0.95);
@@ -284,57 +288,24 @@
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-/* 日期选择器样式 */
-:deep(.el-date-editor) {
-  width: 100%;
-}
-
-:deep(.el-date-editor .el-input__wrapper) {
+/* 文本域样式 */
+:deep(.el-textarea__inner) {
   background: rgba(255, 255, 255, 0.9);
   border: 2px solid rgba(102, 126, 234, 0.2);
   border-radius: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  resize: vertical;
 }
 
-/* 开关样式 */
-:deep(.el-switch) {
-  --el-switch-on-color: #667eea;
-  --el-switch-off-color: #ddd;
+:deep(.el-textarea__inner:hover) {
+  border-color: rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
 }
 
-:deep(.el-switch__core) {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-:deep(.el-switch.is-checked .el-switch__core) {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-/* 空状态样式 */
-.empty-state {
-  text-align: center;
-  padding: 48px 24px;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  border: 1px solid rgba(102, 126, 234, 0.1);
-}
-
-.empty-state .el-icon {
-  color: #d1d5db;
-  margin-bottom: 16px;
-}
-
-.empty-state h3 {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 8px;
-}
-
-.empty-state p {
-  color: #6b7280;
-  font-size: 14px;
-  margin: 0;
+:deep(.el-textarea__inner:focus) {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 /* 加载状态 */
@@ -346,7 +317,6 @@
 :deep(.el-loading-spinner) {
   color: #667eea;
 }
-
 
 /* 动画效果 */
 @keyframes fadeInUp {
@@ -360,12 +330,12 @@
   }
 }
 
-.semesters-view > * {
+.classes-view > * {
   animation: fadeInUp 0.6s ease-out;
 }
 
-.semesters-view > *:nth-child(1) { animation-delay: 0.1s; }
-.semesters-view > *:nth-child(2) { animation-delay: 0.2s; }
+.classes-view > *:nth-child(1) { animation-delay: 0.1s; }
+.classes-view > *:nth-child(2) { animation-delay: 0.2s; }
 
 /* 滚动条美化 */
 :deep(.el-table__body-wrapper)::-webkit-scrollbar {
@@ -433,33 +403,4 @@
 
 :deep(.el-message-box__content) {
   color: #374151;
-}
-
-/* 日期范围选择器样式 */
-:deep(.el-date-range-picker) {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(102, 126, 234, 0.1);
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-
-:deep(.el-date-range-picker__header) {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-  border-bottom: 1px solid rgba(102, 126, 234, 0.1);
-}
-
-:deep(.el-date-table td.today .el-date-table-cell__text) {
-  color: #667eea;
-  font-weight: 700;
-}
-
-:deep(.el-date-table td.current:not(.disabled) .el-date-table-cell__text) {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
-
-:deep(.el-date-table td.in-range .el-date-table-cell__text) {
-  background: rgba(102, 126, 234, 0.1);
-  color: #667eea;
 }

@@ -439,3 +439,7 @@ onMounted(() => {
   fetchSemesters();
 });
 </script>
+
+<style>
+@import "./index.css";
+</style>

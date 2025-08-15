@@ -288,26 +288,6 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
-.classes-view {
-  padding: 20px;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.header h1 {
-  margin: 0;
-  color: #303133;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+<style>
+@import "./index.css";
 </style>
