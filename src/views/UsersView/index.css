@@ -166,6 +166,9 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 320px;
 }
 
 .user-card:hover {
@@ -199,12 +202,24 @@
 
 .card-content {
   padding: 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .user-avatar {
   position: relative;
   margin-bottom: 16px;
   display: inline-block;
+}
+
+/* 头像样式优化 */
+.user-avatar :deep(.el-avatar) {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .status-indicator {
@@ -266,6 +281,8 @@
   align-items: center;
   color: #9ca3af;
   font-size: 12px;
+  margin-top: auto;
+  padding-top: 16px;
 }
 
 .create-time {

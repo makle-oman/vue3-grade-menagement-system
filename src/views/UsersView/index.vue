@@ -53,10 +53,8 @@
       <div v-for="user in filteredUsers" :key="user.id" class="user-card" :class="{ 'inactive': !user.isActive }">
         <div class="card-content">
           <div class="user-avatar">
-            <el-avatar :size="60" class="avatar">
-              <el-icon>
-                <User />
-              </el-icon>
+            <el-avatar :size="60" class="avatar" :style="{ backgroundColor: getAvatarColor(user.name) }">
+              {{ getFirstChar(user.name) }}
             </el-avatar>
             <div class="status-indicator" :class="{ 'active': user.isActive }"></div>
           </div>
@@ -332,6 +330,29 @@ const formatClassNames = (classNames: string[] | string) => {
     }
   }
   return classNames || '-';
+};
+
+// 获取用户名第一个字符
+const getFirstChar = (name: string) => {
+  return name ? name.charAt(0).toUpperCase() : 'U';
+};
+
+// 生成随机头像颜色
+const getAvatarColor = (name: string) => {
+  const colors = [
+    '#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe',
+    '#43e97b', '#38f9d7', '#ffecd2', '#fcb69f', '#a8edea', '#fed6e3',
+    '#ff9a9e', '#fecfef', '#ffeaa7', '#fab1a0', '#fd79a8', '#fdcb6e',
+    '#6c5ce7', '#a29bfe', '#74b9ff', '#0984e3', '#00b894', '#00cec9'
+  ];
+  
+  // 根据用户名生成一个稳定的索引
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  
+  return colors[Math.abs(hash) % colors.length];
 };
 
 const fetchUsers = async () => {
