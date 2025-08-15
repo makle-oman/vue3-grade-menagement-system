@@ -25,8 +25,8 @@
             </el-form-item>
 
             <el-form-item>
-              <el-button type="primary" size="large" :loading="authStore.loading" @click="handleLogin"
-                class="login-button">
+              <el-button type="primary" size="large" :loading="authStore.loading" @click="handleLogin" 
+                class="login-button !bg-[#409EFF]">
                 {{ authStore.loading ? '登录中...' : '登录' }}
               </el-button>
             </el-form-item>

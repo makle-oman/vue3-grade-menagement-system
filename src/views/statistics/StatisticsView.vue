@@ -733,7 +733,7 @@ const generateStatistics = async () => {
     statistics.value = processedStats
   } catch (error) {
     console.error('生成统计数据失败:', error)
-    ElMessage.error('生成统计数据失败')
+    ElMessage.error(error?.response?.data?.message || '生成统计数据失败')
   } finally {
     loading.value = false
   }
