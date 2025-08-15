@@ -35,7 +35,10 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    // 只有在非登录/注册接口遇到401时才清除认证信息并跳转
+    if (error.response?.status === 401 && 
+        !error.config?.url?.includes('/auth/login') && 
+        !error.config?.url?.includes('/auth/register')) {
       localStorage.removeItem('access_token');
       localStorage.removeItem('user');
       window.location.href = '/login';
@@ -110,6 +113,11 @@ export const userApi = {
 
   changePassword: async (data: { currentPassword: string; newPassword: string }): Promise<void> => {
     const response = await api.patch('/auth/change-password', data);
+    return response.data;
+  },
+
+  resetPassword: async (id: string): Promise<{ message: string }> => {
+    const response = await api.patch(`/users/${id}/reset-password`);
     return response.data;
   },
 };

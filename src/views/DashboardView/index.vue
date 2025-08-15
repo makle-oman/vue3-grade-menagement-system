@@ -545,24 +545,10 @@ const loadData = async () => {
 
 // 初始化数据
 onMounted(async () => {
-  // 使用 watch 监听认证状态变化，避免轮询
-  const stopWatcher = watch(
-    () => authStore.isAuthenticated,
-    async (isAuthenticated) => {
-      if (isAuthenticated && currentUser.value) {
-        await loadData();
-        stopWatcher(); // 停止监听
-      }
-    },
-    { immediate: true }
-  );
-
-  // 设置超时保护，5秒后自动停止监听
-  setTimeout(() => {
-    if (!authStore.isAuthenticated) {
-      stopWatcher();
-    }
-  }, 5000);
+  // 只在已认证且有用户信息时加载数据
+  if (authStore.isAuthenticated && currentUser.value) {
+    await loadData();
+  }
 });
 </script>
 

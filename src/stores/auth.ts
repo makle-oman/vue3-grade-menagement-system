@@ -66,14 +66,58 @@ export const useAuthStore = defineStore('auth', () => {
   const login = async (credentials: LoginCredentials) => {
     try {
       loading.value = true
+      console.log('发送登录请求:', credentials)
+      
       const response = await api.post('/auth/login', credentials)
+      console.log('登录响应:', response)
+      
+      if (!response.data || !response.data.access_token || !response.data.user) {
+        throw new Error('登录响应数据格式错误')
+      }
+      
       const { access_token, user: userData } = response.data
       
       setAuth(access_token, userData)
       ElMessage.success('登录成功')
       return true
     } catch (error: any) {
-      const message = error.response?.data?.message || '登录失败'
+      console.error('登录错误详情:', error)
+      console.error('错误响应:', error.response)
+      console.error('错误请求:', error.request)
+      
+      // 注意：登录失败时不要清除认证信息，因为用户可能还没有认证信息
+      // 只有在确实需要清除时才调用 clearAuth()
+      
+      // 根据错误状态码显示不同的错误消息
+      let message = '登录失败'
+      if (error.response) {
+        console.log('HTTP错误状态码:', error.response.status)
+        console.log('错误响应数据:', error.response.data)
+        
+        switch (error.response.status) {
+          case 401:
+            message = '用户名或密码错误'
+            break
+          case 404:
+            message = '用户不存在，请检查用户名'
+            break
+          case 403:
+            message = '账户已被禁用，请联系管理员'
+            break
+          case 500:
+            message = '服务器错误，请稍后重试'
+            break
+          default:
+            message = error.response.data?.message || '登录失败，请检查用户名和密码'
+        }
+      } else if (error.request) {
+        console.log('网络请求错误:', error.request)
+        message = '网络连接失败，请检查网络连接'
+      } else {
+        console.log('其他错误:', error.message)
+        message = error.message || '登录失败'
+      }
+      
       ElMessage.error(message)
       return false
     } finally {
@@ -103,6 +147,9 @@ export const useAuthStore = defineStore('auth', () => {
   // 退出登录
   const logout = () => {
     clearAuth()
+    // 可选：清除记住的登录信息（根据需求决定是否保留）
+    // localStorage.removeItem('rememberedCredentials')
+    // localStorage.removeItem('rememberMe')
     ElMessage.success('已退出登录')
   }
 

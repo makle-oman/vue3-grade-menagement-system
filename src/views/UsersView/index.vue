@@ -100,6 +100,9 @@
           <el-button size="small" type="primary" link :icon="Edit" @click="editUser(user)">
             编辑
           </el-button>
+          <el-button size="small" type="info" link @click="resetPassword(user)">
+            重置密码
+          </el-button>
           <el-button size="small" :type="user.isActive ? 'warning' : 'success'" link @click="toggleUserStatus(user)">
             {{ user.isActive ? '禁用' : '启用' }}
           </el-button>
@@ -408,6 +411,29 @@ const toggleUserStatus = async (user: UserType) => {
   } catch (error) {
     console.error('Failed to toggle user status:', error);
     ElMessage.error('操作失败');
+  }
+};
+
+const resetPassword = async (user: UserType) => {
+  try {
+    await ElMessageBox.confirm(
+      `确定要重置用户 "${user.name}" 的密码吗？密码将重置为 888888`,
+      '确认重置密码',
+      {
+        confirmButtonText: '重置',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }
+    );
+
+    await userApi.resetPassword(user.id);
+    ElMessage.success('密码重置成功，新密码为：888888');
+
+  } catch (error: any) {
+    if (error !== 'cancel') {
+      console.error('Failed to reset password:', error);
+      ElMessage.error('重置密码失败');
+    }
   }
 };
 

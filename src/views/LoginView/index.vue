@@ -144,7 +144,10 @@ const loginForm = reactive<LoginCredentials>({
 // 从本地存储加载记住的登录信息
 const loadRememberedCredentials = () => {
   const remembered = localStorage.getItem('rememberedCredentials')
-  if (remembered) {
+  const rememberFlag = localStorage.getItem('rememberMe')
+  
+  // 只有在用户之前选择了"记住我"的情况下才自动填充
+  if (remembered && rememberFlag === 'true') {
     try {
       const credentials = JSON.parse(remembered)
       loginForm.username = credentials.username || ''
@@ -153,7 +156,12 @@ const loadRememberedCredentials = () => {
     } catch (error) {
       console.error('加载记住的登录信息失败:', error)
       localStorage.removeItem('rememberedCredentials')
+      localStorage.removeItem('rememberMe')
     }
+  } else {
+    // 如果没有记住我标记，清除可能存在的旧数据
+    localStorage.removeItem('rememberedCredentials')
+    localStorage.removeItem('rememberMe')
   }
 }
 
@@ -165,8 +173,10 @@ const handleRememberCredentials = () => {
       password: loginForm.password
     }
     localStorage.setItem('rememberedCredentials', JSON.stringify(credentials))
+    localStorage.setItem('rememberMe', 'true')
   } else {
     localStorage.removeItem('rememberedCredentials')
+    localStorage.removeItem('rememberMe')
   }
 }
 
@@ -202,8 +212,25 @@ const registerForm = reactive<RegisterData & { confirmPassword: string, classInf
 // 登录表单验证规则
 const loginRules: FormRules = {
   username: [
-    { required: true, message: '请输入用户名', trigger: 'blur' },
-    { min: 3, max: 20, message: '用户名长度在 3 到 20 个字符', trigger: 'blur' }
+    { required: true, message: '请输入用户名或手机号', trigger: 'blur' },
+    { 
+      validator: (rule, value, callback) => {
+        // 支持多种格式：
+        // 1. 普通用户名（字母数字下划线，3-20字符）
+        const isUsername = /^[a-zA-Z0-9_]{3,20}$/.test(value)
+        // 2. 手机号格式
+        const isPhone = /^1[3-9]\d{9}$/.test(value)
+        // 3. 测试账号格式（admin, teacher1, grade_leader1等）
+        const isTestAccount = /^(admin|teacher\d*|grade_leader\d*)$/.test(value)
+        
+        if (isUsername || isPhone || isTestAccount) {
+          callback()
+        } else {
+          callback(new Error('请输入正确的用户名、手机号或测试账号'))
+        }
+      },
+      trigger: 'blur'
+    }
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
@@ -254,18 +281,32 @@ const handleLogin = async () => {
   if (!loginFormRef.value) return
 
   try {
+    console.log('开始登录验证，当前表单数据:', loginForm)
+    
     const valid = await loginFormRef.value.validate()
-    if (!valid) return
+    console.log('表单验证结果:', valid)
+    
+    if (!valid) {
+      console.log('表单验证失败，停止登录')
+      return
+    }
 
+    console.log('表单验证通过，准备调用登录API')
+    
     // 处理记住我功能
     handleRememberCredentials()
 
+    console.log('调用 authStore.login，参数:', loginForm)
     const success = await authStore.login(loginForm)
+    console.log('登录API调用结果:', success)
+    
     if (success) {
       router.push('/dashboard')
+    } else {
+      console.log('登录失败，但没有抛出异常')
     }
   } catch (error) {
-    console.error('登录失败:', error)
+    console.error('登录过程中发生异常:', error)
   }
 }
 
