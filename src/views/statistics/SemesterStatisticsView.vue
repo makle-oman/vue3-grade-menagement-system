@@ -1,8 +1,9 @@
 <template>
-  <div class="semester-statistics">
-    <div class="semester-statistics__header">
-      <h1 class="semester-statistics__title">学期成绩统计</h1>
-      <p class="semester-statistics__description">查看学期内所有考试的综合分析和学生成绩趋势</p>
+  <div class="semester-statistics w-full space-y-6 page-content">
+        <!-- 页面标题 -->
+    <div>
+      <h1 class="text-3xl font-bold tracking-tight text-gray-900">学期成绩统计</h1>
+      <p class="text-gray-600 mt-2">查看学期内所有考试的综合分析和学生成绩趋势</p>
     </div>
 
     <!-- 筛选条件 -->
