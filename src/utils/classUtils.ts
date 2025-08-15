@@ -13,8 +13,15 @@ export function formatClassName(className: string): string {
   // 移除多余的空格
   const trimmed = className.trim();
   
+  // 如果已经是正确格式，直接返回
+  if (/^[一二三四五六七八九十]（\d+）班$/.test(trimmed)) {
+    return trimmed;
+  }
+  
   // 匹配各种可能的班级名称格式
   const patterns = [
+    // 匹配 "1-2" 格式
+    /^(\d+)-(\d+)$/,
     // 匹配 "一(2)班", "一（2）班", "1(2)班" 等格式
     /^([一二三四五六七八九十\d]+)[（(](\d+)[）)][班]?$/,
     // 匹配 "一年级2班", "1年级2班" 等格式
@@ -29,25 +36,29 @@ export function formatClassName(className: string): string {
     '6': '六', '7': '七', '8': '八', '9': '九', '10': '十'
   };
   
-  // 中文转数字映射
-  const chineseToNumber: { [key: string]: string } = {
-    '一': '1', '二': '2', '三': '3', '四': '4', '五': '5',
-    '六': '6', '七': '7', '八': '8', '九': '9', '十': '10'
-  };
+  // 尝试匹配 "1-2" 格式
+  const match0 = trimmed.match(patterns[0]);
+  if (match0) {
+    const grade = match0[1];
+    const classNum = match0[2];
+    
+    const gradeInChinese = numberToChinese[grade] || grade;
+    return `${gradeInChinese}（${classNum}）班`;
+  }
   
   // 尝试匹配第一种格式：年级(班级)班
-  const match1 = trimmed.match(patterns[0]);
+  const match1 = trimmed.match(patterns[1]);
   if (match1) {
     const grade = match1[1];
     const classNum = match1[2];
     
-    // 统一使用中文年级 + 阿拉伯数字班级的格式
+    // 统一使用中文年级 + 阿拉伯数字班级的格式，使用全角括号
     const gradeInChinese = numberToChinese[grade] || grade;
     return `${gradeInChinese}（${classNum}）班`;
   }
   
   // 尝试匹配第二种格式：年级年级班级班
-  const match2 = trimmed.match(patterns[1]);
+  const match2 = trimmed.match(patterns[2]);
   if (match2) {
     const grade = match2[1];
     const classNum = match2[2];
@@ -57,11 +68,11 @@ export function formatClassName(className: string): string {
   }
   
   // 尝试匹配第三种格式：只有班级号
-  const match3 = trimmed.match(patterns[2]);
+  const match3 = trimmed.match(patterns[3]);
   if (match3) {
     const classNum = match3[1];
-    // 如果只有班级号，假设是当前年级
-    return `${classNum}班`;
+    // 如果只有班级号，假设是一年级
+    return `一（${classNum}）班`;
   }
   
   // 如果都不匹配，返回原始名称

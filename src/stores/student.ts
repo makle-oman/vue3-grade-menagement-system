@@ -67,9 +67,9 @@ export const useStudentStore = defineStore('student', () => {
     }
   };
 
-  const importStudents = async (studentsData: Omit<Student, 'id' | 'createdAt' | 'teacher'>[]) => {
+  const importStudents = async (studentsData: Omit<Student, 'id' | 'createdAt' | 'teacher'>[], classId?: number) => {
     try {
-      const importedStudents = await studentApi.import(studentsData);
+      const importedStudents = await studentApi.import(studentsData, classId);
       // 重新获取所有学生数据以确保数据同步
       await fetchStudents();
       

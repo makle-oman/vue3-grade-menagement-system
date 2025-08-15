@@ -183,6 +183,27 @@ const handleRememberCredentials = () => {
 // 生成班级选项（1-6年级，每年级1-9班）
 const classOptions = ref<Array<{ label: string, value: string }>>([])
 
+// 初始化班级选项
+const initClassOptions = () => {
+  const grades = ['一', '二', '三', '四', '五', '六'];
+  const options: Array<{ label: string, value: string }> = [];
+  
+  grades.forEach((grade, gradeIndex) => {
+    for (let classNum = 1; classNum <= 9; classNum++) {
+      const label = `${grade}（${classNum}）班`;
+      const value = `${gradeIndex + 1}-${classNum}`;
+      options.push({ label, value });
+    }
+  });
+  
+  classOptions.value = options;
+}
+
+// 页面加载时初始化班级选项
+onMounted(() => {
+  initClassOptions();
+});
+
 const generateClassOptions = () => {
   const grades = ['一', '二', '三', '四', '五', '六']
   const options: Array<{ label: string, value: string }> = []

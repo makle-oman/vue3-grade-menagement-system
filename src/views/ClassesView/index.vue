@@ -36,7 +36,11 @@
           </template>
         </el-table-column>
         <el-table-column prop="grade" label="年级" />
-        <el-table-column prop="description" label="描述" />
+        <el-table-column prop="description" label="描述">
+          <template #default="{ row }">
+            {{ row.description || '暂无描述' }}
+          </template>
+        </el-table-column>
         <el-table-column label="学生数量">
           <template #default="{ row }">
             {{ row.students?.length || 0 }}
@@ -89,10 +93,7 @@
     >
       <el-form :model="classForm" :rules="classRules" ref="classFormRef" label-width="80px">
         <el-form-item label="班级名称" prop="name">
-          <el-input v-model="classForm.name" placeholder="请输入班级名称" />
-        </el-form-item>
-        <el-form-item label="年级" prop="grade">
-          <el-input v-model="classForm.grade" placeholder="如：2024级" />
+          <el-input v-model="classForm.name" placeholder="请输入班级名称，如：一（2）班" />
         </el-form-item>
         <el-form-item label="描述" prop="description">
           <el-input 

@@ -200,15 +200,15 @@
           <ul class="semester-statistics__analysis-list">
             <li>
               <span class="font-medium text-green-600">{{ getUpwardTrendCount() }}</span> 名学生成绩呈上升趋势
-              ({{ Math.round(getUpwardTrendCount() / statistics.studentProgress.length * 100) }}%)
+              ({{getUpwardTrendCount()? Math.round(getUpwardTrendCount()  / statistics.studentProgress.length * 100) :0 }}%)
             </li>
             <li>
               <span class="font-medium text-gray-600">{{ getStableTrendCount() }}</span> 名学生成绩保持稳定
-              ({{ Math.round(getStableTrendCount() / statistics.studentProgress.length * 100) }}%)
+              ({{getStableTrendCount()? Math.round(getStableTrendCount() / statistics.studentProgress.length * 100):0 }}%)
             </li>
             <li>
               <span class="font-medium text-red-600">{{ getDownwardTrendCount() }}</span> 名学生成绩呈下降趋势
-              ({{ Math.round(getDownwardTrendCount() / statistics.studentProgress.length * 100) }}%)
+              ({{getDownwardTrendCount()? Math.round(getDownwardTrendCount() / statistics.studentProgress.length * 100):0 }}%)
             </li>
           </ul>
         </div>

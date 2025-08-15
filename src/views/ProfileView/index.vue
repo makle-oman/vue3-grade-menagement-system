@@ -106,7 +106,7 @@ const userInfo = ref({
   id: '',
   username: '',
   name: '',
-  role: 'teacher'
+  role: 'teacher' as string
 });
 
 // 表单数据
@@ -194,39 +194,32 @@ const primaryClassNames = (() => {
   return classNames;
 })();
 
-// 班级名称格式转换函数
+// 班级名称格式转换函数 - 统一使用 formatClassName 工具函数
 const convertClassNameFormat = (className: string): string => {
-  // 如果是 "6-3" 格式，转换为 "六（3）班"
-  const match = className.match(/^(\d+)-(\d+)$/);
-  if (match) {
-    const gradeNum = parseInt(match[1]);
-    const classNum = match[2];
-    const gradeMap: Record<number, string> = {
-      1: '一', 2: '二', 3: '三', 4: '四', 5: '五', 6: '六',
-      7: '七', 8: '八', 9: '九'
-    };
-    const gradeName = gradeMap[gradeNum] || gradeNum.toString();
-    return `${gradeName}（${classNum}）班`;
-  }
-  // 如果已经是正确格式，直接返回
-  return className;
+  return formatClassName(className);
 };
 
 // 班级名称反向转换函数（保存时使用）
 const convertClassNameToStorage = (className: string): string => {
-  // 如果是 "六（3）班" 格式，转换为 "6-3"
-  const match = className.match(/^([一二三四五六七八九])（(\d+)）班$/);
+  // 如果是标准格式 "六（3）班"，转换为存储格式
+  const match = className.match(/^([一二三四五六七八九十])（(\d+)）班$/);
   if (match) {
     const gradeName = match[1];
     const classNum = match[2];
     const gradeMap: Record<string, number> = {
       '一': 1, '二': 2, '三': 3, '四': 4, '五': 5, '六': 6,
-      '七': 7, '八': 8, '九': 9
+      '七': 7, '八': 8, '九': 9, '十': 10
     };
-    const gradeNum = gradeMap[gradeName] || gradeName;
+    const gradeNum = gradeMap[gradeName] || 1;
     return `${gradeNum}-${classNum}`;
   }
-  // 如果已经是存储格式，直接返回
+  
+  // 如果是数字-数字格式，直接返回
+  if (className.match(/^\d+-\d+$/)) {
+    return className;
+  }
+  
+  // 其他格式保持原样
   return className;
 };
 

@@ -246,8 +246,9 @@ export const studentApi = {
     await api.delete(`/students/batch/${ids.join(',')}`);
   },
   
-  import: async (students: Omit<Student, 'id' | 'createdAt' | 'teacher'>[]): Promise<Student[]> => {
-    const response = await api.post('/students/import', students);
+  import: async (students: Omit<Student, 'id' | 'createdAt' | 'teacher'>[], classId?: number): Promise<Student[]> => {
+    const url = classId ? `/students/import?classId=${classId}` : '/students/import';
+    const response = await api.post(url, students);
     return response.data;
   },
 };

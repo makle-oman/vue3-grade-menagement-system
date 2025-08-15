@@ -47,7 +47,7 @@
               </el-button>
 
               <el-button type="danger" size="large" @click="batchDeleteStudents"
-                :disabled="selectedStudents.length === 0" class="action-button">
+                :disabled="selectedStudents.length === 0" class="action-button !bg-[#f56c6c]">
                 <el-icon>
                   <Delete />
                 </el-icon>
@@ -242,6 +242,7 @@ import {
 } from '@element-plus/icons-vue';
 import * as XLSX from 'xlsx';
 import { formatClassName, sortClasses } from '@/utils/classUtils';
+import { classApi } from '@/services/api';
 
 const studentStore = useStudentStore();
 const authStore = useAuthStore();
@@ -249,6 +250,7 @@ const authStore = useAuthStore();
 // 响应式数据
 const searchQuery = ref('');
 const selectedClass = ref('');
+const selectedClassId = ref<number | undefined>(undefined);
 const showAddDialog = ref(false);
 const showEditDialog = ref(false);
 const addFormRef = ref();
@@ -356,9 +358,25 @@ const filteredStudents = computed(() => {
 });
 
 // 班级变化处理
-const handleClassChange = (className: string) => {
+const handleClassChange = async (className: string) => {
   selectedClass.value = className;
   currentPage.value = 1; // 重置到第一页
+  
+  // 如果选择了班级，获取班级ID
+  if (className) {
+    try {
+      // 获取所有班级
+      const allClasses = await classApi.getAll();
+      // 查找匹配的班级
+      const matchedClass = allClasses.find(cls => cls.name === className);
+      selectedClassId.value = matchedClass?.id;
+    } catch (error) {
+      console.error('获取班级ID失败:', error);
+      selectedClassId.value = undefined;
+    }
+  } else {
+    selectedClassId.value = undefined;
+  }
 };
 
 // 分页后的学生列表
@@ -558,36 +576,66 @@ const handleImportExcel = (event: Event) => {
       const worksheet = workbook.Sheets[sheetName];
       const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-      const studentsData = jsonData.map((row: any) => {
-        const className = String(row['班级'] || row['className'] || '');
-        // 保存班级名称到本地存储
-        if (className) {
-          saveClassName(className);
+      // 如果当前选择了班级，则使用当前选择的班级ID
+      if (selectedClassId.value) {
+        // 只需要学号和姓名
+        const studentsData = jsonData.map((row: any) => {
+          return {
+            studentNumber: String(row['学号'] || row['studentNumber'] || ''),
+            name: String(row['姓名'] || row['name'] || '')
+          };
+        }).filter(student => student.studentNumber && student.name);
+
+        if (studentsData.length === 0) {
+          ElMessage.error('Excel文件格式不正确，请确保包含"学号"、"姓名"列');
+          return;
         }
 
-        return {
-          studentNumber: String(row['学号'] || row['studentNumber'] || ''),
-          name: String(row['姓名'] || row['name'] || ''),
-          className
-        };
-      }).filter(student => student.studentNumber && student.name && student.className);
+        // 检查重复学号
+        const existingNumbers = studentStore.students.map(s => s.studentNumber);
+        const duplicates = studentsData.filter(s => existingNumbers.includes(s.studentNumber));
 
-      if (studentsData.length === 0) {
-        ElMessage.error('Excel文件格式不正确，请确保包含"学号"、"姓名"、"班级"列');
-        return;
+        if (duplicates.length > 0) {
+          ElMessage.error(`发现重复学号：${duplicates.map(s => s.studentNumber).join(', ')}`);
+          return;
+        }
+
+        // 使用当前选择的班级ID导入学生
+        await studentStore.importStudents(studentsData, selectedClassId.value);
+        ElMessage.success(`成功导入 ${studentsData.length} 名学生到当前选择的班级`);
+      } else {
+        // 如果没有选择班级，则需要从Excel中读取班级信息
+        const studentsData = jsonData.map((row: any) => {
+          const className = String(row['班级'] || row['className'] || '');
+          // 保存班级名称到本地存储
+          if (className) {
+            saveClassName(className);
+          }
+
+          return {
+            studentNumber: String(row['学号'] || row['studentNumber'] || ''),
+            name: String(row['姓名'] || row['name'] || ''),
+            className
+          };
+        }).filter(student => student.studentNumber && student.name && student.className);
+
+        if (studentsData.length === 0) {
+          ElMessage.error('Excel文件格式不正确，请确保包含"学号"、"姓名"、"班级"列');
+          return;
+        }
+
+        // 检查重复学号
+        const existingNumbers = studentStore.students.map(s => s.studentNumber);
+        const duplicates = studentsData.filter(s => existingNumbers.includes(s.studentNumber));
+
+        if (duplicates.length > 0) {
+          ElMessage.error(`发现重复学号：${duplicates.map(s => s.studentNumber).join(', ')}`);
+          return;
+        }
+
+        await studentStore.importStudents(studentsData);
+        ElMessage.success(`成功导入 ${studentsData.length} 名学生`);
       }
-
-      // 检查重复学号
-      const existingNumbers = studentStore.students.map(s => s.studentNumber);
-      const duplicates = studentsData.filter(s => existingNumbers.includes(s.studentNumber));
-
-      if (duplicates.length > 0) {
-        ElMessage.error(`发现重复学号：${duplicates.map(s => s.studentNumber).join(', ')}`);
-        return;
-      }
-
-      await studentStore.importStudents(studentsData);
-      ElMessage.success(`成功导入 ${studentsData.length} 名学生`);
     } catch (error) {
       ElMessage.error('Excel文件解析失败，请检查文件格式');
     }
@@ -620,9 +668,9 @@ const handleExportExcel = () => {
 // 下载模板
 const handleDownloadTemplate = () => {
   const templateData = [
-    { 学号: '2024001', 姓名: '张三', 班级: '高一(1)班' },
-    { 学号: '2024002', 姓名: '李四', 班级: '高一(1)班' },
-    { 学号: '2024003', 姓名: '王五', 班级: '高一(2)班' },
+    { 学号: '2024001', 姓名: '张三'},
+    { 学号: '2024002', 姓名: '李四'},
+    { 学号: '2024003', 姓名: '王五'},
   ];
 
   const worksheet = XLSX.utils.json_to_sheet(templateData);
@@ -664,6 +712,15 @@ onMounted(async () => {
     // 设置默认筛选班级（选择第一个可用班级）
     if (availableClasses.value.length > 0) {
       selectedClass.value = availableClasses.value[0];
+      
+      // 获取班级ID
+      try {
+        const allClasses = await classApi.getAll();
+        const matchedClass = allClasses.find(cls => cls.name === selectedClass.value);
+        selectedClassId.value = matchedClass?.id;
+      } catch (error) {
+        console.error('获取班级ID失败:', error);
+      }
     }
   } catch (error) {
     ElMessage.error('获取学生列表失败');

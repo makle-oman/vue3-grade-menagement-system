@@ -417,6 +417,7 @@ const deleteSemester = async (semester: Semester) => {
       '确认删除',
       {
         confirmButtonText: '删除',
+        confirmButtonClass:"!bg-[#409EFF]",
         cancelButtonText: '取消',
         type: 'warning',
       }

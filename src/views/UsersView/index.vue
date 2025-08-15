@@ -125,7 +125,7 @@
     <!-- 创建/编辑用户对话框 -->
     <el-dialog v-model="showCreateDialog" :title="editingUser ? '编辑用户' : '添加用户'" width="600px" class="user-dialog">
       <el-form ref="userFormRef" :model="userForm" :rules="userFormRules" label-width="100px" class="user-form">
-        <el-form-item label="用户名" prop="username">
+        <el-form-item label="手机号" prop="username">
           <el-input v-model="userForm.username" :disabled="!!editingUser" />
         </el-form-item>
 
@@ -162,7 +162,7 @@
 
       <template #footer>
         <el-button @click="showCreateDialog = false">取消</el-button>
-        <el-button type="primary" @click="saveUser" :loading="saving">
+        <el-button type="primary" @click="saveUser" :loading="saving" class="!bg-[#409EFF]">
           {{ editingUser ? '更新' : '创建' }}
         </el-button>
       </template>
@@ -208,8 +208,21 @@ const userForm = reactive({
 
 const userFormRules: FormRules = {
   username: [
-    { required: true, message: '请输入用户名', trigger: 'blur' },
-    { min: 3, max: 20, message: '用户名长度在 3 到 20 个字符', trigger: 'blur' },
+    { required: true, message: '请输入手机号', trigger: 'blur' },
+    { 
+      validator: (rule, value, callback) => {
+       
+        // 2. 手机号格式
+        const isPhone = /^(?:(?:\+|00)86)?1[3-9]\d{9}$/.test(value)
+        
+        if (isPhone) {
+          callback()
+        } else {
+          callback(new Error('请输入正确的用户名、手机号或测试账号'))
+        }
+      },
+      trigger: 'blur'
+    }
   ],
   name: [
     { required: true, message: '请输入姓名', trigger: 'blur' },
@@ -233,7 +246,7 @@ const primaryClassNames = (() => {
   const grades = ['一', '二', '三', '四', '五', '六'];
   const classNames: string[] = [];
 
-  grades.forEach((grade, gradeIndex) => {
+  grades.forEach((grade) => {
     for (let classNum = 1; classNum <= 9; classNum++) {
       classNames.push(`${grade}（${classNum}）班`);
     }
@@ -444,6 +457,7 @@ const deleteUser = async (user: UserType) => {
       '确认删除',
       {
         confirmButtonText: '删除',
+        confirmButtonClass:"!bg-[#409EFF]",
         cancelButtonText: '取消',
         type: 'warning',
       }
