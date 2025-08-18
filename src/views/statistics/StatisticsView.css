@@ -470,6 +470,16 @@
 
 .absent-row, .fail-row {
   color: #ef4444;
+  /* background-color: rgba(239, 68, 68, 0.1); */
+}
+
+.absent-row td, .fail-row td {
+  color: #ef4444;
+}
+
+.ranking-table tr.absent-row:hover td,
+.ranking-table tr.fail-row:hover td {
+  background-color: rgba(239, 68, 68, 0.15);
 }
 
 /* 考试统计分析样式 */

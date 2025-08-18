@@ -190,13 +190,13 @@
                 <span v-else :class="getScoreClass(student.score)">{{ student.score }}</span>
               </td>
               <td>
-                <span v-if="student.isAbsent" class="grade-badge grade-absent">缺考</span>
+                <span v-if="student.isAbsent" class="grade-badge grade-absent grade-poor rating-c">缺考</span>
                 <span v-else :class="getGradeBadgeClass(student.score)" class="grade-badge">
                   {{ getGradeText(student.score) }}
                 </span>
               </td>
               <td>
-                <span v-if="student.isAbsent" class="rating-badge rating-absent">-</span>
+                <span v-if="student.isAbsent" class="rating-badge rating-absent rating-c">-</span>
                 <span v-else :class="getRatingBadgeClass(student.score)" class="rating-badge">
                   {{ getRatingText(student.score) }}
                 </span>
@@ -524,13 +524,7 @@ const filteredExams = computed(() => {
     return exams.value
   }
   
-  // 调试信息
-  console.log('=== FILTERING EXAMS ===')
-  console.log('Selected class ID:', selectedClassId.value)
-  console.log('Selected class:', selectedClass)
-  console.log('All classes:', classes.value)
-  console.log('All exams:', exams.value)
-  console.log('Looking for exams with className:', selectedClass.name)
+
   
   const filtered = exams.value.filter(exam => {
     const match = exam.className === selectedClass.name
@@ -538,8 +532,7 @@ const filteredExams = computed(() => {
     return match
   })
   
-  console.log('Filtered exams result:', filtered)
-  console.log('=== END FILTERING ===')
+
   return filtered
 })
 
