@@ -430,6 +430,7 @@ const loadStatistics = async () => {
   try {
     loading.value = true;
     statistics.value = await statisticsApi.getSemesterStatistics(filters.semesterId, filters.className);
+      ElMessage.success('查询成功！');
     
     // 使用统计数据中的考试信息更新考试列表
     if (statistics.value && statistics.value.exams) {

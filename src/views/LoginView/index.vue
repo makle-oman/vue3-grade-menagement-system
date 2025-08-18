@@ -101,7 +101,7 @@
           </div>
           <div class="demo-item">
             <span class="demo-role">教师:</span>
-            <span class="demo-account">teacher1 / teacher123</span>
+            <span class="demo-account">13800138000 / 888888</span>
           </div>
           <div class="demo-item">
             <span class="demo-role">年级组长:</span>
@@ -263,7 +263,7 @@ const loginRules: FormRules = {
 const registerRules: FormRules = {
   username: [
     { required: true, message: '请输入手机号', trigger: 'blur' },
-    { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号格式', trigger: 'blur' }
+    { pattern: /^1[0-9]\d{9}$/, message: '请输入正确的手机号格式', trigger: 'blur' }
   ],
   name: [
     { required: true, message: '请输入真实姓名', trigger: 'blur' },
