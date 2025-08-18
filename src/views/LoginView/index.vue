@@ -338,10 +338,14 @@ const handleRegister = async () => {
     if (!valid) return
 
     const { confirmPassword, classInfo, ...registerData } = registerForm
+    
     // 将班级信息作为数组传递给后端
     const finalRegisterData = {
       ...registerData,
       classNames: [classInfo] // 确保作为数组传递
+    }
+    if(finalRegisterData.role =='grade_leader'){
+      delete finalRegisterData['subject']
     }
     const success = await authStore.register(finalRegisterData)
     if (success) {
