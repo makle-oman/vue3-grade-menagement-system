@@ -371,7 +371,6 @@ const handleSettings = () => {
 }
 
 .main-content {
-  max-width: 1400px;
   margin: 0 auto;
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
@@ -382,81 +381,5 @@ const handleSettings = () => {
   padding: 32px;
 }
 
-/* 响应式设计 */
-@media (max-width: 1024px) {
-  .app-header {
-    padding: 0 20px;
-    height: 64px;
-  }
 
-  .header-left .app-title {
-    font-size: 20px;
-  }
-
-  .app-main {
-    padding: 16px 20px;
-  }
-
-  .main-content {
-    padding: 24px;
-  }
-}
-
-@media (max-width: 768px) {
-  .app-header {
-    padding: 0 16px;
-    height: 60px;
-  }
-
-  .header-left .app-title {
-    font-size: 18px;
-  }
-
-  .user-info {
-    gap: 8px;
-    padding: 6px 12px;
-  }
-
-  .user-avatar {
-    width: 32px;
-    height: 32px;
-    font-size: 12px;
-  }
-
-  .user-welcome {
-    font-size: 14px;
-  }
-
-  .user-role {
-    display: none;
-  }
-
-  .app-nav {
-    padding: 0 16px;
-  }
-
-  .nav-item span {
-    display: none;
-  }
-
-  .nav-icon {
-    margin-right: 0;
-  }
-
-  .app-main {
-    padding: 12px 16px;
-  }
-
-  .main-content {
-    padding: 20px;
-    border-radius: 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  .main-content {
-    padding: 16px;
-    border-radius: 12px;
-  }
-}
 </style>
