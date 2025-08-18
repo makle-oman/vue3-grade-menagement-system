@@ -1,0 +1,236 @@
+/* 年级分析页面样式 */
+.grade-analysis-container {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-header {
+  background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.page-header h1 {
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.page-header p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+}
+
+.filter-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+  border-top: 3px solid #4b6cb7;
+}
+
+.filter-card .el-button {
+  background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.filter-card .el-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.stats-card {
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  height: 100%;
+  border-left: 4px solid transparent;
+}
+
+.stats-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.stats-card.blue {
+  border-left-color: #4b6cb7;
+}
+
+.stats-card.green {
+  border-left-color: #10b981;
+}
+
+.stats-card.yellow {
+  border-left-color: #f59e0b;
+}
+
+.stats-card.purple {
+  border-left-color: #8b5cf6;
+}
+
+.stats-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+}
+
+.stats-title {
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.stats-value {
+  color: #111827;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 0.25rem;
+}
+
+.comparison-table {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.comparison-table .table-header {
+  background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+  padding: 1rem 1.5rem;
+  color: white;
+}
+
+.comparison-table table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.comparison-table th {
+  background-color: #f9fafb;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #4b5563;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.75rem;
+}
+
+.comparison-table td {
+  padding: 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.comparison-table tr:hover {
+  background-color: #f9fafb;
+}
+
+.comparison-table tr:last-child td {
+  border-bottom: none;
+}
+
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 0.75rem;
+}
+
+.rank-badge.gold {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.rank-badge.silver {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+.rank-badge.bronze {
+  background-color: #ffedd5;
+  color: #9a3412;
+}
+
+.rank-badge.normal {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.empty-state svg {
+  color: #9ca3af;
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  color: #111827;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+  color: #6b7280;
+  text-align: center;
+  max-width: 24rem;
+}
+
+.improvement-up {
+  color: #10b981;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.improvement-down {
+  color: #ef4444;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.improvement-neutral {
+  color: #6b7280;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .stats-card {
+    margin-bottom: 1rem;
+  }
+  
+  .comparison-table {
+    overflow-x: auto;
+  }
+}
