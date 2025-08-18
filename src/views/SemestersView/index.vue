@@ -153,11 +153,12 @@
       </el-table>
     </div>
 
-    <!-- 创建/编辑学期对话框 -->
+    <!-- 添加学期对话框 -->
     <el-dialog
       v-model="showCreateDialog"
-      :title="editingSemester ? '编辑学期' : '添加学期'"
+      title="添加学期"
       width="600px"
+      :close-on-click-modal="false"
     >
       <el-form
         ref="semesterFormRef"
@@ -203,10 +204,72 @@
       </el-form>
       
       <template #footer>
-        <el-button @click="showCreateDialog = false">取消</el-button>
-        <el-button type="primary" @click="saveSemester" :loading="saving" class="!bg-[#409EFF]">
-          {{ editingSemester ? '更新' : '创建' }}
-        </el-button>
+        <div class="flex gap-2 justify-end">
+          <el-button @click="showCreateDialog = false">取消</el-button>
+          <el-button type="primary" @click="saveSemester" :loading="saving">
+            创建
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!-- 编辑学期对话框 -->
+    <el-dialog
+      v-model="showEditDialog"
+      title="编辑学期"
+      width="600px"
+      :close-on-click-modal="false"
+    >
+      <el-form
+        ref="editSemesterFormRef"
+        :model="editingSemesterForm"
+        :rules="semesterFormRules"
+        label-width="100px"
+      >
+        <el-form-item label="学期名称" prop="name">
+          <el-input v-model="editingSemesterForm.name" placeholder="如：2024年春季学期" />
+        </el-form-item>
+        
+        <el-form-item label="学年" prop="schoolYear">
+          <el-input
+            v-model="editingSemesterForm.schoolYear"
+            placeholder="如：2024-2025"
+            style="width: 100%"
+          />
+          <div class="text-xs text-gray-500 mt-1">格式：起始年份-结束年份，如 2024-2025</div>
+        </el-form-item>
+        
+        <el-form-item label="开始日期" prop="startDate">
+          <el-date-picker
+            v-model="editingSemesterForm.startDate"
+            type="date"
+            placeholder="选择开始日期"
+            style="width: 100%"
+          />
+        </el-form-item>
+        
+        <el-form-item label="结束日期" prop="endDate">
+          <el-date-picker
+            v-model="editingSemesterForm.endDate"
+            type="date"
+            placeholder="选择结束日期"
+            style="width: 100%"
+          />
+        </el-form-item>
+        
+        <el-form-item label="设为当前学期">
+          <el-switch v-model="editingSemesterForm.isCurrent" />
+        </el-form-item>
+        
+      </el-form>
+      
+      <template #footer>
+        <div class="flex gap-2 justify-end">
+          <el-button @click="showEditDialog = false">取消</el-button>
+          <el-button type="primary" @click="updateSemester" :loading="saving">
+            更新
+          </el-button>
+        </div>
       </template>
     </el-dialog>
   </div>
@@ -225,12 +288,23 @@ const semesters = ref<Semester[]>([]);
 const searchQuery = ref('');
 const statusFilter = ref('');
 const showCreateDialog = ref(false);
+const showEditDialog = ref(false);
 const editingSemester = ref<Semester | null>(null);
 
 const semesterFormRef = ref<FormInstance>();
+const editSemesterFormRef = ref<FormInstance>();
+
 const semesterForm = reactive({
   name: '',
   schoolYear: `${new Date().getFullYear()}-${new Date().getFullYear() + 1}`,
+  startDate: '',
+  endDate: '',
+  isCurrent: false,
+});
+
+const editingSemesterForm = reactive({
+  name: '',
+  schoolYear: '',
   startDate: '',
   endDate: '',
   isCurrent: false,
@@ -336,20 +410,31 @@ const resetForm = () => {
     endDate: '',
     isCurrent: false,
   });
-  editingSemester.value = null;
   semesterFormRef.value?.clearValidate();
+};
+
+const resetEditForm = () => {
+  Object.assign(editingSemesterForm, {
+    name: '',
+    schoolYear: '',
+    startDate: '',
+    endDate: '',
+    isCurrent: false,
+  });
+  editingSemester.value = null;
+  editSemesterFormRef.value?.clearValidate();
 };
 
 const editSemester = (semester: Semester) => {
   editingSemester.value = semester;
-  Object.assign(semesterForm, {
+  Object.assign(editingSemesterForm, {
     name: semester.name,
     schoolYear: semester.schoolYear,
     startDate: semester.startDate,
     endDate: semester.endDate,
     isCurrent: semester.isCurrent,
   });
-  showCreateDialog.value = true;
+  showEditDialog.value = true;
 };
 
 const saveSemester = async () => {
@@ -359,7 +444,7 @@ const saveSemester = async () => {
     await semesterFormRef.value.validate();
     
     // 验证日期
-    if (new Date(semesterForm.endDate) <= new Date(semesterForm.startDate)) {
+    if (new Date(semesterForm.endDate as string) <= new Date(semesterForm.startDate as string)) {
       ElMessage.error('结束日期必须晚于开始日期');
       return;
     }
@@ -370,22 +455,17 @@ const saveSemester = async () => {
     const semesterData = {
       name: semesterForm.name,
       schoolYear: semesterForm.schoolYear,
-      startDate: semesterForm.startDate instanceof Date 
-        ? semesterForm.startDate.toISOString() 
+      startDate: typeof semesterForm.startDate === 'object' && semesterForm.startDate !== null
+        ? semesterForm.startDate.toISOString()
         : semesterForm.startDate,
-      endDate: semesterForm.endDate instanceof Date 
-        ? semesterForm.endDate.toISOString() 
+      endDate: typeof semesterForm.endDate === 'object' && semesterForm.endDate !== null
+        ? semesterForm.endDate.toISOString()
         : semesterForm.endDate,
       isCurrent: semesterForm.isCurrent
     };
     
-    if (editingSemester.value) {
-      await semesterApi.update(editingSemester.value.id, semesterData);
-      ElMessage.success('学期更新成功');
-    } else {
-      await semesterApi.create(semesterData);
-      ElMessage.success('学期创建成功');
-    }
+    await semesterApi.create(semesterData);
+    ElMessage.success('学期创建成功');
     
     showCreateDialog.value = false;
     resetForm();
@@ -393,7 +473,49 @@ const saveSemester = async () => {
     
   } catch (error) {
     console.error('Failed to save semester:', error);
-    ElMessage.error('保存学期失败');
+    ElMessage.error('创建学期失败');
+  } finally {
+    saving.value = false;
+  }
+};
+
+const updateSemester = async () => {
+  if (!editSemesterFormRef.value || !editingSemester.value) return;
+  
+  try {
+    await editSemesterFormRef.value.validate();
+    
+    // 验证日期
+    if (new Date(editingSemesterForm.endDate as string) <= new Date(editingSemesterForm.startDate as string)) {
+      ElMessage.error('结束日期必须晚于开始日期');
+      return;
+    }
+    
+    saving.value = true;
+    
+    // 准备数据，确保日期是ISO字符串格式
+    const semesterData = {
+      name: editingSemesterForm.name,
+      schoolYear: editingSemesterForm.schoolYear,
+      startDate: typeof editingSemesterForm.startDate === 'object' && editingSemesterForm.startDate !== null
+        ? editingSemesterForm.startDate.toISOString()
+        : editingSemesterForm.startDate,
+      endDate: typeof editingSemesterForm.endDate === 'object' && editingSemesterForm.endDate !== null
+        ? editingSemesterForm.endDate.toISOString()
+        : editingSemesterForm.endDate,
+      isCurrent: editingSemesterForm.isCurrent
+    };
+    
+    await semesterApi.update(editingSemester.value.id, semesterData);
+    ElMessage.success('学期更新成功');
+    
+    showEditDialog.value = false;
+    resetEditForm();
+    await fetchSemesters();
+    
+  } catch (error) {
+    console.error('Failed to update semester:', error);
+    ElMessage.error('更新学期失败');
   } finally {
     saving.value = false;
   }
@@ -442,4 +564,47 @@ onMounted(() => {
 
 <style>
 @import "./index.css";
+
+/* 确保对话框样式正确应用 */
+:deep(.el-dialog) {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(102, 126, 234, 0.1) !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+  overflow: hidden !important;
+}
+
+:deep(.el-dialog__header) {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%) !important;
+  border-bottom: 1px solid rgba(102, 126, 234, 0.1) !important;
+  border-radius: 20px 20px 0 0 !important;
+  padding: 20px 24px !important;
+}
+
+:deep(.el-dialog__title) {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: #1f2937 !important;
+}
+
+:deep(.el-dialog__body) {
+  padding: 24px !important;
+}
+
+:deep(.el-dialog__footer) {
+  padding: 20px 24px !important;
+  border-top: 1px solid rgba(102, 126, 234, 0.1) !important;
+}
+
+:deep(.el-button--primary) {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+  border: none !important;
+}
+
+:deep(.el-button--primary:hover) {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6) !important;
+}
 </style>

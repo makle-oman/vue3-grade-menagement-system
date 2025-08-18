@@ -7,7 +7,6 @@
           v-if="canCreateClass"
           type="primary" 
           @click="showCreateDialog = true" 
-          class="!bg-[#409eff]"
         >
           <el-icon><Plus /></el-icon>
           新建班级
@@ -53,12 +52,13 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200">
+        <el-table-column label="操作" >
           <template #default="{ row }">
             <el-button 
               v-if="canOperateClass(row.name)" 
               size="small" 
               @click="editClass(row)"
+              class="!bg-[#409eff] !text-[#fff]"
             >
               编辑
             </el-button>
@@ -85,11 +85,12 @@
       </el-table>
     </el-card>
 
-    <!-- 新建/编辑班级对话框 -->
+    <!-- 新建班级对话框 -->
     <el-dialog 
-      :title="editingClass ? '编辑班级' : '新建班级'"
+      title="新建班级"
       v-model="showCreateDialog"
       width="500px"
+      :close-on-click-modal="false"
     >
       <el-form :model="classForm" :rules="classRules" ref="classFormRef" label-width="80px">
         <el-form-item label="班级名称" prop="name">
@@ -108,10 +109,45 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="showCreateDialog = false">取消</el-button>
-        <el-button type="primary" @click="saveClass" :loading="saving" class="!bg-[#409eff]">
-          {{ editingClass ? '更新' : '创建' }}
-        </el-button>
+        <div class="flex gap-2 justify-end">
+          <el-button @click="showCreateDialog = false">取消</el-button>
+          <el-button type="primary" @click="saveClass" :loading="saving">
+            创建
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!-- 编辑班级对话框 -->
+    <el-dialog 
+      title="编辑班级"
+      v-model="showEditDialog"
+      width="500px"
+      :close-on-click-modal="false"
+    >
+      <el-form :model="editingClassForm" :rules="classRules" ref="editClassFormRef" label-width="80px">
+        <el-form-item label="班级名称" prop="name">
+          <el-input v-model="editingClassForm.name" placeholder="请输入班级名称，如：一（2）班" />
+        </el-form-item>
+        <el-form-item label="描述" prop="description">
+          <el-input 
+            v-model="editingClassForm.description" 
+            type="textarea" 
+            :rows="3"
+            placeholder="请输入班级描述（可选）" 
+          />
+        </el-form-item>
+        <el-form-item label="状态" prop="isActive">
+          <el-switch v-model="editingClassForm.isActive" active-text="活跃" inactive-text="停用" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="flex gap-2 justify-end">
+          <el-button @click="showEditDialog = false">取消</el-button>
+          <el-button type="primary" @click="updateClass" :loading="saving">
+            更新
+          </el-button>
+        </div>
       </template>
     </el-dialog>
   </div>
@@ -156,11 +192,19 @@ const canOperateClass = (className: string) => {
 const loading = ref(false)
 const saving = ref(false)
 const showCreateDialog = ref(false)
+const showEditDialog = ref(false)
 const showInactiveClasses = ref(false)
 const classes = ref<Class[]>([])
 const editingClass = ref<Class | null>(null)
 
 const classForm = reactive({
+  name: '',
+  grade: '',
+  description: '',
+  isActive: true
+})
+
+const editingClassForm = reactive({
   name: '',
   grade: '',
   description: '',
@@ -179,6 +223,7 @@ const classRules = {
 }
 
 const classFormRef = ref()
+const editClassFormRef = ref()
 
 const loadClasses = async () => {
   loading.value = true
@@ -204,16 +249,23 @@ const resetForm = () => {
   classForm.grade = ''
   classForm.description = ''
   classForm.isActive = true
+}
+
+const resetEditForm = () => {
+  editingClassForm.name = ''
+  editingClassForm.grade = ''
+  editingClassForm.description = ''
+  editingClassForm.isActive = true
   editingClass.value = null
 }
 
 const editClass = (classItem: Class) => {
   editingClass.value = classItem
-  classForm.name = classItem.name
-  classForm.grade = classItem.grade
-  classForm.description = classItem.description || ''
-  classForm.isActive = classItem.isActive
-  showCreateDialog.value = true
+  editingClassForm.name = classItem.name
+  editingClassForm.grade = classItem.grade
+  editingClassForm.description = classItem.description || ''
+  editingClassForm.isActive = classItem.isActive
+  showEditDialog.value = true
 }
 
 const saveClass = async () => {
@@ -223,21 +275,39 @@ const saveClass = async () => {
     await classFormRef.value.validate()
     saving.value = true
     
-    if (editingClass.value) {
-      await classApi.update(editingClass.value.id, classForm)
-      ElMessage.success('班级更新成功')
-    } else {
-      await classApi.create(classForm)
-      ElMessage.success('班级创建成功')
-    }
+    await classApi.create(classForm)
+    ElMessage.success('班级创建成功')
     
     showCreateDialog.value = false
     resetForm()
     await loadClasses()
   } catch (error) {
     if (error !== false) { // 不是表单验证错误
-      ElMessage.error(editingClass.value ? '更新班级失败' : '创建班级失败')
-      console.error('保存班级失败:', error)
+      ElMessage.error('创建班级失败')
+      console.error('创建班级失败:', error)
+    }
+  } finally {
+    saving.value = false
+  }
+}
+
+const updateClass = async () => {
+  if (!editClassFormRef.value || !editingClass.value) return
+  
+  try {
+    await editClassFormRef.value.validate()
+    saving.value = true
+    
+    await classApi.update(editingClass.value.id, editingClassForm)
+    ElMessage.success('班级更新成功')
+    
+    showEditDialog.value = false
+    resetEditForm()
+    await loadClasses()
+  } catch (error) {
+    if (error !== false) { // 不是表单验证错误
+      ElMessage.error('更新班级失败')
+      console.error('更新班级失败:', error)
     }
   } finally {
     saving.value = false
