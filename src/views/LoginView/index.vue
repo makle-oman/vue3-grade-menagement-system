@@ -47,8 +47,6 @@
                 clearable />
             </el-form-item>
 
-            <!-- 移除邮箱字段，因为后端不需要 -->
-
             <el-form-item prop="role">
               <el-select v-model="registerForm.role" placeholder="请选择角色" size="large" style="width: 100%">
                 <el-option label="教师" value="teacher" />
@@ -56,7 +54,7 @@
               </el-select>
             </el-form-item>
 
-            <el-form-item prop="subject">
+            <el-form-item prop="subject" v-if="registerForm.role == 'teacher'">
               <el-select v-model="registerForm.subject" placeholder="请选择教学科目" size="large" style="width: 100%">
                 <el-option label="语文" value="语文" />
                 <el-option label="数学" value="数学" />
@@ -64,7 +62,7 @@
               </el-select>
             </el-form-item>
 
-            <el-form-item prop="classInfo">
+            <el-form-item prop="classInfo" v-if="registerForm.role == 'teacher'">
               <el-select v-model="registerForm.classInfo" placeholder="请选择班级" size="large" style="width: 100%">
                 <el-option v-for="classOption in classOptions" :key="classOption.value" :label="formatClassName(classOption.label)"
                   :value="classOption.value" />
@@ -224,7 +222,7 @@ const registerForm = reactive<RegisterData & { confirmPassword: string, classInf
   username: '',
   name: '',
   role: 'teacher',
-  subject: '语文', // 默认选择语文
+  subject: '数学', // 默认选择语文
   classInfo: '',
   password: '',
   confirmPassword: ''
