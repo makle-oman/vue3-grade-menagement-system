@@ -50,7 +50,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" @click="handleSave" :loading="saving" class="!bg-[#409eff]">
+          <el-button type="primary" @click="handleSave" :loading="saving" class="!bg-[#409eff] !text-[#fff]">
             保存修改
           </el-button>
           <el-button @click="handleReset">重置</el-button>
@@ -76,7 +76,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" @click="handleChangePassword" :loading="changingPassword" class="!bg-[#409eff]">
+          <el-button type="primary" @click="handleChangePassword" :loading="changingPassword" class="!bg-[#409eff] !text-[#fff]">
             修改密码
           </el-button>
           <el-button @click="handleResetPassword">重置</el-button>

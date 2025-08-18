@@ -181,7 +181,7 @@
             </el-icon>
             考试计划
           </h3>
-          <el-button type="primary" class="!bg-[#409eff] text-[#fff]" @click="$router.push('/exams')">查看全部</el-button>
+          <el-button type="primary" class="!bg-[#409eff] !text-[#fff]" @click="$router.push('/exams')">查看全部</el-button>
         </div>
       </template>
       <div class="space-y-4">
