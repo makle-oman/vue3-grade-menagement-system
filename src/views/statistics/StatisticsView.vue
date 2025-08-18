@@ -190,13 +190,13 @@
                 <span v-else :class="getScoreClass(student.score)">{{ student.score }}</span>
               </td>
               <td>
-                <span v-if="student.isAbsent" class="grade-badge grade-absent grade-poor rating-c">缺考</span>
+                <span v-if="student.isAbsent" class="grade-badge  grade-poor rating-c">缺考</span>
                 <span v-else :class="getGradeBadgeClass(student.score)" class="grade-badge">
                   {{ getGradeText(student.score) }}
                 </span>
               </td>
               <td>
-                <span v-if="student.isAbsent" class="rating-badge rating-absent rating-c">-</span>
+                <span v-if="student.isAbsent" class="rating-badge  rating-c">-</span>
                 <span v-else :class="getRatingBadgeClass(student.score)" class="rating-badge">
                   {{ getRatingText(student.score) }}
                 </span>
