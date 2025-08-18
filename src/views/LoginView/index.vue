@@ -12,11 +12,11 @@
           <el-form ref="loginFormRef" :model="loginForm" :rules="loginRules" class="login-form"
             @submit.prevent="handleLogin">
             <el-form-item prop="username">
-              <el-input v-model="loginForm.username" placeholder="请输入用户名" size="large" :prefix-icon="User" clearable />
+              <el-input v-model="loginForm.username" placeholder="请输入用户名"  :prefix-icon="User" clearable />
             </el-form-item>
 
             <el-form-item prop="password">
-              <el-input v-model="loginForm.password" type="password" placeholder="请输入密码" size="large"
+              <el-input v-model="loginForm.password" type="password" placeholder="请输入密码" 
                 :prefix-icon="Lock" show-password clearable @keyup.enter="handleLogin" />
             </el-form-item>
 
@@ -38,12 +38,12 @@
           <el-form ref="registerFormRef" :model="registerForm" :rules="registerRules" class="login-form"
             @submit.prevent="handleRegister">
             <el-form-item prop="username">
-              <el-input v-model="registerForm.username" placeholder="请输入手机号" size="large" :prefix-icon="User"
+              <el-input v-model="registerForm.username" placeholder="请输入手机号" size="small" :prefix-icon="User"
                 clearable />
             </el-form-item>
 
             <el-form-item prop="name">
-              <el-input v-model="registerForm.name" placeholder="请输入真实姓名" size="large" :prefix-icon="UserFilled"
+              <el-input v-model="registerForm.name" placeholder="请输入真实姓名" size="small" :prefix-icon="UserFilled"
                 clearable />
             </el-form-item>
 
@@ -72,12 +72,12 @@
             </el-form-item>
 
             <el-form-item prop="password">
-              <el-input v-model="registerForm.password" type="password" placeholder="请输入密码" size="large"
+              <el-input v-model="registerForm.password" type="password" placeholder="请输入密码" size="small"
                 :prefix-icon="Lock" show-password clearable />
             </el-form-item>
 
             <el-form-item prop="confirmPassword">
-              <el-input v-model="registerForm.confirmPassword" type="password" placeholder="请确认密码" size="large"
+              <el-input v-model="registerForm.confirmPassword" type="password" placeholder="请确认密码" size="small"
                 :prefix-icon="Lock" show-password clearable @keyup.enter="handleRegister" />
             </el-form-item>
 
