@@ -2,10 +2,23 @@
 .page-content {
   width: 100% !important;
   max-width: 100% !important;
-  overflow-x: hidden !important;
+  overflow: hidden !important;
   padding: 0 !important;
   box-sizing: border-box !important;
   background: transparent;
+  min-height: 0 !important;
+  height: auto !important;
+}
+
+/* 防止初始化时出现滚动条 */
+.page-content * {
+  box-sizing: border-box !important;
+}
+
+.page-content .space-y-6 {
+  overflow: hidden !important;
+  width: 100% !important;
+  max-width: 100% !important;
 }
 
 .space-y-6 > * + * {

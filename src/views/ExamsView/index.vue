@@ -7,7 +7,7 @@
     </div>
 
     <!-- 考试信息管理卡片 -->
-    <div class="bg-white rounded-lg border shadow-sm">
+    <div class="bg-white rounded-lg border shadow-sm pb-6">
       <div class="p-6 border-b border-gray-200">
         <div class="flex flex-row justify-between items-center gap-4">
           <div>
@@ -27,7 +27,7 @@
 
       <div class="p-6">
         <!-- 搜索区域 -->
-        <div class="mb-6">
+        <div class="mb-6 mt-6">
           <div class="flex flex-row gap-4">
             <!-- 班级筛选 -->
             <div class="w-48">

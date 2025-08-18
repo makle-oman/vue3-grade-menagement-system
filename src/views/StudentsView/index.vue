@@ -193,7 +193,7 @@
       <template #footer>
         <div class="flex gap-2 justify-end">
           <el-button @click="showAddDialog = false">取消</el-button>
-          <el-button type="primary" @click="addStudent" class="!bg-[#409eff]">添加</el-button>
+          <el-button type="primary" @click="addStudent" >添加</el-button>
         </div>
       </template>
     </el-dialog>

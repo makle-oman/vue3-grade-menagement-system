@@ -3,7 +3,7 @@
     <el-card class="mb-4">
       <template #header>
         <div class="text-center">
-          <h2 class="text-xl font-bold mb-2">成绩单生成</h2>
+          <h2 class="text-xl font-bold mb-2 text-3xl">成绩单生成</h2>
           <div class="text-gray-500 text-sm">生成和导出各种格式的成绩单和统计报表</div>
         </div>
       </template>
