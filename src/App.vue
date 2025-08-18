@@ -83,8 +83,8 @@
             <span>学期管理</span>
           </el-menu-item>
 
-          <!-- 年级组长专用菜单 -->
-          <el-menu-item v-if="currentUser?.role === 'grade_leader'" index="/grade-analysis" class="nav-item">
+          <!-- 年级组长和管理员专用菜单 -->
+          <el-menu-item v-if="currentUser?.role === 'grade_leader' || currentUser?.role === 'admin'" index="/grade-analysis" class="nav-item">
             <el-icon class="nav-icon"><TrendCharts /></el-icon>
             <span>年级分析</span>
           </el-menu-item>

@@ -323,7 +323,7 @@ const chartData = computed(() => {
         examStats[key] = {
           total: 0,
           count: 0,
-          examName: exam.name,
+          examName: exam.className + '-' + exam.subject + '-' + exam.name,
           examDate: exam.examDate
         };
       }

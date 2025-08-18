@@ -96,7 +96,7 @@
         </div>
 
         <div class="user-actions">
-          <el-button size="small" type="primary" link :icon="Edit" @click="editUser(user)">
+          <el-button size="small" type="primary" link :icon="Edit" @click="editUser(user)" class="!text-[#fff]">
             编辑
           </el-button>
           <el-button size="small" type="info" link @click="resetPassword(user)">

@@ -599,6 +599,6 @@ const getScoreStatusText = (studentId: string) => {
 };
 </script>
 
-<style>
+<style scoped>
 @import "./index.css";
 </style>

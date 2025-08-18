@@ -35,7 +35,7 @@
         </div>
         
         <div class="flex items-end">
-          <el-button type="primary" @click="loadAnalysis" :loading="loading" class="px-6">
+          <el-button  @click="loadAnalysis" :loading="loading" class="px-6 !text-[#fff]">
             <i class="el-icon-data-analysis mr-1"></i>
             {{ loading ? '分析中...' : '分析数据' }}
           </el-button>
@@ -224,6 +224,11 @@ const fetchSemesters = async () => {
     if (currentSemester) {
       filters.semesterId = currentSemester.id;
     }
+    
+    // 默认选择第一个年级
+    if (gradeLevels.value.length > 0) {
+      filters.gradeLevel = gradeLevels.value[0].value;
+    }
   } catch (error) {
     console.error('获取学期列表失败:', error);
     ElMessage.error('获取学期列表失败');
@@ -275,11 +280,16 @@ const loadAnalysis = async () => {
 //   analysis.value = null;
 // });
 
-onMounted(() => {
-  fetchSemesters();
+onMounted(async () => {
+  await fetchSemesters();
+  
+  // 如果已经有学期和年级，自动加载分析数据
+  if (filters.semesterId && filters.gradeLevel) {
+    loadAnalysis();
+  }
 });
 </script>
 
-<style>
+<style scoped>
 @import './index.css';
 </style>

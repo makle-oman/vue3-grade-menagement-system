@@ -944,7 +944,7 @@ onMounted(() => {
 })
 </script>
 
-<style>
+<style scoped>
 @import "../../styles/views/statistics.css";
 @import "./StatisticsView.css";
 </style>

@@ -560,7 +560,7 @@ onMounted(() => {
 });
 </script>
 
-<style>
+<style scoped>
 @import "./index.css";
 
 /* 确保对话框样式正确应用 */
