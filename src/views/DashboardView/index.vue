@@ -19,7 +19,7 @@
           <div class="card-content">
             <div class="card-stat">{{ stats.studentCount }}</div>
             <p class="card-desc">学生总数</p>
-            <el-button type="primary" class="!bg-[#409eff]" @click.stop="$router.push('/students')">管理学生</el-button>
+            <el-button  @click.stop="$router.push('/students')">管理学生</el-button>
           </div>
         </el-card>
       </el-col>
@@ -37,7 +37,7 @@
           <div class="card-content">
             <div class="card-stat">{{ stats.examCount }}</div>
             <p class="card-desc">考试总数</p>
-            <el-button type="primary" class="!bg-[#409eff]" @click.stop="$router.push('/exams')">管理考试</el-button>
+            <el-button  @click.stop="$router.push('/exams')">管理考试</el-button>
           </div>
         </el-card>
       </el-col>
@@ -55,7 +55,7 @@
           <div class="card-content">
             <div class="card-stat">{{ stats.scoreCount || 0 }}</div>
             <p class="card-desc">成绩记录数</p>
-            <el-button type="primary" class="!bg-[#409eff]" @click.stop="$router.push('/scores')">录入成绩</el-button>
+            <el-button  @click.stop="$router.push('/scores')">录入成绩</el-button>
           </div>
         </el-card>
       </el-col>
@@ -77,7 +77,7 @@
               </el-icon>
             </div>
             <p class="card-desc">分析成绩数据</p>
-            <el-button type="primary" class="!bg-[#409eff]" @click.stop="$router.push('/statistics')">查看统计</el-button>
+            <el-button  @click.stop="$router.push('/statistics')">查看统计</el-button>
           </div>
         </el-card>
       </el-col>
@@ -181,7 +181,7 @@
             </el-icon>
             考试计划
           </h3>
-          <el-button type="primary" class="!bg-[#409eff] !text-[#fff]" @click="$router.push('/exams')">查看全部</el-button>
+          <el-button @click="$router.push('/exams')">查看全部</el-button>
         </div>
       </template>
       <div class="space-y-4">
@@ -241,7 +241,7 @@
               </div>
             </div>
             <div class="flex items-center gap-2">
-              <el-button type="primary" link size="small" @click="handleScoreEntry(exam)">
+              <el-button link size="small" @click="handleScoreEntry(exam)">
                 {{ getExamStatusText(exam) === '已完成' ? '查看成绩' : '录入成绩' }}
               </el-button>
             </div>

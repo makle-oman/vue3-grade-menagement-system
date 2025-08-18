@@ -34,7 +34,7 @@
         </div>
         
         <div class="semester-statistics__filter-button">
-          <el-button type="primary" @click="loadStatistics" :loading="loading" class="!bg-[#409eff]">
+          <el-button type="primary" @click="loadStatistics" :loading="loading">
             查询统计
           </el-button>
         </div>
@@ -177,7 +177,7 @@
                 <span v-else class="text-gray-400">未统计</span>
               </td>
               <td class="text-gray-500">
-                <el-button type="primary" size="small" @click="viewExamStatistics(exam.id)" class="!bg-[#409eff]">
+                <el-button type="primary" size="small" @click="viewExamStatistics(exam.id)" >
                   查看统计
                 </el-button>
               </td>

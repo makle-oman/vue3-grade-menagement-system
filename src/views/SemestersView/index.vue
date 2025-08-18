@@ -22,7 +22,7 @@
         </el-select>
       </div>
       
-      <el-button type="primary" :icon="Plus" @click="showCreateDialog = true" class="!bg-[#409EFF]">
+      <el-button  :icon="Plus" @click="showCreateDialog = true" class="!text-[667eea]">
         添加学期
       </el-button>
     </div>
@@ -124,17 +124,15 @@
                 type="primary" 
                 plain
                 @click="editSemester(row)"
-                class="!border-blue-300 !text-blue-600 hover:!bg-blue-50"
               >
                 编辑
               </el-button>
               <el-button
                 size="small"
-                :type="row.isCurrent ? 'warning' : 'success'"
+                :type="row.isCurrent ? 'success' : 'warning'"
                 plain
                 @click="toggleCurrentSemester(row)"
                 :disabled="row.isCurrent"
-                :class="row.isCurrent ? '!border-orange-300 !text-orange-600' : '!border-green-300 !text-green-600 hover:!bg-green-50'"
               >
                 {{ row.isCurrent ? '当前学期' : '设为当前' }}
               </el-button>
@@ -143,7 +141,7 @@
                 type="danger"
                 plain
                 @click="deleteSemester(row)"
-                class="!border-red-300 !text-red-600 hover:!bg-red-50"
+                class="!border-red-300 !text-[#fff] hover:!bg-red-50"
               >
                 删除
               </el-button>
@@ -206,7 +204,7 @@
       <template #footer>
         <div class="flex gap-2 justify-end">
           <el-button @click="showCreateDialog = false">取消</el-button>
-          <el-button type="primary" @click="saveSemester" :loading="saving">
+          <el-button  @click="saveSemester" :loading="saving">
             创建
           </el-button>
         </div>
@@ -266,7 +264,7 @@
       <template #footer>
         <div class="flex gap-2 justify-end">
           <el-button @click="showEditDialog = false">取消</el-button>
-          <el-button type="primary" @click="updateSemester" :loading="saving">
+          <el-button  @click="updateSemester" :loading="saving">
             更新
           </el-button>
         </div>
@@ -606,5 +604,6 @@ onMounted(() => {
 :deep(.el-button--primary:hover) {
   transform: translateY(-2px) !important;
   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6) !important;
+
 }
 </style>

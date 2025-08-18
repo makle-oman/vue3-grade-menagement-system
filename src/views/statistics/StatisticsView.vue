@@ -57,8 +57,8 @@
           </el-select>
         </div>
         
-        <div class="filter-item">
-          <el-button type="primary" @click="generateStatistics" :loading="loading" class="!bg-[#409EFF]">
+        <div class="filter-item text-gray-500">
+          <el-button type="primary" @click="generateStatistics" :loading="loading" class="search-btn">
             查询统计
           </el-button>
         </div>

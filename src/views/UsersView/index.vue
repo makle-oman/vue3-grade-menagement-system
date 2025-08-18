@@ -28,22 +28,22 @@
     <!-- 操作栏 -->
     <div class="action-bar">
       <div class="search-filters">
-        <el-input v-model="searchQuery" placeholder="搜索用户名或姓名..." class="search-input" clearable
+        <el-input v-model="searchQuery" placeholder="搜索用户名或姓名..."  clearable
           :prefix-icon="Search" />
-        <el-select v-model="roleFilter" placeholder="筛选角色" clearable class="role-filter">
+        <el-select v-model="roleFilter" placeholder="筛选角色" clearable >
           <el-option label="全部角色" value="" />
           <el-option label="管理员" value="admin" />
           <el-option label="教师" value="teacher" />
           <el-option label="年级组长" value="grade_leader" />
         </el-select>
-        <el-select v-model="statusFilter" placeholder="筛选状态" clearable class="status-filter">
+        <el-select v-model="statusFilter" placeholder="筛选状态" clearable>
           <el-option label="全部状态" value="" />
           <el-option label="启用" value="active" />
           <el-option label="禁用" value="inactive" />
         </el-select>
       </div>
 
-      <el-button type="primary" class="add-button" :icon="Plus" @click="showCreateDialog = true">
+      <el-button  class="add-button !text-[#fff]" :icon="Plus" @click="showCreateDialog = true">
         添加用户
       </el-button>
     </div>
@@ -55,8 +55,9 @@
           <div class="user-avatar">
             <el-avatar :size="60" class="avatar" :style="{ backgroundColor: getAvatarColor(user.name) }">
               {{ getFirstChar(user.name) }}
-            </el-avatar>
             <div class="status-indicator" :class="{ 'active': user.isActive }"></div>
+
+            </el-avatar>
           </div>
 
           <div class="user-info">
@@ -160,7 +161,7 @@
 
       <template #footer>
         <el-button @click="showCreateDialog = false">取消</el-button>
-        <el-button type="primary" @click="saveUser" :loading="saving" class="!bg-[#409EFF]">
+        <el-button  @click="saveUser" :loading="saving" >
           {{ editingUser ? '更新' : '创建' }}
         </el-button>
       </template>
