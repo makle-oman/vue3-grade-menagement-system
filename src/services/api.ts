@@ -394,6 +394,15 @@ export const statisticsApi = {
     const response = await api.get(`/statistics/subject/${encodeURIComponent(subject)}${queryString ? `?${queryString}` : ''}`);
     return response.data;
   },
+
+  getGradeAnalysis: async (semesterId: string, gradeLevel: string): Promise<any> => {
+    const params = new URLSearchParams();
+    params.append('semesterId', semesterId);
+    params.append('gradeLevel', gradeLevel);
+    
+    const response = await api.get(`/statistics/grade-analysis?${params.toString()}`);
+    return response.data;
+  },
 };
 
 export default api;

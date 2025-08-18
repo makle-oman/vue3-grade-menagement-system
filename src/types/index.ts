@@ -195,6 +195,25 @@ export interface SubjectStatistics {
   }[];
 }
 
+export interface ClassComparison {
+  className: string;
+  teacher?: string;
+  studentCount: number;
+  averageScore: number;
+  excellentRate: number;
+  passRate: number;
+  improvement: number;
+}
+
+export interface GradeAnalysis {
+  gradeName: string;
+  totalClasses: number;
+  totalStudents: number;
+  gradeAverage: number;
+  excellentRate: number;
+  classComparison: ClassComparison[];
+}
+
 // 保持向后兼容的Statistics接口
 export interface Statistics extends ExamStatistics {
   classStats?: ClassStatistics[];

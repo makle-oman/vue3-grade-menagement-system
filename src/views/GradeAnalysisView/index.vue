@@ -3,7 +3,8 @@
     <!-- 页面标题 -->
     <div class="page-header">
       <h1 class="text-2xl font-bold mb-2">年级分析</h1>
-      <p>年级组长专用的成绩分析功能，帮助您全面了解各班级学习情况</p>
+      <p v-if="!analysis">年级组长专用的成绩分析功能，帮助您全面了解各班级学习情况</p>
+      <p v-else>{{ analysis.gradeName }}成绩分析，帮助您全面了解各班级学习情况</p>
     </div>
 
     <!-- 筛选条件 -->
@@ -112,7 +113,7 @@
           <thead>
             <tr>
               <th>班级</th>
-              <th>班主任</th>
+              <th>教师</th>
               <th>学生数</th>
               <th>平均分</th>
               <th>年级排名</th>
@@ -187,28 +188,9 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, watch } from 'vue';
 import { ElMessage } from 'element-plus';
-import { semesterApi } from '@/services/api';
-import type { Semester } from '@/types';
+import { semesterApi, statisticsApi } from '@/services/api';
+import type { Semester, GradeAnalysis } from '@/types';
 import { formatClassName } from '@/utils/classUtils';
-import axios from 'axios';
-
-interface ClassComparison {
-  className: string;
-  teacher?: string;
-  studentCount: number;
-  averageScore: number;
-  excellentRate: number;
-  passRate: number;
-  improvement: number;
-}
-
-interface GradeAnalysis {
-  totalClasses: number;
-  totalStudents: number;
-  gradeAverage: number;
-  excellentRate: number;
-  classComparison: ClassComparison[];
-}
 
 const loading = ref(false);
 const semesters = ref<Semester[]>([]);
@@ -256,17 +238,13 @@ const loadAnalysis = async () => {
   
   try {
     loading.value = true;
+    console.log(`正在获取年级分析数据: 学期ID=${filters.semesterId}, 年级=${filters.gradeLevel}`);
     
     // 调用后端API获取年级分析数据
-    const response = await axios.get('/api/statistics/grade-analysis', {
-      params: {
-        semesterId: filters.semesterId,
-        gradeLevel: filters.gradeLevel
-      }
-    });
+    const data = await statisticsApi.getGradeAnalysis(filters.semesterId, filters.gradeLevel);
     
-    if (response.data) {
-      analysis.value = response.data;
+    if (data) {
+      analysis.value = data;
       
       // 确保班级对比数据按平均分排序
       if (analysis.value.classComparison) {
@@ -280,7 +258,12 @@ const loadAnalysis = async () => {
     }
   } catch (error) {
     console.error('获取分析数据失败:', error);
-    ElMessage.error('获取分析数据失败');
+    if (error.response) {
+      console.error('错误响应:', error.response.data);
+      ElMessage.error(`获取分析数据失败: ${error.response.data.message || '未知错误'}`);
+    } else {
+      ElMessage.error('获取分析数据失败');
+    }
     analysis.value = null;
   } finally {
     loading.value = false;
@@ -288,9 +271,9 @@ const loadAnalysis = async () => {
 };
 
 // 当学期或年级变化时，清空分析结果
-watch([() => filters.semesterId, () => filters.gradeLevel], () => {
-  analysis.value = null;
-});
+// watch([() => filters.semesterId, () => filters.gradeLevel], () => {
+//   analysis.value = null;
+// });
 
 onMounted(() => {
   fetchSemesters();
