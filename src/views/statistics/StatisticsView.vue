@@ -58,7 +58,7 @@
         </div>
         
         <div class="filter-item text-gray-500">
-          <el-button type="primary" @click="generateStatistics" :loading="loading" class="search-btn">
+          <el-button type="primary" @click="generateStatistics" :loading="loading" class="search-btn !text-[#fff]">
             查询统计
           </el-button>
         </div>

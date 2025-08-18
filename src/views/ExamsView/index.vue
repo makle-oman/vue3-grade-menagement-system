@@ -82,7 +82,7 @@
                 <el-tag size="small">{{ getExamTypeLabel(scope.row.examType) }}</el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="status" label="状态" min-width="120">
+            <el-table-column prop="status" label="状态" min-width="120" v-if="false">
               <template #default="scope">
                 <el-select v-model="scope.row.status" size="small"
                   @change="(value) => updateExamStatus(scope.row.id, value)">

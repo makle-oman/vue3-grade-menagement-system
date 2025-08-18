@@ -34,7 +34,7 @@
         </div>
         
         <div class="semester-statistics__filter-button">
-          <el-button type="primary" @click="loadStatistics" :loading="loading">
+          <el-button type="primary" @click="loadStatistics" :loading="loading" class="!text-[#fff]">
             查询统计
           </el-button>
         </div>
