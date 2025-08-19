@@ -13,7 +13,7 @@ import type {
   SemesterStatistics
 } from '../types';
 
-const API_URL = 'http://localhost:3000';
+const API_URL = 'http://60.205.167.169:3000';
 
 const api = axios.create({
   baseURL: API_URL,

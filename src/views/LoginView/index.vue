@@ -93,7 +93,7 @@
       <div class="demo-accounts">
         <el-divider>演示账号</el-divider>
         <div class="demo-list">
-          <div class="demo-item">
+          <div class="demo-item" v-if="false">
             <span class="demo-role">管理员:</span>
             <span class="demo-account">admin / admin123</span>
           </div>
@@ -103,7 +103,7 @@
           </div>
           <div class="demo-item">
             <span class="demo-role">年级组长:</span>
-            <span class="demo-account">grade_leader1 / leader123</span>
+            <span class="demo-account">10010010010 / 888888</span>
           </div>
         </div>
       </div>

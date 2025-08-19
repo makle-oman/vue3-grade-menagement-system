@@ -56,21 +56,21 @@
 
               <input ref="fileInput" type="file" accept=".xlsx,.xls" @change="handleImportExcel"
                 style="display: none" />
-              <el-button size="large" @click="triggerFileInput" class="action-button">
+              <el-button  @click="triggerFileInput">
                 <el-icon>
                   <Upload />
                 </el-icon>
                 导入Excel
               </el-button>
 
-              <el-button size="large" @click="handleExportExcel" class="action-button">
+              <el-button  @click="handleExportExcel">
                 <el-icon>
                   <Download />
                 </el-icon>
                 导出Excel
               </el-button>
 
-              <el-button size="large" @click="handleDownloadTemplate" class="action-button">
+              <el-button  @click="handleDownloadTemplate">
                 <el-icon>
                   <Document />
                 </el-icon>

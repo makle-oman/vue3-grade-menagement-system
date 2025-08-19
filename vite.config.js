@@ -10,7 +10,7 @@ export default defineConfig({
     vue(),
     vueJsx(),
   ],
-  base: '/',
+  base: "/web",
   server: {
     port: 8888,
     host: true
