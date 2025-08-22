@@ -5,6 +5,21 @@ import LoginView from '../views/LoginView/index.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+  scrollBehavior(to, from, savedPosition) {
+    // 如果有保存的位置（比如浏览器前进后退），则恢复到保存的位置
+    if (savedPosition) {
+      return savedPosition
+    }
+    // 如果路由有 hash，则滚动到对应的元素
+    if (to.hash) {
+      return {
+        el: to.hash,
+        behavior: 'smooth'
+      }
+    }
+    // 默认情况下，滚动到页面顶部
+    return { top: 0, behavior: 'smooth' }
+  },
   routes: [
     // 登录页面
     {

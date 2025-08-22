@@ -1,6 +1,5 @@
 /* 页面容器样式 */
 .reports-container {
-  min-height: calc(100vh - 120px);
   padding: 0 !important;
   background: transparent;
 }

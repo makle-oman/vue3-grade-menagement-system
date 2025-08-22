@@ -124,7 +124,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import {
@@ -154,6 +154,21 @@ const authStore = useAuthStore();
 const isAuthenticated = computed(() => authStore.isAuthenticated);
 const currentUser = computed(() => authStore.user);
 const isLoginPage = computed(() => route.path === '/login');
+
+// 监听路由变化，自动滚动到顶部
+watch(() => route.path, () => {
+  if (!isLoginPage.value && isAuthenticated.value) {
+    nextTick(() => {
+      const mainElement = document.querySelector('.app-main');
+      if (mainElement) {
+        mainElement.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }
+    });
+  }
+});
 
 // 获取角色文本
 const getRoleText = (role: string) => {
