@@ -88,7 +88,7 @@
         </div>
 
         <div class="grid gap-2 grid-cols-3">
-          <el-checkbox v-for="student in examStudents" :key="student.id" v-model="selectedStudentsMap[student.id]"
+          <el-checkbox v-for="student in sortedExamStudents" :key="student.id" v-model="selectedStudentsMap[student.id.toString()]"
             @change="updateSelectedStudents">
             {{ student.name }} ({{ student.studentNumber }})
           </el-checkbox>
@@ -195,6 +195,7 @@ import { useScoreStore } from '@/stores/score';
 import { Exam, Student, Score } from '@/types';
 import * as XLSX from 'xlsx';
 import { formatClassName } from '@/utils/classUtils';
+import { sortStudentsByNumber } from '@/utils/naturalSort';
 
 // 状态管理
 const examStore = useExamStore();
@@ -220,13 +221,16 @@ const sortedExams = computed(() => {
 // 报表类型
 const reportType = ref<'individual' | 'class' | 'summary'>('class');
 
-// 学生选择
-const selectedStudentsMap = reactive<Record<number, boolean>>({});
+// 学生选择 - 修复：确保key是字符串类型
+const selectedStudentsMap = reactive<Record<string, boolean>>({});
 const selectAllStudents = ref(false);
 const selectedStudents = computed(() => {
-  return Object.entries(selectedStudentsMap)
+  const result = Object.entries(selectedStudentsMap)
     .filter(([_, selected]) => selected)
-    .map(([id]) => Number(id));
+    .map(([id]) => id); // 直接返回字符串ID，不转换为数字
+  
+  console.log('最终选中的学生ID数组:', result); // 调试日志
+  return result;
 });
 
 // 获取选中考试的学生和成绩
@@ -240,10 +244,26 @@ const examStudents = computed(() => {
   return students.value.filter(student => student.className === currentExam.value?.className);
 });
 
-// 构建完整的学生成绩数据
+// 按学号排序的学生列表（用于显示）
+const sortedExamStudents = computed(() => {
+  return sortStudentsByNumber(examStudents.value);
+});
+
+// 构建完整的学生成绩数据 - 修复：正确匹配成绩数据
 const studentScoreData = computed(() => {
+  console.log('examStudents:', examStudents.value.map(s => ({ id: s.id, studentNumber: s.studentNumber })));
+  console.log('examScores:', examScores.value.map(s => ({ studentId: s.studentId, studentNumber: s.studentNumber })));
+  
   return examStudents.value.map(student => {
-    const score = examScores.value.find(s => s.studentNumber === student.id);
+    // 修复：正确匹配成绩数据，尝试多种匹配方式
+    const score = examScores.value.find(s => 
+      s.studentId === student.id || 
+      s.studentNumber === student.id ||
+      s.studentNumber === student.studentNumber
+    );
+    
+    console.log(`学生 ${student.name}(ID:${student.id}, 学号:${student.studentNumber}) 匹配到成绩:`, score);
+    
     return {
       student,
       score: score?.score || null,
@@ -369,21 +389,21 @@ const resetStudentSelection = () => {
   });
   selectAllStudents.value = false;
 
-  // 初始化当前考试的学生选择状态
+  // 初始化当前考试的学生选择状态 - 修复：使用字符串key
   examStudents.value.forEach(student => {
-    selectedStudentsMap[student.id] = false;
+    selectedStudentsMap[student.id.toString()] = false;
   });
 };
 
 const handleSelectAllStudents = (val: boolean) => {
   examStudents.value.forEach(student => {
-    selectedStudentsMap[student.id] = val;
+    selectedStudentsMap[student.id.toString()] = val;
   });
 };
 
 const updateSelectedStudents = () => {
   // 检查是否全选
-  const allSelected = examStudents.value.every(student => selectedStudentsMap[student.id]);
+  const allSelected = examStudents.value.every(student => selectedStudentsMap[student.id.toString()]);
   selectAllStudents.value = allSelected;
 };
 
@@ -392,34 +412,64 @@ const formatDate = (dateString: string) => {
   return date.toLocaleDateString();
 };
 
-// 生成个人成绩单
+// 生成个人成绩单 - 修复：确保正确获取和排序学生
 const generateIndividualReports = () => {
   if (!currentExam.value || !statistics.value) {
     ElMessage.warning('请先选择考试');
     return;
   }
 
-  const studentsToExport = selectedStudents.value.length > 0
-    ? examStudents.value.filter(s => selectedStudents.value.includes(s.id))
-    : [];
-
-  if (studentsToExport.length === 0) {
+  // 修复：正确获取选中的学生
+  const selectedStudentIds = selectedStudents.value;
+  console.log('选中的学生ID:', selectedStudentIds); // 调试日志
+  
+  if (selectedStudentIds.length === 0) {
     ElMessage.warning('请选择要生成成绩单的学生');
     return;
   }
 
-  const reportData = studentsToExport.map(student => {
-    const scoreData = rankedStudentData.value.find(item => item.student.id === student.id);
+  // 获取选中的学生对象 - 修复：确保ID类型匹配
+  const studentsToExport = examStudents.value.filter(student => 
+    selectedStudentIds.includes(student.id.toString())
+  );
+
+  console.log('要导出的学生:', studentsToExport); // 调试日志
+
+  if (studentsToExport.length === 0) {
+    ElMessage.warning('未找到选中的学生数据');
+    return;
+  }
+
+  // 按学号自然排序
+  const sortedStudentsToExport = sortStudentsByNumber(studentsToExport);
+
+  const reportData = sortedStudentsToExport.map(student => {
+    // 从完整的学生成绩数据中查找
+    const scoreData = studentScoreData.value.find(item => item.student.id === student.id);
     const score = scoreData?.score;
-    const rank = scoreData?.rank || 0;
     const isAbsent = scoreData?.isAbsent || false;
+    
+    // 查找排名信息
+    const rankInfo = rankedStudentData.value.find(item => item.student.id === student.id);
+    const rank = rankInfo?.rank || null;
 
     let level = '不及格';
-    if (!isAbsent && score !== null && score !== undefined) {
+    let displayScore = '';
+    let displayRank = '';
+
+    if (isAbsent || score === null || score === undefined) {
+      displayScore = '缺考';
+      displayRank = '缺考';
+      level = '缺考';
+    } else {
+      displayScore = score.toString();
+      displayRank = rank ? rank.toString() : '';
+      
       const totalScore = currentExam.value!.totalScore;
       if (score >= totalScore * 0.85) level = '优秀';
       else if (score >= totalScore * 0.75) level = '良好';
       else if (score >= totalScore * 0.6) level = '及格';
+      else level = '不及格';
     }
 
     return {
@@ -430,9 +480,9 @@ const generateIndividualReports = () => {
       科目: currentExam.value!.subject,
       考试日期: formatDate(currentExam.value!.examDate),
       总分: currentExam.value!.totalScore,
-      得分: isAbsent ? '缺考' : (score || ''),
-      等级: isAbsent ? '缺考' : level,
-      班级排名: isAbsent ? '缺考' : (rank || ''),
+      得分: displayScore,
+      等级: level,
+      班级排名: displayRank,
       班级平均分: statistics.value!.averageScore,
       班级最高分: statistics.value!.highestScore,
       班级最低分: statistics.value!.lowestScore,
@@ -446,44 +496,64 @@ const generateIndividualReports = () => {
   XLSX.utils.book_append_sheet(workbook, worksheet, '个人成绩单');
   XLSX.writeFile(workbook, `${currentExam.value!.name}_个人成绩单.xlsx`);
 
-  ElMessage.success('个人成绩单生成成功');
+  ElMessage.success(`个人成绩单生成成功，共导出 ${reportData.length} 名学生`);
 };
 
-// 生成班级成绩汇总表
+// 生成班级成绩汇总表 - 修复：确保正确排序
 const generateClassReport = () => {
   if (!currentExam.value || !statistics.value) {
     ElMessage.warning('请先选择考试');
     return;
   }
 
-  // 处理正常参加考试的学生
-  const classReportData = rankedStudentData.value.map(item => {
-    const isFailingOrAbsent = item.isAbsent || (item.score !== null && item.score < 60);
-
+  // 获取所有学生数据（包括缺考和正常考试的）
+  const allStudentData = studentScoreData.value.map(item => {
+    // 查找该学生的排名信息
+    const rankInfo = rankedStudentData.value.find(ranked => ranked.student.id === item.student.id);
+    
     return {
-      排名: item.rank,
-      学号: item.student.studentNumber,
-      姓名: item.student.name,
-      成绩: item.isAbsent ? '缺考' : item.score,
-      状态: item.isAbsent ? '缺考' : (item.score < 60 ? '不及格' : '正常'),
+      student: item.student,
+      score: item.score,
+      isAbsent: item.isAbsent,
+      rank: rankInfo?.rank || null
     };
   });
 
-  // 添加缺考学生
-  const absentStudents = studentScoreData.value
-    .filter(item => item.isAbsent)
-    .sort((a, b) => a.student.studentNumber.localeCompare(b.student.studentNumber))
-    .map(item => ({
-      排名: '缺考',
+  // 按学号自然排序所有学生
+  const sortedAllStudents = sortStudentsByNumber(allStudentData.map(item => item.student))
+    .map(student => allStudentData.find(data => data.student.id === student.id)!)
+    .filter(Boolean);
+
+  // 生成最终的报表数据
+  const classReportData = sortedAllStudents.map(item => {
+    let displayScore = '';
+    let displayRank = '';
+    let status = '';
+
+    if (item.isAbsent) {
+      displayScore = '缺考';
+      displayRank = '缺考';
+      status = '缺考';
+    } else if (item.score === null || item.score === undefined) {
+      displayScore = '缺考';
+      displayRank = '缺考';
+      status = '缺考';
+    } else {
+      displayScore = item.score.toString();
+      displayRank = item.rank ? item.rank.toString() : '';
+      status = item.score < 60 ? '不及格' : '正常';
+    }
+
+    return {
+      排名: displayRank,
       学号: item.student.studentNumber,
       姓名: item.student.name,
-      成绩: '缺考',
-      状态: '缺考',
-    }));
+      成绩: displayScore,
+      状态: status,
+    };
+  });
 
-  const allData = [...classReportData, ...absentStudents];
-
-  const worksheet = XLSX.utils.json_to_sheet(allData);
+  const worksheet = XLSX.utils.json_to_sheet(classReportData);
 
   // 设置单元格样式
   const workbook = XLSX.utils.book_new();
@@ -493,8 +563,8 @@ const generateClassReport = () => {
   if (!workbook.Sheets['班级成绩汇总'].s) workbook.Sheets['班级成绩汇总'].s = {};
 
   // 为每个单元格设置样式
-  for (let i = 0; i < allData.length; i++) {
-    const row = allData[i];
+  for (let i = 0; i < classReportData.length; i++) {
+    const row = classReportData[i];
     const isFailingOrAbsent = row.状态 === '缺考' || row.状态 === '不及格';
 
     if (isFailingOrAbsent) {
