@@ -1,6 +1,5 @@
 /* 学期统计视图样式 */
 .semester-statistics {
-  padding: 1.5rem;
 }
 
 /* 页面标题区域 */
@@ -679,7 +678,6 @@
 /* 页面背景 */
 .semester-statistics {
   position: relative;
-  padding: 1.5rem;
   min-height: calc(100vh - 64px);
 }
 
