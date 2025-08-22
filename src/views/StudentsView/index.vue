@@ -578,13 +578,14 @@ const handleImportExcel = (event: Event) => {
 
       // 如果当前选择了班级，则使用当前选择的班级ID
       if (selectedClassId.value) {
-        // 只需要学号和姓名
+        // 只需要学号和姓名，添加当前选择的班级名称
         const studentsData = jsonData.map((row: any) => {
           return {
             studentNumber: String(row['学号'] || row['studentNumber'] || ''),
-            name: String(row['姓名'] || row['name'] || '')
+            name: String(row['姓名'] || row['name'] || ''),
+            className: selectedClass.value || '' // 使用当前选择的班级
           };
-        }).filter(student => student.studentNumber && student.name);
+        }).filter(student => student.studentNumber && student.name && student.className);
 
         if (studentsData.length === 0) {
           ElMessage.error('Excel文件格式不正确，请确保包含"学号"、"姓名"列');
@@ -646,23 +647,33 @@ const handleImportExcel = (event: Event) => {
 
 // Excel导出
 const handleExportExcel = () => {
-  if (studentStore.students.length === 0) {
+  // 使用过滤后的学生数据进行导出，而不是全部学生
+  if (filteredStudents.value.length === 0) {
     ElMessage.error('暂无学生数据可导出');
     return;
   }
 
-  const exportData = studentStore.students.map(student => ({
+  const exportData = filteredStudents.value.map(student => ({
     学号: student.studentNumber,
     姓名: student.name,
     班级: student.className,
     创建时间: new Date(student.createdAt).toLocaleString(),
   }));
 
+  // 根据是否选择了班级来确定文件名
+  const fileName = selectedClass.value 
+    ? `${formatClassName(selectedClass.value)}_学生名单_${new Date().toISOString().split('T')[0]}.xlsx`
+    : `学生名单_${new Date().toISOString().split('T')[0]}.xlsx`;
+
   const worksheet = XLSX.utils.json_to_sheet(exportData);
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, '学生名单');
-  XLSX.writeFile(workbook, `学生名单_${new Date().toISOString().split('T')[0]}.xlsx`);
-  ElMessage.success('导出成功');
+  XLSX.writeFile(workbook, fileName);
+  
+  const message = selectedClass.value 
+    ? `成功导出 ${formatClassName(selectedClass.value)} 的 ${exportData.length} 名学生`
+    : `成功导出 ${exportData.length} 名学生`;
+  ElMessage.success(message);
 };
 
 // 下载模板

@@ -137,6 +137,7 @@ import * as XLSX from 'xlsx';
 import { Edit, Upload, Download, Document, Check, RefreshRight, Search } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { formatClassName, sortClasses } from '@/utils/classUtils'
+import { sortStudentsByNumber } from '@/utils/naturalSort'
 
 // 引入 store
 const studentStore = useStudentStore();
@@ -471,13 +472,30 @@ const handleExportScores = () => {
     return;
   }
 
-  const exportData = examStudents.value.map(student => {
+  // 按学号自然排序学生列表
+  const sortedStudents = sortStudentsByNumber(examStudents.value);
+
+  const exportData = sortedStudents.map(student => {
     const score = existingScores.value.find(s => s.studentId === student.id);
+    let displayScore = '';
+    let status = '';
+
+    if (score?.isAbsent) {
+      displayScore = '缺考';
+      status = '缺考';
+    } else if (score?.score !== null && score?.score !== undefined) {
+      displayScore = score.score.toString();
+      status = score.score < 60 ? '不及格' : '正常';
+    } else {
+      displayScore = '';
+      status = '未录入';
+    }
+
     return {
       学号: student.studentNumber,
       姓名: student.name,
-      成绩: score?.isAbsent ? '缺考' : (score?.score || ''),
-      状态: score?.isAbsent ? '缺考' : '正常',
+      成绩: displayScore,
+      状态: status,
     };
   });
 
@@ -485,6 +503,8 @@ const handleExportScores = () => {
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, '考试成绩');
   XLSX.writeFile(workbook, `${currentExam.value.name}_考试成绩.xlsx`);
+  
+  ElMessage.success(`成功导出 ${exportData.length} 条成绩记录`);
 };
 
 // 获取行样式
