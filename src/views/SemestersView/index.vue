@@ -1,5 +1,5 @@
   <template>
-  <div class="p-6">
+  <div class="p-6 pt-0 pl-0 pr-0">
     <div class="mb-6">
       <h1 class="text-2xl font-bold text-gray-900 mb-2">学期管理</h1>
       <p class="text-gray-600">管理学期信息和时间安排</p>

@@ -1,5 +1,8 @@
 <template>
   <div id="app">
+    <!-- 全局加载组件 -->
+    <!-- <GlobalLoading /> -->
+    
     <!-- 如果是登录页面或未认证，直接显示路由内容 -->
     <router-view v-if="isLoginPage || !isAuthenticated" />
 
@@ -143,6 +146,7 @@ import {
   SwitchButton,
 } from '@element-plus/icons-vue';
 import { useAuthStore } from './stores/auth';
+import GlobalLoading from './components/GlobalLoading.vue';
 
 // 控制更多菜单弹出框的显示状态
 const showMorePopover = ref(false);

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useLoadingStore } from '../stores/loading';
 import type { 
   Student, 
   Exam, 
@@ -13,7 +14,8 @@ import type {
   SemesterStatistics
 } from '../types';
 
-const API_URL = 'http://60.205.167.169:3000';
+const API_URL = ' http://localhost:3000';
+// const API_URL = 'http://60.205.167.169:3000';
 
 const api = axios.create({
   baseURL: API_URL,
@@ -22,19 +24,50 @@ const api = axios.create({
   },
 });
 
-// 请求拦截器 - 添加认证token
+// 请求拦截器 - 添加认证token和加载状态
 api.interceptors.request.use((config) => {
+  // 添加认证token
   const token = localStorage.getItem('access_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  
+  // 启动加载状态（除了某些不需要显示加载的接口）
+  const skipLoadingUrls = ['/auth/profile'];
+  const shouldShowLoading = !skipLoadingUrls.some(url => config.url?.includes(url));
+  
+  if (shouldShowLoading) {
+    const loadingStore = useLoadingStore();
+    loadingStore.startLoading();
+  }
+  
   return config;
 });
 
-// 响应拦截器 - 处理认证错误
+// 响应拦截器 - 处理认证错误和停止加载状态
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // 停止加载状态
+    const skipLoadingUrls = ['/auth/profile'];
+    const shouldShowLoading = !skipLoadingUrls.some(url => response.config.url?.includes(url));
+    
+    if (shouldShowLoading) {
+      const loadingStore = useLoadingStore();
+      loadingStore.stopLoading();
+    }
+    
+    return response;
+  },
   (error) => {
+    // 停止加载状态
+    const skipLoadingUrls = ['/auth/profile'];
+    const shouldShowLoading = !skipLoadingUrls.some(url => error.config?.url?.includes(url));
+    
+    if (shouldShowLoading) {
+      const loadingStore = useLoadingStore();
+      loadingStore.stopLoading();
+    }
+    
     // 只有在非登录/注册接口遇到401时才清除认证信息并跳转
     if (error.response?.status === 401 && 
         !error.config?.url?.includes('/auth/login') && 

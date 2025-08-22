@@ -1,5 +1,5 @@
 <template>
-  <div class="grade-analysis-container p-6">
+  <div class="grade-analysis-container ">
     <!-- 页面标题 -->
     <div class="page-header">
       <h1 class="text-2xl font-bold mb-2">年级分析</h1>
