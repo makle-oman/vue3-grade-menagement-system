@@ -189,3 +189,176 @@ body {
 .flex-1 {
   flex: 1 1 0%;
 }
+
+/* ========== UI优化样式 ========== */
+
+/* 可访问性和对比度优化 */
+.text-contrast-high {
+  color: #111827 !important;
+}
+
+.text-contrast-medium {
+  color: #374151 !important;
+}
+
+.text-contrast-low {
+  color: #6b7280 !important;
+}
+
+.glass-effect-readable {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.modern-button {
+  color: white !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-card .card-content {
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 16px;
+  margin: -8px;
+  padding: 24px;
+}
+
+.modern-input {
+  background: rgba(255, 255, 255, 0.98) !important;
+  color: #111827 !important;
+}
+
+.modern-input::placeholder {
+  color: #9ca3af !important;
+}
+
+.nav-item:not(.is-active) {
+  color: #374151 !important;
+}
+
+.nav-item:not(.is-active):hover {
+  color: #111827 !important;
+}
+
+/* 动画和交互优化 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.welcome-section {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.dashboard-card {
+  animation: scaleIn 0.5s ease-out;
+  animation-fill-mode: both;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dashboard-card:nth-child(1) { animation-delay: 0.1s; }
+.dashboard-card:nth-child(2) { animation-delay: 0.2s; }
+.dashboard-card:nth-child(3) { animation-delay: 0.3s; }
+.dashboard-card:nth-child(4) { animation-delay: 0.4s; }
+
+.chart-card, .recent-card {
+  animation: fadeInUp 0.6s ease-out 0.3s both;
+}
+
+.recent-section {
+  animation: fadeInUp 0.6s ease-out 0.4s both;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(102, 126, 234, 0.25);
+}
+
+.modern-button:active {
+  transform: translateY(-1px) scale(0.98);
+  transition: all 0.1s ease;
+}
+
+.nav-item {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.nav-item::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.nav-item:hover::before {
+  width: 80%;
+}
+
+.nav-item.is-active::before {
+  width: 100%;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.loading-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.trend-bar {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.trend-item:hover .trend-bar {
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.modern-input {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modern-input:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+}
