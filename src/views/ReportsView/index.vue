@@ -266,17 +266,17 @@ const studentScoreData = computed(() => {
     
     return {
       student,
-      score: score?.score || null,
+      score: score?.score !== undefined ? score.score : null, // 修复：正确处理0分
       isAbsent: score?.isAbsent || false,
       rank: 0, // 将在排序后设置
     };
   });
 });
 
-// 计算排名
+// 计算排名 - 修复：0分也应该参与排名
 const rankedStudentData = computed(() => {
   const validScores = studentScoreData.value
-    .filter(item => !item.isAbsent && item.score !== null)
+    .filter(item => !item.isAbsent && (item.score !== null && item.score !== undefined))
     .sort((a, b) => (b.score || 0) - (a.score || 0));
 
   return validScores.map((item, index) => ({ ...item, rank: index + 1 }));
@@ -457,11 +457,14 @@ const generateIndividualReports = () => {
     let displayScore = '';
     let displayRank = '';
 
-    if (isAbsent || score === null || score === undefined) {
+    // 修复：正确区分缺考和0分
+    if (isAbsent || (score === null || score === undefined)) {
       displayScore = '缺考';
       displayRank = '缺考';
       level = '缺考';
+
     } else {
+      // 有成绩的情况（包括0分）
       displayScore = score.toString();
       displayRank = rank ? rank.toString() : '';
       
@@ -530,15 +533,13 @@ const generateClassReport = () => {
     let displayRank = '';
     let status = '';
 
-    if (item.isAbsent) {
-      displayScore = '缺考';
-      displayRank = '缺考';
-      status = '缺考';
-    } else if (item.score === null || item.score === undefined) {
+    // 修复：正确区分缺考和0分
+    if (item.isAbsent || (item.score === null || item.score === undefined)) {
       displayScore = '缺考';
       displayRank = '缺考';
       status = '缺考';
     } else {
+      // 有成绩的情况（包括0分）
       displayScore = item.score.toString();
       displayRank = item.rank ? item.rank.toString() : '';
       status = item.score < 60 ? '不及格' : '正常';
